@@ -1,5 +1,4 @@
 group 'com.thirdparty'
-version 'alpha'
 
 apply plugin: 'java'
 apply plugin: 'idea'
