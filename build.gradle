@@ -1,0 +1,17 @@
+group 'com.thirdparty'
+version 'alpha'
+
+apply plugin: 'java'
+apply plugin: 'idea'
+
+ext {
+    jacksonVersion = "2.8.4"
+}
+
+dependencies {
+    compile project(':plugin-api')
+    compile (group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: "$jacksonVersion") { transitive = false }
+    compile (group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "$jacksonVersion"){ transitive = false }
+    compile (group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: "$jacksonVersion"){ transitive = false }
+
+}
