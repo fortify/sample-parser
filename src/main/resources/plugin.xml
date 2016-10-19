@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<plugin key="com.example.parser" api-version="1.0">
+<plugin id="com.example.parser" api-version="1.0">
     <name>Custom Parser</name>
     <version>1.0</version>
     <vendor>Foo</vendor>
