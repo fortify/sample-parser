@@ -14,3 +14,9 @@ dependencies {
     compile (group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: "$jacksonVersion"){ transitive = false }
 
 }
+
+uploadArchives  {
+    repositories.localRepository
+}
+
+jar.finalizedBy uploadArchives
