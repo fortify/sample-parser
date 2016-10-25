@@ -2,7 +2,7 @@ package com.thirdparty;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-import com.fortify.plugin.event.ScanParse;
+import com.fortify.plugin.event.ScanSubmission;
 import com.fortify.plugin.result.Vulnerability;
 import com.fortify.plugin.spi.ParserPlugin;
 import com.fortify.plugin.spi.VulnerabilityPublisher;
@@ -40,7 +40,7 @@ public class EverythingParser implements ParserPlugin {
     }
 
     @Override
-    public boolean accept(ScanParse event) {
+    public boolean accept(ScanSubmission event) {
         System.out.println("Received file " +  event.getFileName() + " scan id " + event.getScanId());
         ObjectReader r = JSONMAPPER.readerFor(Scan.class);
         try {
