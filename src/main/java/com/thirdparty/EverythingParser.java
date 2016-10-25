@@ -19,19 +19,19 @@ import java.util.concurrent.Executors;
  * (C) Copyright 2015,2016 Hewlett Packard Enterprise Development, L.P.
  */
 public class EverythingParser implements ParserPlugin {
-    
+
     private static final ObjectMapper JSONMAPPER = new ObjectMapper();
     private final VulnerabilityPublisher publisher;
-    
+
     public EverythingParser() {
-        ServiceLoader<VulnerabilityPublisher> loader = ServiceLoader.load(VulnerabilityPublisher.class);
+        ServiceLoader<VulnerabilityPublisher> loader = ServiceLoader.load(VulnerabilityPublisher.class, EverythingParser.class.getClassLoader());
         Iterator<VulnerabilityPublisher> implementations = loader.iterator();
         publisher = implementations.next();
         if (publisher == null || implementations.hasNext()) {
             throw new IllegalStateException("None or multiple implementations found for " + ParserPlugin.class.getCanonicalName());
         }
     }
-    
+
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     @Override
     public void stop() {
@@ -65,7 +65,7 @@ public class EverythingParser implements ParserPlugin {
                         System.out.println("Stopped!");
                         return;
                     }
-    
+
                 });
                 return true;
             }
