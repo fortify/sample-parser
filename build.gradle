@@ -9,13 +9,18 @@ ext {
 
 dependencies {
     compile project(':plugin-api')
-    compile (group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: "$jacksonVersion") { transitive = false }
-    compile (group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "$jacksonVersion"){ transitive = false }
-    compile (group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: "$jacksonVersion"){ transitive = false }
+    compile(group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: "$jacksonVersion") { transitive = false }
+    compile(group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "$jacksonVersion") { transitive = false }
+    compile(group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: "$jacksonVersion") { transitive = false }
 
 }
 
-uploadArchives  {
+
+jar {
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it).matching { exclude 'META-INF/*' } } }
+}
+
+uploadArchives {
     repositories.localRepository
 }
 
