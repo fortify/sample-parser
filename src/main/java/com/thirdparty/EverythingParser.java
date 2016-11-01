@@ -3,13 +3,17 @@ package com.thirdparty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fortify.plugin.event.ScanSubmission;
+import com.fortify.plugin.result.Vulnerability;
 import com.fortify.plugin.spi.ParserPlugin;
 import com.fortify.plugin.spi.VulnerabilityPublisher;
+import com.thirdparty.scan.Finding;
 import com.thirdparty.scan.Scan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Iterator;
 import java.util.ServiceLoader;
 import java.util.concurrent.ExecutorService;
@@ -37,24 +41,22 @@ public class EverythingParser implements ParserPlugin {
 
     @Override
     public void stop() {
-        System.out.println("they see me runnin they stoppin");
+        LOG.info("they see me runnin they stoppin");
         executor.shutdownNow();
     }
 
     @Override
     public boolean accept(ScanSubmission event) {
         ObjectReader r = JSONMAPPER.readerFor(Scan.class);
+        final String location = event.getLocation();
+        LOG.info("Reading stream from location:" + location);
+
+        // Simulation of location data stream
+        InputStream content = new ByteArrayInputStream(new String("{ \"findings\" : [{ \"uniqueId\": 0, \"field\": \"test field\"}]}").getBytes());
         try {
-            final String location = r.readValue(event.getLocation());
-            LOG.info("GOT LOCATION:" + location);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return true;
-        /*try {
-            final Scan s = r.readValue(event.getContent());
+            final Scan s = r.readValue(content);
             if(s == null) {
-                System.out.println("FAILED with NULL");
+                LOG.error("FAILED with NULL");
                 return false;
             }
             else {
@@ -68,9 +70,9 @@ public class EverythingParser implements ParserPlugin {
                             v.setScanId(event.getScanId());
                             publisher.publish(v);
                         }
-                        System.out.println("Processed " + event.getScanId());
+                        LOG.info("Processed " + event.getScanId());
                     } catch (InterruptedException e) {
-                        System.out.println("Stopped!");
+                        LOG.warn("Interrupted!");
                         return;
                     }
 
@@ -78,12 +80,12 @@ public class EverythingParser implements ParserPlugin {
                 return true;
             }
         } catch (IOException  e) {
-            System.err.println("FAILED because of my EX");
+            LOG.error("FAILED because of my EX", e);
             return false;
         } finally {
             try {
-                if(event.getContent() != null) event.getContent().close();
+                if(content != null) content.close();
             } catch (IOException e) { }
-        }*/
+        }
     }
 }
