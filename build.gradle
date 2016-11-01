@@ -9,6 +9,7 @@ ext {
 
 dependencies {
     compile project(':plugin-api')
+    compile group: 'org.slf4j', name: 'slf4j-api', version: slf4jVersion
     compile(group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: "$jacksonVersion") { transitive = false }
     compile(group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "$jacksonVersion") { transitive = false }
     compile(group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: "$jacksonVersion") { transitive = false }

@@ -3,11 +3,11 @@ package com.thirdparty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fortify.plugin.event.ScanSubmission;
-import com.fortify.plugin.result.Vulnerability;
 import com.fortify.plugin.spi.ParserPlugin;
 import com.fortify.plugin.spi.VulnerabilityPublisher;
-import com.thirdparty.scan.Finding;
 import com.thirdparty.scan.Scan;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -19,6 +19,7 @@ import java.util.concurrent.Executors;
  * (C) Copyright 2015,2016 Hewlett Packard Enterprise Development, L.P.
  */
 public class EverythingParser implements ParserPlugin {
+    private static final Logger LOG = LoggerFactory.getLogger(EverythingParser.class);
 
     private static final ObjectMapper JSONMAPPER = new ObjectMapper();
     private final VulnerabilityPublisher publisher;
@@ -33,17 +34,24 @@ public class EverythingParser implements ParserPlugin {
     }
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
+
     @Override
     public void stop() {
-         System.out.println("they see me runnin they stoppin");
+        System.out.println("they see me runnin they stoppin");
         executor.shutdownNow();
     }
 
     @Override
     public boolean accept(ScanSubmission event) {
-        System.out.println("Received file " +  event.getFileName() + " scan id " + event.getScanId());
         ObjectReader r = JSONMAPPER.readerFor(Scan.class);
         try {
+            final String location = r.readValue(event.getLocation());
+            LOG.info("GOT LOCATION:" + location);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return true;
+        /*try {
             final Scan s = r.readValue(event.getContent());
             if(s == null) {
                 System.out.println("FAILED with NULL");
@@ -75,7 +83,7 @@ public class EverythingParser implements ParserPlugin {
         } finally {
             try {
                 if(event.getContent() != null) event.getContent().close();
-            } catch (IOException e) { /*/*/ }
-        }
+            } catch (IOException e) { }
+        }*/
     }
 }
