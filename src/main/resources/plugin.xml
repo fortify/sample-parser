@@ -4,6 +4,9 @@
     <version>1.0</version>
     <vendor>Foo</vendor>
     <description>Custom parser for SSC</description>
+    <subscriptions>
+        <subscription>FPR_PROCESSING</subscription>
+    </subscriptions>
     <!--configuration>
         <param name="p1">TEST</param>
     </configuration-->
