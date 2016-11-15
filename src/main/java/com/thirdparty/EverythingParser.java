@@ -65,7 +65,7 @@ public class EverythingParser implements ParserPlugin {
                         Thread.sleep(2500);
                         for(Finding f : s.getFindings()) {
                             Vulnerability v = new Vulnerability();
-                            v.setAttributeValue("Field", f.getField());
+                            v.setCustomAttributeValue("Field", f.getField());
                             v.setInstanceId(f.getUniqueId());
                             v.setScanId(event.getScanId());
                             publisher.publish(v);
