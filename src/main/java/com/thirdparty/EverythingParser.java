@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.fortify.plugin.event.ScanSubmission;
 import com.fortify.plugin.result.Vulnerability;
 import com.fortify.plugin.spi.ParserPlugin;
-import com.fortify.plugin.spi.ScanPublisher;
 import com.fortify.plugin.spi.VulnerabilityPublisher;
 import com.thirdparty.scan.Finding;
 import com.thirdparty.scan.Scan;
