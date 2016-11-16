@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.fortify.plugin.event.ScanSubmission;
 import com.fortify.plugin.result.Vulnerability;
 import com.fortify.plugin.spi.ParserPlugin;
+import com.fortify.plugin.spi.ScanPublisher;
 import com.fortify.plugin.spi.VulnerabilityPublisher;
 import com.thirdparty.scan.Finding;
 import com.thirdparty.scan.Scan;
@@ -65,7 +66,7 @@ public class EverythingParser implements ParserPlugin {
                         Thread.sleep(2500);
                         for(Finding f : s.getFindings()) {
                             Vulnerability v = new Vulnerability();
-                            v.setAttributeValue("Field", f.getField());
+                            v.setCustomAttributeValue("Field", f.getField());
                             v.setInstanceId(f.getUniqueId());
                             v.setScanId(event.getScanId());
                             publisher.publish(v);
@@ -73,7 +74,6 @@ public class EverythingParser implements ParserPlugin {
                         LOG.info("Processed " + event.getScanId());
                     } catch (InterruptedException e) {
                         LOG.warn("Interrupted!");
-                        return;
                     }
 
                 });
@@ -84,8 +84,8 @@ public class EverythingParser implements ParserPlugin {
             return false;
         } finally {
             try {
-                if(content != null) content.close();
-            } catch (IOException e) { }
+                content.close();
+            } catch (IOException ignored) { }
         }
     }
 }
