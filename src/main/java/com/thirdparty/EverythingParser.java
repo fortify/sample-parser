@@ -50,20 +50,15 @@ public class EverythingParser implements ParserPlugin {
             try {
                 final Scan s = r.readValue(content);
                 executor.submit(() -> {
-                    try {
-                        Thread.sleep(2500);
-                        for (Finding f : s.getFindings()) {
-                            Vulnerability v = new Vulnerability();
-                            v.setCustomAttributeValue("Field", f.getField());
-                            v.setInstanceId(f.getUniqueId());
-                            v.setScanId(scanSubmission.getScanId());
-                            publisher.send(v);
-                        }
-                        LOG.info("Processed " + scanSubmission.getScanId());
-                    } catch (InterruptedException e) {
-                        LOG.warn("Interrupted!");
+                    for (Finding f : s.getFindings()) {
+                        // TODO why object creation of Vulnerability takes 2 seconds?
+                        Vulnerability v = new Vulnerability();
+                        v.setCustomAttributeValue("Field", f.getField());
+                        v.setInstanceId(f.getUniqueId());
+                        v.setScanId(scanSubmission.getScanId());
+                        publisher.send(v);
                     }
-
+                    LOG.info("Processed " + scanSubmission.getScanId());
                 });
             } catch (IOException e) {
                 LOG.error("FAILED because of my EX", e);
