@@ -1,24 +1,38 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <plugin id="com.example.parser" api-version="1.0">
-    <plugin-info>
-        <name>Custom Parser</name>
-        <version>1.0</version>
-        <data-version>1</data-version>
-        <vendor name="Foo"/>
-        <description>Custom parser for SSC</description>
-        <subscriptions>
-            <subscription>FPR_PROCESSING</subscription>
-        </subscriptions>
-        <!--configuration>
-            <param name="p1">TEST</param>
-        </configuration-->
-    </plugin-info>
-    <issue-parser>
-        <engine-type>SOMEDUCK</engine-type>
-        <output-data>
-            <custom-attributes>
-                <attribute id="field" type="STRING"/>
-            </custom-attributes>
-        </output-data>
-    </issue-parser>
+<plugin-info>
+    <name>Parser Example</name>
+    <version>1.0</version>
+    <vendor name="Hewlett Packard Enterprise" url="https://www.hpe.com/"/>
+    <plugin-icon>images/hpe-icon.png</plugin-icon>
+    <plugin-logo>hpe-logo.png</plugin-logo>
+    <description>Parser API implementation example</description>
+    <subscriptions>
+        <subscription>FPR_PROCESSING</subscription>
+    </subscriptions>
+    <configuration>
+        <plugin-parameters>
+            <param name="StringParameter" type="STRING">TEST</param>
+            <param name="DecimalParameter" type="DECIMAL">5</param>
+            <param name="DateParameter" type="DATE">2016-01-01</param>
+        </plugin-parameters>
+    </configuration>
+</plugin-info>
+<issue-parser>
+    <engine-type>SAMPLE</engine-type>
+    <output-data version="1">
+        <custom-attributes>
+            <attribute id="projectId" type="STRING" name="Project ID" description=""/>
+            <attribute id="projectName" type="STRING" name="Project name" description=""/>
+            <attribute id="versionId" type="STRING" name="Version ID" description=""/>
+            <attribute id="projectVersion" type="STRING" name="Project version" description=""/>
+            <attribute id="vulnerabilityId" type="STRING" name="Vulnerability Id (CVE number)" description=""/>
+            <attribute id="description" type="LONG_STRING" name="Vulnerability description" description=""/>
+            <attribute id="baseScore" type="DECIMAL" name="CVSS score Base score" description=""/>
+            <attribute id="impact" type="DECIMAL" name="Vulnerability impact" description=""/>
+            <attribute id="url" type="STRING" name="URL"/>
+        </custom-attributes>
+    </output-data>
+</issue-parser>
 </plugin>
+

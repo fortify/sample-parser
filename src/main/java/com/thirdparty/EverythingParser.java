@@ -13,7 +13,6 @@ import com.thirdparty.scan.Scan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
@@ -39,19 +38,19 @@ public class EverythingParser implements ParserPlugin {
 
     @Override
     public void handle(Event event) {
+        LOG.info("Handling event " + event.getClass().getName());
         if (event instanceof ScanSubmission) {
-            ScanSubmission scanSubmission = (ScanSubmission) event;
-            ObjectReader r = JSONMAPPER.readerFor(Scan.class);
-            final String location = scanSubmission.getLocation();
-            LOG.info("Reading stream from location:" + location);
+            executor.submit(() -> {
+                ScanSubmission scanSubmission = (ScanSubmission) event;
+                ObjectReader r = JSONMAPPER.readerFor(Scan.class);
+                final String location = scanSubmission.getLocation();
+                LOG.info("Reading stream from location:" + location);
 
-            // Simulation of location data stream
-            InputStream content = new ByteArrayInputStream(new String("{ \"findings\" : [{ \"uniqueId\": 0, \"field\": \"test field\"}]}").getBytes());
-            try {
-                final Scan s = r.readValue(content);
-                executor.submit(() -> {
+                // Simulation of location data stream
+                try (InputStream content = EverythingParser.class.getResourceAsStream("/examples/sample-scan.json")) {
+                    final Scan s = r.readValue(content);
+
                     for (Finding f : s.getFindings()) {
-                        // TODO why object creation of Vulnerability takes 2 seconds?
                         Vulnerability v = new Vulnerability();
                         v.setCustomAttributeValue("Field", f.getField());
                         v.setInstanceId(f.getUniqueId());
@@ -59,15 +58,11 @@ public class EverythingParser implements ParserPlugin {
                         publisher.send(v);
                     }
                     LOG.info("Processed " + scanSubmission.getScanId());
-                });
-            } catch (IOException e) {
-                LOG.error("FAILED because of my EX", e);
-            } finally {
-                try {
-                    if (content != null) content.close();
+
                 } catch (IOException e) {
+                    LOG.error("FAILED because of my EX", e);
                 }
-            }
+            });
         }
     }
 

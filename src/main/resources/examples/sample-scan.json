@@ -1,0 +1,44 @@
+{
+  "findings": [
+    {
+      "uniqueId": "aa1e0c10-a533-4f27-88f0-1a6d1a8f5929",
+      "field": "SQL injection"
+    },
+    {
+      "uniqueId": "13d11efe-33ab-4497-9a1c-d7412baed986",
+      "field": "SQL injection"
+    },
+    {
+      "uniqueId": "4dd62f35-ba93-4c01-8da4-5a66b9fe9a91",
+      "field": "SQL injection"
+    },
+    {
+      "uniqueId": "577100fa-bbdc-48f0-959b-8c6f29b8f9d6",
+      "field": "SQL injection"
+    },
+    {
+      "uniqueId": "0d7858ed-dada-4c1e-b77c-1b9141a515f2",
+      "field": "XML External Entity Injection"
+    },
+    {
+      "uniqueId": "ef973bf1-a052-4c55-8528-ea97b45fc37c",
+      "field": "XML External Entity Injection"
+    },
+    {
+      "uniqueId": "eb8d1049-f0a4-4ea9-914b-c390f5b0a134",
+      "field": "XML External Entity Injection"
+    },
+    {
+      "uniqueId": "31b84397-6838-43d4-b79b-b2a412aa1a10",
+      "field": "XML External Entity Injection"
+    },
+    {
+      "uniqueId": "fbb8eeff-cee9-4818-9358-4c1762690833",
+      "field": "XML External Entity Injection"
+    },
+    {
+      "uniqueId": "447f88d8-722d-4f66-88ea-68f88e1fd805",
+      "field": "XML External Entity Injection"
+    }
+  ]
+}
