@@ -20,9 +20,3 @@ dependencies {
 jar {
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it).matching { exclude 'META-INF/*' } } }
 }
-
-uploadArchives {
-    repositories.localRepository
-}
-
-jar.finalizedBy uploadArchives
