@@ -5,16 +5,16 @@
     <version>1.0</version>
     <vendor name="Hewlett Packard Enterprise" url="https://www.hpe.com/"/>
     <plugin-icon>images/hpe-icon.png</plugin-icon>
-    <plugin-logo>hpe-logo.png</plugin-logo>
+    <plugin-logo>images/hpe-logo.png</plugin-logo>
     <description>Parser API implementation example</description>
     <subscriptions>
         <subscription>FPR_PROCESSING</subscription>
     </subscriptions>
     <configuration>
         <plugin-parameters>
-            <param name="StringParameter" type="STRING">TEST</param>
-            <param name="DecimalParameter" type="DECIMAL">5</param>
-            <param name="DateParameter" type="DATE">2016-01-01</param>
+            <param name="StringParameter" type="STRING"/>
+            <param name="DecimalParameter" type="DECIMAL"/>
+            <param name="DateParameter" type="DATE"/>
         </plugin-parameters>
     </configuration>
 </plugin-info>
