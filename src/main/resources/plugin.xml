@@ -1,13 +1,24 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <plugin id="com.example.parser" api-version="1.0">
-    <name>Custom Parser</name>
-    <version>1.0</version>
-    <vendor>Foo</vendor>
-    <description>Custom parser for SSC</description>
-    <subscriptions>
-        <subscription>FPR_PROCESSING</subscription>
-    </subscriptions>
-    <!--configuration>
-        <param name="p1">TEST</param>
-    </configuration-->
+    <plugin-info>
+        <name>Custom Parser</name>
+        <version>1.0</version>
+        <data-version>1</data-version>
+        <vendor name="Foo"/>
+        <description>Custom parser for SSC</description>
+        <subscriptions>
+            <subscription>FPR_PROCESSING</subscription>
+        </subscriptions>
+        <!--configuration>
+            <param name="p1">TEST</param>
+        </configuration-->
+    </plugin-info>
+    <issue-parser>
+        <engine-type>SOMEDUCK</engine-type>
+        <output-data>
+            <custom-attributes>
+                <attribute id="field" type="STRING"/>
+            </custom-attributes>
+        </output-data>
+    </issue-parser>
 </plugin>
