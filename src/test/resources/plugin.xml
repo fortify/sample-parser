@@ -2,7 +2,7 @@
 <plugin xmlns="xmlns://www.fortifysoftware.com/schema/pluginmanifest-1.0.xsd"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="PluginDescriptor"
         id="com.example.parser" api-version="1.0">
-    <plugin-info>
+    <plugin-info xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="PluginInfo">
         <name>Parser API implementation example</name>
         <version>1.0</version>
         <data-version>1</data-version>
@@ -28,7 +28,7 @@
             </plugin-parameters>
         </configuration>
     </plugin-info>
-    <issue-parser xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <issue-parser xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="IssueParser">
         <engine-type>SAMPLE</engine-type>
         <output-data>
             <custom-attributes>
