@@ -7,15 +7,17 @@
         <version>1.0</version>
         <data-version>1</data-version>
         <vendor name="Example vendor" url="https://www.example.com/"/>
-        <plugin-icon>images/sample-icon.png</plugin-icon>
-        <plugin-logo>images/sample-logo.png</plugin-logo>
         <description>Parser API implementation example</description>
         <resources>
             <localization>
-                <language id="default" localtion="resources/sample_en.properties"/>
-                <language id="en_US" localtion="resources/sample_en_US.properties"/>
-                <language id="ru" localtion="resources/sample_ru.properties"/>
+                <language id="default" location="resources/sample_en.properties"/>
+                <language id="en_US" location="resources/sample_en_US.properties"/>
+                <language id="ru" location="resources/sample_ru.properties"/>
             </localization>
+            <images>
+                <image imageType="ICON" location="images/sample-icon.png"/>
+                <image imageType="LOGO" location="images/sample-logo.png"/>
+            </images>
         </resources>
         <subscriptions>
             <subscription>FPR_PROCESSING</subscription>
