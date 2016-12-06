@@ -10,13 +10,13 @@
         <description>Parser API implementation example</description>
         <resources>
             <localization>
-                <language id="default" location="resources/black_duck_parser.txt"/>
-                <language id="en_US" location="resources/black_duck_parser.txt"/>
-                <language id="ru" location="resources/black_duck_parser_ru.txt"/>
+                <language id="default" location="/resources/black_duck_parser.txt"/>
+                <language id="en_US" location="/resources/black_duck_parser.txt"/>
+                <language id="ru" location="/resources/black_duck_parser_ru.txt"/>
             </localization>
             <images>
-                <image imageType="icon" location="images/blackduck-icon.png"/>
-                <image imageType="logo" location="images/blackduck-logo.png"/>
+                <image imageType="icon" location="/images/blackduck-icon.png"/>
+                <image imageType="logo" location="/images/blackduck-logo.png"/>
             </images>
         </resources>
         <subscriptions>
