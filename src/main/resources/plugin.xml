@@ -20,7 +20,7 @@
             </images>
         </resources>
         <subscriptions>
-            <subscription>FPR_PROCESSING</subscription>
+            <subscription>ARTIFACT</subscription>
         </subscriptions>
         <configuration>
             <plugin-parameters>

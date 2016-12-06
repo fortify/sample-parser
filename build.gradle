@@ -7,6 +7,10 @@ ext {
     jacksonVersion = "2.8.4"
 }
 
+configurations {
+    export
+}
+
 dependencies {
     compile project(':plugin-api')
     compile group: 'org.slf4j', name: 'slf4j-api', version: slf4jVersion
@@ -14,10 +18,21 @@ dependencies {
     compile(group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "$jacksonVersion") { transitive = false }
     compile(group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: "$jacksonVersion") { transitive = false }
 
+    export(group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: "$jacksonVersion") { transitive = false }
+    export(group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "$jacksonVersion") { transitive = false }
+    export(group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: "$jacksonVersion") { transitive = false }
+
     testCompile "junit:junit:$junitVersion"
 }
 
 
 jar {
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it).matching { exclude 'META-INF/*' } } }
+    from { configurations.export.collect { it.isDirectory() ? it : zipTree(it).matching { exclude 'META-INF/*' } } }
 }
+
+task copySamplePlugin(type: Copy) {
+    from jar
+    into "${project(':plugin-container').buildDir}/.fortify/ssc/plugins"
+}
+
+build.finalizedBy copySamplePlugin
