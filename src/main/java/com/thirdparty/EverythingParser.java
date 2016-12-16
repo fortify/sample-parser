@@ -39,9 +39,8 @@ public class EverythingParser implements ParserPlugin {
         LOG.info("Handling event " + event.getClass().getName());
     }
 
-    public com.fortify.plugin.result.parser.Scan parse(InputStream is, VulnerabilityHandler vh) throws Exception {
-        com.fortify.plugin.result.parser.Scan result = new com.fortify.plugin.result.parser.Scan();
-        result.setScanDate(new Date());
+    @Override
+    public void parseVulnerabilities(InputStream is, VulnerabilityHandler vh) throws Exception {
         ObjectReader r = JSONMAPPER.readerFor(Scan.class);
         // Simulation of location data stream
         try (InputStream content = EverythingParser.class.getResourceAsStream("/examples/sample-scan.json")) {
@@ -52,8 +51,13 @@ public class EverythingParser implements ParserPlugin {
                 v.setCustomAttributeValue("Field", f.getField());
                 v.completeVulnerability();
             }
-            vh.complete();
         }
+    }
+
+    @Override
+    public com.fortify.plugin.result.parser.Scan parseScan(InputStream is) throws Exception {
+        com.fortify.plugin.result.parser.Scan result = new com.fortify.plugin.result.parser.Scan();
+        result.setScanDate(new Date());
         return result;
     }
 }
