@@ -11,7 +11,7 @@
         <resources>
             <localization>
                 <language id="default" location="/resources/black_duck_parser.txt"/>
-                <language id="en_US" location="/resources/black_duck_parser.txt"/>
+                <language id="en" location="/resources/black_duck_parser.txt"/>
                 <language id="ru" location="/resources/black_duck_parser_ru.txt"/>
             </localization>
             <images>
