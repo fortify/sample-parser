@@ -19,7 +19,7 @@ import java.io.InputStream;
 /**
  * (C) Copyright 2015,2016 Hewlett Packard Enterprise Development, L.P.
  */
-public class EverythingParser implements ParserPlugin {
+public class EverythingParser implements ParserPlugin<SampleParserVulnerabilityAttribute> {
     private static final Logger LOG = LoggerFactory.getLogger(EverythingParser.class);
 
     private static final ObjectMapper JSONMAPPER = new ObjectMapper();
@@ -38,6 +38,11 @@ public class EverythingParser implements ParserPlugin {
     @Override
     public void handle(Event event) {
         LOG.info("Handling event " + event.getClass().getName());
+    }
+
+    @Override
+    public Class<SampleParserVulnerabilityAttribute> getCustomAttributesClass() {
+        return SampleParserVulnerabilityAttribute.class;
     }
 
     @Override
@@ -61,7 +66,7 @@ public class EverythingParser implements ParserPlugin {
                 counter += 1;
                 VulnerabilityBuilder v = vh.startVulnerability(f.getUniqueId());
                 // custom field
-                v.setCustomAttributeValue("Field", f.getField());
+                v.setCustomAttributeValue(SampleParserVulnerabilityAttribute.FIELD1, f.getField());
                 v.setCategory(String.format("Sample issue %d", counter));
                 v.setFileName(String.format("vulnerable_file_%d_%s.bin", counter, f.getUniqueId()));
                 v.setVulnerabilityAbstract(String.format("Abstract of issue %d", counter));

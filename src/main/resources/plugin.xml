@@ -32,19 +32,6 @@
     </plugin-info>
     <issue-parser xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
         <engine-type>SAMPLE</engine-type>
-        <output-data>
-            <custom-attributes>
-                <attribute id="projectId" type="STRING"/>
-                <attribute id="projectName" type="STRING"/>
-                <attribute id="versionId" type="STRING"/>
-                <attribute id="projectVersion" type="STRING"/>
-                <attribute id="vulnerabilityId" type="STRING"/>
-                <attribute id="description" type="LONG_STRING"/>
-                <attribute id="baseScore" type="DECIMAL"/>
-                <attribute id="impact" type="DECIMAL"/>
-                <attribute id="url" type="STRING"/>
-            </custom-attributes>
-        </output-data>
     </issue-parser>
 </plugin>
 
