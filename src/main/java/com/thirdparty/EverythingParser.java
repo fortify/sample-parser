@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.fortify.plugin.api.ScanData;
 import com.fortify.plugin.event.Event;
 import com.fortify.plugin.result.Status;
-import com.fortify.plugin.result.parser.VulnerabilityBuilder;
+import com.fortify.plugin.result.parser.StaticVulnerabilityBuilder;
 import com.fortify.plugin.result.parser.VulnerabilityHandler;
 import com.fortify.plugin.spi.ParserPlugin;
 import com.thirdparty.scan.Finding;
@@ -64,7 +64,7 @@ public class EverythingParser implements ParserPlugin<SampleParserVulnerabilityA
             int counter = 0;
             for (Finding f : s.getFindings()) {
                 counter += 1;
-                VulnerabilityBuilder v = vh.startVulnerability(f.getUniqueId());
+                StaticVulnerabilityBuilder v = vh.startStaticVulnerability(f.getUniqueId());
                 // custom field
                 v.setCustomAttributeValue(SampleParserVulnerabilityAttribute.FIELD1, f.getField());
                 v.setCategory(String.format("Sample issue %d", counter));
