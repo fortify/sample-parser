@@ -32,6 +32,9 @@
     </plugin-info>
     <issue-parser xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
         <engine-type>SAMPLE</engine-type>
+        <view-template location="/viewtemplate/BlackDuckTemplate.json">
+            <description>Default BlackDuck vulnerability view template.</description>
+        </view-template>
     </issue-parser>
 </plugin>
 
