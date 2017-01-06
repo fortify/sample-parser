@@ -41,7 +41,7 @@ public class EverythingParser implements ParserPlugin<SampleParserVulnerabilityA
     }
 
     @Override
-    public Class<SampleParserVulnerabilityAttribute> getCustomAttributesClass() {
+    public Class<SampleParserVulnerabilityAttribute> getVulnerabilityAttributesClass() {
         return SampleParserVulnerabilityAttribute.class;
     }
 
