@@ -1,5 +1,6 @@
 package com.thirdparty;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fortify.plugin.api.ScanData;
@@ -8,6 +9,7 @@ import com.fortify.plugin.result.Status;
 import com.fortify.plugin.result.parser.StaticVulnerabilityBuilder;
 import com.fortify.plugin.result.parser.VulnerabilityHandler;
 import com.fortify.plugin.spi.ParserPlugin;
+import com.fortify.plugin.spi.ScanParsingException;
 import com.thirdparty.scan.Finding;
 import com.thirdparty.scan.Scan;
 import org.slf4j.Logger;
@@ -46,18 +48,20 @@ public class EverythingParser implements ParserPlugin<SampleParserVulnerabilityA
     }
 
     @Override
-    public com.fortify.plugin.result.parser.Scan parseScan(final ScanData scanData) throws Exception {
+    public com.fortify.plugin.result.parser.Scan parseScan(final ScanData scanData) throws ScanParsingException, IOException {
         final ObjectReader r = JSONMAPPER.readerFor(Scan.class);
         try (final InputStream content = getScanInputStream(scanData)) {
             final Scan s = r.readValue(content);
             com.fortify.plugin.result.parser.Scan result = new com.fortify.plugin.result.parser.Scan();
             result.setScanDate(s.getScanDate());
             return result;
+        } catch (final JsonProcessingException e) {
+            throw new ScanParsingException("Invalid scan syntax", e);
         }
     }
 
     @Override
-    public void parseVulnerabilities(final ScanData scanData, final VulnerabilityHandler vh) throws Exception {
+    public void parseVulnerabilities(final ScanData scanData, final VulnerabilityHandler vh) throws ScanParsingException, IOException {
         final ObjectReader r = JSONMAPPER.readerFor(Scan.class);
         try (final InputStream content = getScanInputStream(scanData)) {
             final Scan s = r.readValue(content);
@@ -72,6 +76,8 @@ public class EverythingParser implements ParserPlugin<SampleParserVulnerabilityA
                 v.setVulnerabilityAbstract(String.format("Abstract of issue %d", counter));
                 v.completeVulnerability();
             }
+        } catch (final JsonProcessingException e) {
+            throw new ScanParsingException("Invalid scan syntax", e);
         }
     }
 
