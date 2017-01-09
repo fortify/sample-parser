@@ -1,0 +1,85 @@
+{
+        "dataVersion": 1,
+        "objectVersion":1,
+        "templateData": [
+            [
+                {
+                    "type": "template",
+                    "title": "Overview",
+                    "key": "customAttributes.description",
+                    "templateId":"COLLAPSE",
+                    "dataType":"string"
+                },                
+                {
+                    "type":"fieldset",
+                    "items":[{
+                    "type": "template",
+                    "title": "Vulnerability ID",
+                    "key": "customAttributes.vulnerabilityId",
+                    "templateId":"SIMPLE",
+                    "dataType":"string"
+                },
+                {
+                    "type": "template",
+                    "title": "Vulnerability Source",
+                    "key": "shortFileName",
+                    "templateId":"SIMPLE",
+                    "dataType":"string"
+                },
+                {
+                    "type": "template",
+                    "title": "Published on",
+                    "key": "customAttributes.publishedOn",
+                    "templateId":"SIMPLE",
+                    "dataType":"date"
+                },
+                {
+                    "type": "template",
+                    "title": "Last Updatded on",
+                    "key": "customAttributes.updatedOn",
+                    "templateId":"SIMPLE",
+                    "dataType":"date"
+                }]
+                }
+            ],
+            [
+               {
+                    "type":"template",
+                    "templateId":"TITLEBOX",
+                    "title":"Details",
+                    "items":[
+                    {
+                    "type": "template",
+                    "title": "Hub Project Name",
+                    "key": "customAttributes.projectName",
+                    "templateId":"SIMPLE",
+                    "dataType":"string"
+                },
+                {
+                    "type": "template",
+                    "title": "Hub Project Id",
+                    "key": "id",
+                    "templateId":"SIMPLE",
+                    "dataType":"integer"
+                },
+                {
+                    "type": "template",
+                    "title": "Current Status",
+                    "key": "scanStatus",
+                    "templateId":"SIMPLE",
+                    "dataType":"string"
+                },
+                {
+                    "type": "template",
+                    "title": "Level of Severity",
+                    "key": "severity",
+                    "templateId":"SIMPLE",
+                    "dataType":"integer"
+                }]
+               }
+            ]
+        ],
+        "description": "blackduck issue view description",
+        "engineType": "BLACKDUCK",
+  		"id":1
+    }
