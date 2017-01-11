@@ -54,6 +54,7 @@ public class EverythingParser implements ParserPlugin<SampleParserVulnerabilityA
             final Scan s = r.readValue(content);
             com.fortify.plugin.result.parser.Scan result = new com.fortify.plugin.result.parser.Scan();
             result.setScanDate(s.getScanDate());
+            result.setDataVersion(Integer.valueOf(1));
             return result;
         } catch (final JsonProcessingException e) {
             throw new ScanParsingException("Invalid scan syntax", e);
