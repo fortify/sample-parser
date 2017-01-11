@@ -70,7 +70,7 @@ public class EverythingParser implements ParserPlugin<SampleParserVulnerabilityA
                 counter += 1;
                 StaticVulnerabilityBuilder v = vh.startStaticVulnerability(f.getUniqueId());
                 // custom field
-                v.setCustomAttributeValue(SampleParserVulnerabilityAttribute.FIELD1, f.getField());
+                v.setStringCustomAttributeValue(SampleParserVulnerabilityAttribute.FIELD1, f.getField());
                 v.setCategory(String.format("Sample issue %d", counter));
                 v.setFileName(String.format("vulnerable_file_%d_%s.bin", counter, f.getUniqueId()));
                 v.setVulnerabilityAbstract(String.format("Abstract of issue %d", counter));
