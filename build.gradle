@@ -32,8 +32,7 @@ jar {
 
 task copySamplePlugin(type: Copy) {
     from jar
-    // TODO .fortify/plugin-framework/plugins
-    into "${project(':plugin-container').buildDir}/.fortify/ssc/plugins"
+    into "${project(':plugin-container').buildDir}/.fortify/plugin-framework/plugins"
 }
 
 build.finalizedBy copySamplePlugin
