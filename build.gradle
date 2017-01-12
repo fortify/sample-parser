@@ -22,6 +22,7 @@ dependencies {
     export(group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "$jacksonVersion") { transitive = false }
     export(group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: "$jacksonVersion") { transitive = false }
 
+    testCompile project(':plugin-core')
     testCompile "junit:junit:$junitVersion"
 }
 

@@ -3,13 +3,12 @@ package com.thirdparty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
+import com.fortify.plugin.api.ScanBuilder;
 import com.fortify.plugin.api.ScanData;
-import com.fortify.plugin.event.Event;
-import com.fortify.plugin.result.Status;
-import com.fortify.plugin.result.parser.StaticVulnerabilityBuilder;
-import com.fortify.plugin.result.parser.VulnerabilityHandler;
+import com.fortify.plugin.api.ScanParsingException;
+import com.fortify.plugin.api.StaticVulnerabilityBuilder;
+import com.fortify.plugin.api.VulnerabilityHandler;
 import com.fortify.plugin.spi.ParserPlugin;
-import com.fortify.plugin.spi.ScanParsingException;
 import com.thirdparty.scan.Finding;
 import com.thirdparty.scan.Scan;
 import org.slf4j.Logger;
@@ -33,29 +32,18 @@ public class EverythingParser implements ParserPlugin<SampleParserVulnerabilityA
     }
 
     @Override
-    public Status status() {
-        return null;
-    }
-
-    @Override
-    public void handle(Event event) {
-        LOG.info("Handling event " + event.getClass().getName());
-    }
-
-    @Override
     public Class<SampleParserVulnerabilityAttribute> getVulnerabilityAttributesClass() {
         return SampleParserVulnerabilityAttribute.class;
     }
 
     @Override
-    public com.fortify.plugin.result.parser.Scan parseScan(final ScanData scanData) throws ScanParsingException, IOException {
+    public void parseScan(final ScanData scanData, final ScanBuilder scanBuilder) throws ScanParsingException, IOException {
         final ObjectReader r = JSONMAPPER.readerFor(Scan.class);
         try (final InputStream content = getScanInputStream(scanData)) {
             final Scan s = r.readValue(content);
-            com.fortify.plugin.result.parser.Scan result = new com.fortify.plugin.result.parser.Scan();
-            result.setScanDate(s.getScanDate());
-            result.setDataVersion(Integer.valueOf(1));
-            return result;
+            scanBuilder.setScanDate(s.getScanDate());
+            scanBuilder.setDataVersion(1);
+            scanBuilder.completeScan();
         } catch (final JsonProcessingException e) {
             throw new ScanParsingException("Invalid scan syntax", e);
         }
