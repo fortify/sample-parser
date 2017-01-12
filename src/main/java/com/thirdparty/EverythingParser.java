@@ -16,6 +16,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
+import java.time.Duration;
 
 /**
  * (C) Copyright 2015,2016 Hewlett Packard Enterprise Development, L.P.
@@ -25,6 +27,7 @@ public class EverythingParser implements ParserPlugin<SampleParserVulnerabilityA
 
     private static final ObjectMapper JSONMAPPER = new ObjectMapper();
 
+    private static final Duration elapsed = Duration.ofHours(2).plus(Duration.ofMinutes(3)).plus(Duration.ofSeconds(4));
 
     @Override
     public void stop() throws Exception {
@@ -40,9 +43,14 @@ public class EverythingParser implements ParserPlugin<SampleParserVulnerabilityA
     public void parseScan(final ScanData scanData, final ScanBuilder scanBuilder) throws ScanParsingException, IOException {
         final ObjectReader r = JSONMAPPER.readerFor(Scan.class);
         try (final InputStream content = getScanInputStream(scanData)) {
+            // parse scan
             final Scan s = r.readValue(content);
             scanBuilder.setScanDate(s.getScanDate());
-            scanBuilder.setDataVersion(1);
+            // fake some values not present in the scan
+            scanBuilder.setEngineVersion("TEST-0.1");
+            scanBuilder.setHostName(InetAddress.getLocalHost().getHostName());
+            scanBuilder.setElapsedTime((int) elapsed.getSeconds());
+            // complete scan building
             scanBuilder.completeScan();
         } catch (final JsonProcessingException e) {
             throw new ScanParsingException("Invalid scan syntax", e);
