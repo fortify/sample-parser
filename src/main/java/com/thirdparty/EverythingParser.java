@@ -30,8 +30,13 @@ public class EverythingParser implements ParserPlugin<SampleParserVulnerabilityA
     private static final Duration elapsed = Duration.ofHours(2).plus(Duration.ofMinutes(3)).plus(Duration.ofSeconds(4));
 
     @Override
+    public void start() throws Exception {
+        LOG.info("EverythingParser plugin is starting");
+    }
+
+    @Override
     public void stop() throws Exception {
-        LOG.info("Plugin is stopping");
+        LOG.info("EverythingParser plugin is stopping");
     }
 
     @Override
