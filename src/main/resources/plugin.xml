@@ -19,9 +19,6 @@
                 <image imageType="logo" location="/images/blackduck-logo.png"/>
             </images>
         </resources>
-        <subscriptions>
-            <subscription>ARTIFACT</subscription>
-        </subscriptions>
         <configuration>
             <plugin-parameters>
                 <param name="StringParameter" type="STRING"/>
