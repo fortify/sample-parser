@@ -15,7 +15,7 @@ import java.util.Date;
 /**
  * Created by svobodpe on 2017-01-25.
  */
-class DateDeserializer extends StdConverter<String, Date> {
+public class DateDeserializer extends StdConverter<String, Date> {
     private static final DateTimeFormatter[] DATE_TIME_FORMATTERS = {DateTimeFormatter.ISO_DATE_TIME};
 
     @Override
