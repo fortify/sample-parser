@@ -3,34 +3,28 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="PluginDescriptor"
         id="com.example.parser" api-version="1.0">
     <plugin-info>
-        <name>Parser API implementation example</name>
-        <version>1.0</version>
+        <name>Sample parser plugin</name>
+        <version><!--VERSION-->0.0<!--/VERSION--></version>
         <data-version>1</data-version>
-        <vendor name="Example vendor" url="https://www.example.com/"/>
-        <description>Parser API implementation example</description>
+        <vendor name="Sample vendor" url="https://sample-parser-plugin.example.com/"/>
+        <description>Simple parser plugin implementation example.</description>
         <resources>
             <localization>
-                <language id="default" location="/resources/black_duck_parser.txt"/>
-                <language id="en" location="/resources/black_duck_parser.txt"/>
-                <language id="ru" location="/resources/black_duck_parser_ru.txt"/>
+                <language id="default" location="/resources/sample_en.properties"/>
+                <language id="cs" location="/resources/sample_cs.properties"/>
+                <language id="en" location="/resources/sample_en.properties"/>
+                <language id="ru" location="/resources/sample_ru.properties"/>
             </localization>
             <images>
-                <image imageType="icon" location="/images/blackduck-icon.png"/>
-                <image imageType="logo" location="/images/blackduck-logo.png"/>
+                <image imageType="icon" location="/images/sample-icon.png"/>
+                <image imageType="logo" location="/images/sample-logo.png"/>
             </images>
         </resources>
-        <configuration>
-            <plugin-parameters>
-                <param name="StringParameter" type="STRING"/>
-                <param name="DecimalParameter" type="DECIMAL"/>
-                <param name="DateParameter" type="DATE"/>
-            </plugin-parameters>
-        </configuration>
     </plugin-info>
     <issue-parser xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
         <engine-type>SAMPLE</engine-type>
-        <view-template location="/viewtemplate/BlackDuckTemplate.json">
-            <description>Default BlackDuck vulnerability view template.</description>
+        <view-template location="/viewtemplate/SampleTemplate.json">
+            <description>Default sample vulnerability view template.</description>
         </view-template>
     </issue-parser>
 </plugin>

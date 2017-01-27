@@ -2,8 +2,7 @@
   [
     {
       "type": "template",
-      "title": "Overview",
-      "key": "customAttributes.description",
+      "key": "brief",
       "templateId": "COLLAPSE",
       "dataType": "string"
     },
@@ -13,31 +12,27 @@
       "items": [
         {
           "type": "template",
-          "title": "Vulnerability ID",
-          "key": "customAttributes.vulnerabilityId",
+          "key": "fullFileName",
           "templateId": "SIMPLE",
           "dataType": "string"
         },
         {
           "type": "template",
-          "title": "Vulnerability Source",
-          "key": "shortFileName",
+          "key": "confidence",
+          "templateId": "SIMPLE",
+          "dataType": "float"
+        },
+        {
+          "type": "template",
+          "key": "id",
+          "templateId": "SIMPLE",
+          "dataType": "integer"
+        },
+        {
+          "type": "template",
+          "key": "scanStatus",
           "templateId": "SIMPLE",
           "dataType": "string"
-        },
-        {
-          "type": "template",
-          "title": "Published on",
-          "key": "customAttributes.publishedOn",
-          "templateId": "SIMPLE",
-          "dataType": "date"
-        },
-        {
-          "type": "template",
-          "title": "Last Updatded on",
-          "key": "customAttributes.updatedOn",
-          "templateId": "SIMPLE",
-          "dataType": "date"
         },
         {
           "type": "template",
@@ -46,43 +41,63 @@
           "dataType": "string"
         }
       ]
+    },
+    {
+      "type": "template",
+      "title": "Custom attributes",
+      "templateId": "TITLEBOX",
+      "items": [
+        {
+          "type": "template",
+          "key": "customAttributes.buildServer",
+          "templateId": "SIMPLE",
+          "dataType": "string"
+        },
+        {
+          "type": "template",
+          "key": "customAttributes.artifact",
+          "templateId": "SIMPLE",
+          "dataType": "string"
+        },
+        {
+          "type": "template",
+          "key": "customAttributes.ratio",
+          "templateId": "SIMPLE",
+          "dataType": "float"
+        },
+        {
+          "type": "template",
+          "key": "customAttributes.buildNumber",
+          "templateId": "SIMPLE",
+          "dataType": "string"
+        },
+        {
+          "type": "template",
+          "key": "customAttributes.lastChangeDate",
+          "templateId": "SIMPLE",
+          "dataType": "date"
+        },
+        {
+          "type": "template",
+          "key": "customAttributes.artifactBuildDate",
+          "templateId": "SIMPLE",
+          "dataType": "date"
+        }
+      ]
     }
   ],
   [
     {
       "type": "template",
-      "templateId": "TITLEBOX",
-      "title": "Details",
-      "items": [
-        {
-          "type": "template",
-          "title": "Hub Project Name",
-          "key": "customAttributes.projectName",
-          "templateId": "SIMPLE",
-          "dataType": "string"
-        },
-        {
-          "type": "template",
-          "title": "Hub Project Id",
-          "key": "id",
-          "templateId": "SIMPLE",
-          "dataType": "integer"
-        },
-        {
-          "type": "template",
-          "title": "Current Status",
-          "key": "scanStatus",
-          "templateId": "SIMPLE",
-          "dataType": "string"
-        },
-        {
-          "type": "template",
-          "title": "Level of Severity",
-          "key": "severity",
-          "templateId": "SIMPLE",
-          "dataType": "integer"
-        }
-      ]
+      "key": "customAttributes.text1",
+      "templateId": "COLLAPSE",
+      "dataType": "string"
+    },
+    {
+      "type": "template",
+      "key": "customAttributes.text2",
+      "templateId": "COLLAPSE",
+      "dataType": "string"
     }
   ]
 ]
