@@ -57,31 +57,35 @@ the project files.
 
 ## Scan artifact requirements
 - Scan has be accompanied by `scan.info` metadata and packed into a ZIP file together
- - ZIP have to contain at least 2 entries
+  - ZIP have to contain at least 2 entries
     1. /scan.info
     2. /raw.scan - name and location depends on parser implementation and how it retrieves entry from `com.fortify.plugin.api.ScanData` (e.g. `scanData.getInputStream(x -> x.endsWith(".json"))` retrieves file ending with `.json` extension)
 - Optionally, 3rd party scan can be uploaded as a raw scan (not packed in ZIP with `scan.info`) but only through SSC REST API where call to REST API has to provide engine type as parameter of a call. Example: 
- - retrieve file upload token; using for example admin user and password `curl --noproxy localhost -X POST -H "Content-Type: application/json" -u admin:password -T "uploadFileToken.json" http://localhost:8080/ssc/api/v1/fileTokens` where content of `uploadFileToken.json` is `{"fileTokenType": "UPLOAD"}`
- - upload scan with engine type parameter; using token retrieved in previous operation `curl --noproxy localhost -X POST --form files=@"security.csv" "http://localhost:8080/ssc/upload/resultFileUpload.html?mat=TOKEN_FROM_PREV_OPERATION&entityId=APLICATION_VERSION_ID&engineType=SAMPLE"` where engine type parameter matches engine type registered by parser plugin (`plugin.xml/plugin/issue-parser/engine-type`)
+  - retrieve file upload token; using for example admin user and password `curl --noproxy localhost -X POST -H "Content-Type: application/json" -u admin:password -T "uploadFileToken.json" http://localhost:8080/ssc/api/v1/fileTokens` where content of `uploadFileToken.json` is `{"fileTokenType": "UPLOAD"}`
+  - upload scan with engine type parameter; using token retrieved in previous operation `curl --noproxy localhost -X POST --form files=@"security.csv" "http://localhost:8080/ssc/upload/resultFileUpload.html?mat=TOKEN_FROM_PREV_OPERATION&entityId=APLICATION_VERSION_ID&engineType=SAMPLE"` where engine type parameter matches engine type registered by parser plugin (`plugin.xml/plugin/issue-parser/engine-type`)
 
 ## `scan.info` metadata contract
 - `scan.info` is a property file
- - SSC v17.10 can retrieve 2 properties from the file: `engineType` (STRING) and `scanDate` (STRING)
+  - SSC v17.10 can retrieve 2 properties from the file: `engineType` (STRING) and `scanDate` (STRING)
 - `scan.info` file has to provide at least engineType property, designating scan producer, which will match engine type registered by parser plugin (`plugin.xml/plugin/issue-parser/engine-type`) 
 - `scan.info` can also provide `scanDate` property value in ISO-8601 format
- - if `scanDate` is not provided the parser plugin will be responsible to provide a meaningful scan date value for SSC operations
+  - if `scanDate` is not provided the parser plugin will be responsible to provide a meaningful scan date value for SSC operations
 
+## Generating scan with random data
+The sample plugin library can be also used as a generator for scans, which can be parsed by plugin itself. The usage is as follows:
+- `java -cp sample-parser-[version].jar com.thirdparty.ScanGenerator output_scan.zip ISSUE_COUNT CATEGORY_COUNT LONG_TEXT_SIZE`
+  - e.g. `java -cp b:\tmp\sample-plugin\sample-parser-1.0.412650.3098.jar com.thirdparty.ScanGenerator sample_scan.zip 50 10 500`
 
 ## Debugging
 - Developer can follow an `ssc.log` and `plugin-framework.log` to monitor what is happening in SSC and plugin container.
- - `ssc.log` is by default located in application server log directory or can be configured by `ssc.log.path` VM system property
- - plugin container log is by default stored in `<user.home>/.fortify/plugin-framework/log` location and can be configured in `org.ops4j.pax.logging.cfg` (`WEB-INF/plugin-framework/etc`)
+  - `ssc.log` is by default located in application server log directory or can be configured by `ssc.log.path` VM system property
+  - plugin container log is by default stored in `<user.home>/.fortify/plugin-framework/log` location and can be configured in `org.ops4j.pax.logging.cfg` (`WEB-INF/plugin-framework/etc`)
 - SSC update its plugin registration if plugin version is incremented in `plugin.xml/plugin/plugin-info/version`
- - version could be incremented by build for seamless development
+  - version could be incremented by build for seamless development
 
 ## FAQ
 1. What is engine type
- - Designation of analyser that produced a scan, which is being uploaded to SSC and should be parsed by parser supporting the engine type
+  - Designation of analyser that produced a scan, which is being uploaded to SSC and should be parsed by parser supporting the engine type
 2. There is no parser to process a scan
- - engine type provided with scan is different to engine type provided by parser plugin or no plugin of specified engine type is registered with SSC
- - parser plugin registration failed - check plugin container logs and SSC logs for any errors
+  - engine type provided with scan is different to engine type provided by parser plugin or no plugin of specified engine type is registered with SSC
+  - parser plugin registration failed - check plugin container logs and SSC logs for any errors
