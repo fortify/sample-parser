@@ -200,17 +200,33 @@ public class SampleParserPlugin implements ParserPlugin<SampleParserVulnerabilit
         v.setLineNumber(f.getLineNumber());
         v.setConfidence(f.getConfidence());
         // set string custom attributes
-        v.setStringCustomAttributeValue(BUILD_SERVER, f.getBuildServer());
-        v.setStringCustomAttributeValue(ARTIFACT, f.getArtifact());
+        if (f.getBuildServer() != null) {
+            v.setStringCustomAttributeValue(BUILD_SERVER, f.getBuildServer());
+        }
+        if (f.getArtifact() != null) {
+            v.setStringCustomAttributeValue(ARTIFACT, f.getArtifact());
+        }
         // set long string custom attributes
-        v.setStringCustomAttributeValue(TEXT1, f.getText1());
-        v.setStringCustomAttributeValue(TEXT2, f.getText2());
+        if (f.getText1() != null) {
+            v.setStringCustomAttributeValue(TEXT1, f.getText1());
+        }
+        if (f.getText2() != null) {
+            v.setStringCustomAttributeValue(TEXT2, f.getText2());
+        }
         // set big decimal custom attributes
-        v.setDecimalCustomAttributeValue(RATIO, f.getRatio());
-        v.setDecimalCustomAttributeValue(BUILD_NUMBER, f.getBuildNumber());
+        if (f.getRatio() != null) {
+            v.setDecimalCustomAttributeValue(RATIO, f.getRatio());
+        }
+        if (f.getBuildNumber() != null) {
+            v.setDecimalCustomAttributeValue(BUILD_NUMBER, f.getBuildNumber());
+        }
         // set date custom attributes
-        v.setDateCustomAttributeValue(LAST_CHANGE_DATE, f.getLastChangeDate());
-        v.setDateCustomAttributeValue(ARTIFACT_BUILD_DATE, f.getArtifactBuildDate());
+        if (f.getLastChangeDate() != null) {
+            v.setDateCustomAttributeValue(LAST_CHANGE_DATE, f.getLastChangeDate());
+        }
+        if (f.getArtifactBuildDate() != null) {
+            v.setDateCustomAttributeValue(ARTIFACT_BUILD_DATE, f.getArtifactBuildDate());
+        }
         // complete vulnerability building
         v.completeVulnerability();
 
