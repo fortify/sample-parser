@@ -11,7 +11,7 @@
 - Plugin have to be a single library (JAR)
 - All plugin dependencies have to be packed inside Plugin JAR
  - Extract all dependencies to plugin JAR
-- Plugin has to implement one and only one of service provider interfaces in plugin-api/com.fortify.plugin.spi  
+- Plugin has to implement one and only one of service provider interfaces in plugin-api/com.fortify.plugin.spi
  - Plugin API v1.0 supports only ParserPlugin
  - Plugin has to declare SPI implementation in `META-INF/services`; for parser plugin implementation it would be a `com.fortify.plugin.spi.ParserPlugin` file containing declaration of class which implements `com.fortify.plugin.spi.ParserPlugin`
 - Plugin JAR has to contain plugin.xml manifest in root of JAR
@@ -21,14 +21,14 @@
 
 ## Plugin library build
 - Plugin has to be built with all dependencies contained in plugin library
- - All dependencies has to be extracted, plugin class loader can't access JAR in JAR 
+ - All dependencies has to be extracted, plugin class loader can't access JAR in JAR
 - Example Gradle build is provided with the plugin
 
 ### Using the provided build
 
-Sources includes Gradle wrapper that can be used to build the project. The wrapper will download Gradle distribution 
+Sources includes Gradle wrapper that can be used to build the project. The wrapper will download Gradle distribution
 on first run. The build also needs access to Maven Central repository for downloading some project dependencies.
-Depending on your platform either `gradlew.bat` or `gradlew` scripts should be used. 
+Depending on your platform either `gradlew.bat` or `gradlew` scripts should be used.
 
 The plugin library is built using `gradlew build` command. Produced plugin library artifact is created as
 `build/libs/sample-parser-[version].jar`
@@ -42,11 +42,11 @@ the project files.
 
 ## Installation to SSC
 - SSC version 17.10 supports only basic installation of plugin through filesystem
-- Plugin installation directory is given by VM system property `fortify.home` and plugin directory configuration property `plugin.dir` in `com.fortify.plugin.framework.cfg` (`WEB-INF/plugin-framework/etc`)
+- Plugin installation directory is given by VM system property `fortify.home` and plugin directory configuration property `plugin.dir` in `com.fortify.plugin.framework.properties` (`WEB-INF/plugin-framework/etc`)
  - By default the location for plugin installation is in `<user.home>/.fortify/plugin-framework/plugins`
 - Before plugin is started, it is first transformed to OSGi bundle that can be started in SSC's plugin container
  - Transformed bundle is by default stored in `<user.home>/.fortify/plugin-framework/plugin-bundles`
-    - Location can be modified by setting `fortify.home` VM system property and `plugin.bundles.dir` property in `com.fortify.plugin.framework.cfg` (`WEB-INF/plugin-framework/etc`)
+    - Location can be modified by setting `fortify.home` VM system property and `plugin.bundles.dir` property in `com.fortify.plugin.framework.properties` (`WEB-INF/plugin-framework/etc`)
  - Transformation injects:
     - OSGi related properties to `META-INF/MANIFEST.MF` of plugin
     - OSGi blueprint contexts with necessary beans to `OSGI-INF/blueprint`
@@ -60,14 +60,14 @@ the project files.
   - ZIP have to contain at least 2 entries
     1. /scan.info
     2. /raw.scan - name and location depends on parser implementation and how it retrieves entry from `com.fortify.plugin.api.ScanData` (e.g. `scanData.getInputStream(x -> x.endsWith(".json"))` retrieves file ending with `.json` extension)
-- Optionally, 3rd party scan can be uploaded as a raw scan (not packed in ZIP with `scan.info`) but only through SSC REST API where call to REST API has to provide engine type as parameter of a call. Example: 
+- Optionally, 3rd party scan can be uploaded as a raw scan (not packed in ZIP with `scan.info`) but only through SSC REST API where call to REST API has to provide engine type as parameter of a call. Example:
   - retrieve file upload token; using for example admin user and password `curl --noproxy localhost -X POST -H "Content-Type: application/json" -u admin:password -T "uploadFileToken.json" http://localhost:8080/ssc/api/v1/fileTokens` where content of `uploadFileToken.json` is `{"fileTokenType": "UPLOAD"}`
   - upload scan with engine type parameter; using token retrieved in previous operation `curl --noproxy localhost -X POST --form files=@"security.csv" "http://localhost:8080/ssc/upload/resultFileUpload.html?mat=TOKEN_FROM_PREV_OPERATION&entityId=APLICATION_VERSION_ID&engineType=SAMPLE"` where engine type parameter matches engine type registered by parser plugin (`plugin.xml/plugin/issue-parser/engine-type`)
 
 ## `scan.info` metadata contract
 - `scan.info` is a property file
   - SSC v17.10 can retrieve 2 properties from the file: `engineType` (STRING) and `scanDate` (STRING)
-- `scan.info` file has to provide at least engineType property, designating scan producer, which will match engine type registered by parser plugin (`plugin.xml/plugin/issue-parser/engine-type`) 
+- `scan.info` file has to provide at least engineType property, designating scan producer, which will match engine type registered by parser plugin (`plugin.xml/plugin/issue-parser/engine-type`)
 - `scan.info` can also provide `scanDate` property value in ISO-8601 format
   - if `scanDate` is not provided the parser plugin will be responsible to provide a meaningful scan date value for SSC operations
 
