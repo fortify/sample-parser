@@ -21,6 +21,7 @@ public class Finding {
     private String vulnerabilityAbstract;
     private Integer lineNumber;
     private Float confidence;
+    private String friority;
 
     // custom attributes
     private String buildServer;
@@ -73,9 +74,11 @@ public class Finding {
         return confidence;
     }
 
-    public void setConfidence(final Float confidence) {
-        this.confidence = confidence;
-    }
+    public void setConfidence(final Float confidence) { this.confidence = confidence; }
+
+    public String getFriority() { return friority; }
+
+    public void setFriority(final String friority) { this.friority = friority; }
 
     public void setUniqueId(final String uniqueId) {
         this.uniqueId = uniqueId;

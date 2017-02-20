@@ -2,9 +2,8 @@ package com.thirdparty;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
-import com.fasterxml.jackson.databind.ObjectReader;
+import com.fortify.plugin.api.BasicVulnerabilityBuilder;
 import com.fortify.plugin.api.ScanBuilder;
 import com.fortify.plugin.api.ScanData;
 import com.fortify.plugin.api.ScanParsingException;
@@ -14,16 +13,12 @@ import com.fortify.plugin.spi.ParserPlugin;
 import com.fortify.plugin.spi.VulnerabilityAttribute;
 import com.thirdparty.scan.DateDeserializer;
 import com.thirdparty.scan.Finding;
-import com.thirdparty.scan.Scan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.text.ParseException;
-import java.util.Arrays;
 
 import static com.fasterxml.jackson.core.JsonToken.START_OBJECT;
 import static com.thirdparty.SampleParserVulnerabilityAttribute.ARTIFACT;
@@ -153,6 +148,8 @@ public class SampleParserPlugin implements ParserPlugin<SampleParserVulnerabilit
                 case "confidence":
                     f.setConfidence(jsonParser.getFloatValue());
                     break;
+                case "friority":
+                    f.setFriority(jsonParser.getText());
 
                 // custom attributes
 
@@ -199,6 +196,9 @@ public class SampleParserPlugin implements ParserPlugin<SampleParserVulnerabilit
         v.setVulnerabilityAbstract(f.getVulnerabilityAbstract());
         v.setLineNumber(f.getLineNumber());
         v.setConfidence(f.getConfidence());
+        if (f.getFriority() != null) {
+            v.setPriority((BasicVulnerabilityBuilder.Priority.valueOf(f.getFriority())));
+        }
         // set string custom attributes
         if (f.getBuildServer() != null) {
             v.setStringCustomAttributeValue(BUILD_SERVER, f.getBuildServer());

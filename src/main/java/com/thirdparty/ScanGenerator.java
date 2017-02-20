@@ -21,7 +21,9 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 import java.util.UUID;
@@ -126,6 +128,7 @@ public class ScanGenerator {
         jsonGenerator.writeStringField("vulnerabilityAbstract", "Abstract for vulnerability " + id);
         jsonGenerator.writeNumberField("lineNumber", random.nextInt(Integer.MAX_VALUE));
         jsonGenerator.writeNumberField("confidence", random.nextFloat() * 9 + 1); // 1..10
+        jsonGenerator.writeStringField("friority", FriorityList[random.nextInt(FriorityList.length)]);
         jsonGenerator.writeStringField("buildServer", "server1.example.com");
         jsonGenerator.writeStringField("artifact", String.format("artifact-%s.jar", id));
         jsonGenerator.writeFieldName("text1");
@@ -188,6 +191,8 @@ public class ScanGenerator {
     private static int min(final int i, final int j) {
         return i < j ? i : j;
     }
+
+    private static final String[] FriorityList = {"Critical", "High", "Medium", "Low"};
 
     private static byte[] LOREM_IPSUM = (
         "Lorem ipsum dolor sit amet, eam ridens cetero iuvaret id. Ius eros fabulas ei. Te vis unum intellegam, cu sed ullum eruditi, et est lorem volumus. Te altera malorum quaestio mei, sea ea veniam disputando.\n" +
