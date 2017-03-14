@@ -33,6 +33,7 @@ dependencies {
     compileExport(group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: "$jacksonVersion") { transitive = false }
 
     testCompile project(':plugin-core')
+    testCompile project(':com.fortify.plugin.runtime')
     testCompile "junit:junit:$junitVersion"
     testRuntime 'org.slf4j:slf4j-simple:1.7.21'
 }

@@ -1,5 +1,7 @@
 package com.fortify.plugin.manifest;
 
+import com.fortify.plugin.runtime.descriptor.jaxb.ObjectFactory;
+import com.fortify.plugin.runtime.descriptor.jaxb.PluginDescriptor;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
