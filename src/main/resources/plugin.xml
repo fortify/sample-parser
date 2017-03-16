@@ -23,6 +23,7 @@
     </plugin-info>
     <issue-parser xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
         <engine-type>SAMPLE</engine-type>
+        <supported-engine-versions>v2.2-4.3</supported-engine-versions>
         <view-template location="/viewtemplate/SampleTemplate.json">
             <description>Default sample vulnerability view template.</description>
         </view-template>
