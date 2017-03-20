@@ -30,7 +30,7 @@
     </plugin-info>
     <issue-parser xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="IssueParser">
         <engine-type>SAMPLE</engine-type>
-        <supported-engine-versions>v2.2-4.1</supported-engine-versions>
+        <supported-engine-versions>(2.2,4.1)</supported-engine-versions>
         <output-data>
             <custom-attributes>
                 <attribute id="projectId" type="STRING"/>
