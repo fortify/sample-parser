@@ -26,9 +26,10 @@ import static com.thirdparty.SampleParserVulnerabilityAttribute.ARTIFACT_BUILD_D
 import static com.thirdparty.SampleParserVulnerabilityAttribute.BUILD_NUMBER;
 import static com.thirdparty.SampleParserVulnerabilityAttribute.BUILD_SERVER;
 import static com.thirdparty.SampleParserVulnerabilityAttribute.LAST_CHANGE_DATE;
-import static com.thirdparty.SampleParserVulnerabilityAttribute.RATIO;
-import static com.thirdparty.SampleParserVulnerabilityAttribute.TEXT1;
-import static com.thirdparty.SampleParserVulnerabilityAttribute.TEXT2;
+import static com.thirdparty.SampleParserVulnerabilityAttribute.CATEGORY_ID;
+import static com.thirdparty.SampleParserVulnerabilityAttribute.DESCRIPTION;
+import static com.thirdparty.SampleParserVulnerabilityAttribute.COMMENT;
+import static com.thirdparty.SampleParserVulnerabilityAttribute.STATUS;
 import static java.math.BigDecimal.ROUND_HALF_UP;
 
 /**
@@ -148,11 +149,18 @@ public class SampleParserPlugin implements ParserPlugin<SampleParserVulnerabilit
                 case "confidence":
                     f.setConfidence(jsonParser.getFloatValue());
                     break;
-                case "friority":
-                    f.setFriority(jsonParser.getText());
+                case "impact":
+                    f.setImpact(jsonParser.getFloatValue());
+                    break;
 
                 // custom attributes
 
+                case "categoryId":
+                    f.setCategoryId(jsonParser.getText());
+                    break;
+                case "criticality":
+                    f.setCriticality(jsonParser.getText());
+                    break;
                 case "buildServer":
                     f.setBuildServer(jsonParser.getText());
                     break;
@@ -160,18 +168,18 @@ public class SampleParserPlugin implements ParserPlugin<SampleParserVulnerabilit
                     f.setArtifact(jsonParser.getText());
                     break;
 
-                case "text1":
-                    f.setText1(new String(jsonParser.getBinaryValue(), StandardCharsets.US_ASCII));
+                case "description":
+                    f.setDescription(new String(jsonParser.getBinaryValue(), StandardCharsets.US_ASCII));
                     break;
-                case "text2":
-                    f.setText2(new String(jsonParser.getBinaryValue(), StandardCharsets.US_ASCII));
+                case "comment":
+                    f.setComment(new String(jsonParser.getBinaryValue(), StandardCharsets.US_ASCII));
                     break;
 
-                case "ratio":
-                    f.setRatio(jsonParser.getDecimalValue().setScale(VulnerabilityAttribute.MAX_DECIMAL_SCALE, ROUND_HALF_UP));
-                    break;
                 case "buildNumber":
                     f.setBuildNumber(jsonParser.getDecimalValue().setScale(VulnerabilityAttribute.MAX_DECIMAL_SCALE, ROUND_HALF_UP));
+                    break;
+                case "status":
+                    f.setStatus(jsonParser.getText());
                     break;
 
                 case "lastChangeDate":
@@ -196,27 +204,31 @@ public class SampleParserPlugin implements ParserPlugin<SampleParserVulnerabilit
         v.setVulnerabilityAbstract(f.getVulnerabilityAbstract());
         v.setLineNumber(f.getLineNumber());
         v.setConfidence(f.getConfidence());
-        if (f.getFriority() != null) {
-            v.setPriority((BasicVulnerabilityBuilder.Priority.valueOf(f.getFriority())));
+        v.setImpact(f.getImpact());
+        if (f.getCriticality() != null) {
+            v.setPriority((BasicVulnerabilityBuilder.Priority.valueOf(f.getCriticality())));
         }
         // set string custom attributes
+        if (f.getCategoryId() != null) {
+            v.setStringCustomAttributeValue(CATEGORY_ID, f.getCategoryId());
+        }
         if (f.getBuildServer() != null) {
             v.setStringCustomAttributeValue(BUILD_SERVER, f.getBuildServer());
         }
         if (f.getArtifact() != null) {
             v.setStringCustomAttributeValue(ARTIFACT, f.getArtifact());
         }
-        // set long string custom attributes
-        if (f.getText1() != null) {
-            v.setStringCustomAttributeValue(TEXT1, f.getText1());
+        if (f.getStatus() != null) {
+            v.setStringCustomAttributeValue(STATUS, f.getStatus());
         }
-        if (f.getText2() != null) {
-            v.setStringCustomAttributeValue(TEXT2, f.getText2());
+        // set long string custom attributes
+        if (f.getDescription() != null) {
+            v.setStringCustomAttributeValue(DESCRIPTION, f.getDescription());
+        }
+        if (f.getComment() != null) {
+            v.setStringCustomAttributeValue(COMMENT, f.getComment());
         }
         // set big decimal custom attributes
-        if (f.getRatio() != null) {
-            v.setDecimalCustomAttributeValue(RATIO, f.getRatio());
-        }
         if (f.getBuildNumber() != null) {
             v.setDecimalCustomAttributeValue(BUILD_NUMBER, f.getBuildNumber());
         }
@@ -236,8 +248,8 @@ public class SampleParserPlugin implements ParserPlugin<SampleParserVulnerabilit
 
     private static <T> void parseJson(final ScanData scanData, final T object, final Callback<T> fn) throws ScanParsingException, IOException {
         try (
-            final InputStream content = scanData.getInputStream(x -> x.endsWith(".json"));
-            final JsonParser jsonParser = JSON_FACTORY.createParser(content);
+                final InputStream content = scanData.getInputStream(x -> x.endsWith(".json"));
+                final JsonParser jsonParser = JSON_FACTORY.createParser(content);
         ) {
             jsonParser.nextToken();
             assertStartObject(jsonParser);

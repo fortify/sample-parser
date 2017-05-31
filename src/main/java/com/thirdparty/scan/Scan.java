@@ -16,7 +16,7 @@ public class Scan {
     private Date scanDate;
     private String engineVersion;
     private Integer elapsed;
-    private String hostName;
+    private String buildServer;
     private List<Finding> findings = new LinkedList<>();
 
     @JsonSerialize(converter = DateSerializer.class)
@@ -45,12 +45,12 @@ public class Scan {
         this.elapsed = elapsed;
     }
 
-    public String getHostName() {
-        return hostName;
+    public String getBuildServer() {
+        return buildServer;
     }
 
-    public void setHostName(final String hostName) {
-        this.hostName = hostName;
+    public void setBuildServer(final String buildServer) {
+        this.buildServer = buildServer;
     }
 
     public List<Finding> getFindings() {

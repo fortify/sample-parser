@@ -61,12 +61,6 @@
         },
         {
           "type": "template",
-          "key": "customAttributes.ratio",
-          "templateId": "SIMPLE",
-          "dataType": "float"
-        },
-        {
-          "type": "template",
           "key": "customAttributes.buildNumber",
           "templateId": "SIMPLE",
           "dataType": "string"
@@ -89,13 +83,13 @@
   [
     {
       "type": "template",
-      "key": "customAttributes.text1",
+      "key": "customAttributes.description",
       "templateId": "COLLAPSE",
       "dataType": "string"
     },
     {
       "type": "template",
-      "key": "customAttributes.text2",
+      "key": "customAttributes.comment",
       "templateId": "COLLAPSE",
       "dataType": "string"
     }

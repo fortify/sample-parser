@@ -21,15 +21,17 @@ public class Finding {
     private String vulnerabilityAbstract;
     private Integer lineNumber;
     private Float confidence;
-    private String friority;
+    private Float impact;
 
     // custom attributes
+    private String criticality;
+    private String categoryId;
     private String buildServer;
     private String artifact;
-    private String text1;
-    private String text2;
-    private BigDecimal ratio;
+    private String description;
+    private String comment;
     private BigDecimal buildNumber;
+    private String status;
     private Date lastChangeDate;
     private Date artifactBuildDate;
 
@@ -76,13 +78,23 @@ public class Finding {
 
     public void setConfidence(final Float confidence) { this.confidence = confidence; }
 
-    public String getFriority() { return friority; }
+    public Float getImpact() {
+        return impact;
+    }
 
-    public void setFriority(final String friority) { this.friority = friority; }
+    public void setImpact(final Float impact) { this.impact = impact; }
 
     public void setUniqueId(final String uniqueId) {
         this.uniqueId = uniqueId;
     }
+
+    public String getCriticality() { return criticality; }
+
+    public void setCriticality(final String criticality) { this.criticality = criticality; }
+
+    public String getCategoryId() { return categoryId; }
+
+    public void setCategoryId(final String categoryId) { this.categoryId = categoryId; }
 
     public String getBuildServer() {
         return buildServer;
@@ -100,29 +112,13 @@ public class Finding {
         this.artifact = artifact;
     }
 
-    public String getText1() {
-        return text1;
-    }
+    public String getDescription() { return description; }
 
-    public void setText1(final String text1) {
-        this.text1 = text1;
-    }
+    public void setDescription(final String description) { this.description = description; }
 
-    public String getText2() {
-        return text2;
-    }
+    public String getComment() { return comment; }
 
-    public void setText2(final String text2) {
-        this.text2 = text2;
-    }
-
-    public BigDecimal getRatio() {
-        return ratio;
-    }
-
-    public void setRatio(final BigDecimal ratio) {
-        this.ratio = ratio;
-    }
+    public void setComment(final String comment) { this.comment = comment; }
 
     public BigDecimal getBuildNumber() {
         return buildNumber;
@@ -131,6 +127,10 @@ public class Finding {
     public void setBuildNumber(final BigDecimal buildNumber) {
         this.buildNumber = buildNumber;
     }
+
+    public String getStatus() { return status; }
+
+    public void setStatus(final String status) { this.status = status; }
 
     @JsonSerialize(converter = DateSerializer.class)
     public Date getLastChangeDate() {
