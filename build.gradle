@@ -9,12 +9,25 @@ ext {
     jacksonVersion = "2.8.4"
 }
 
+// plugin version, note the version must match versionRegex.
+version = '1.0'
+
 if (!project.hasProperty('release')) {
     // Gradle has been run without option -Prelease - auto increment plugin version
     def time = System.currentTimeMillis().intdiv(1000)
     def hours = time.intdiv(3600)
     def secs = time % 3600
     version = String.format('%s.%d.%04d', version, hours, secs)
+}
+
+repositories {
+    // repository with fortify artifacts
+    ivy {
+        name 'sample'
+        url = [projectDir, "fortifyRepository"].join(File.separator)
+    }
+
+    mavenCentral()
 }
 
 configurations {
@@ -24,18 +37,13 @@ configurations {
 
 dependencies {
     // dependencies provided by plugin runtime
-    compile project(':plugin-api')
-    compile group: 'org.slf4j', name: 'slf4j-api', version: slf4jVersion
+    compile 'com.fortify.plugin:plugin-api:1.1'
+    compile 'org.slf4j:slf4j-api:1.7.21'
 
     // plugin specific dependencies
     compileExport(group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: "$jacksonVersion") { transitive = false }
     compileExport(group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "$jacksonVersion") { transitive = false }
     compileExport(group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: "$jacksonVersion") { transitive = false }
-
-    testCompile project(':plugin-core')
-    testCompile project(':com.fortify.plugin.runtime')
-    testCompile "junit:junit:$junitVersion"
-    testRuntime 'org.slf4j:slf4j-simple:1.7.21'
 }
 
 
