@@ -163,7 +163,7 @@
     
         Vulnerability template contains only names of the attributes which values should be displayed. Actual values fo vulnerability attributes are taken from issue object returned by `/issueDetails/{id}`  REST service.
     This is high level structure of vulnerability template:
-    
+
       ```javascript
         [
           [
@@ -177,8 +177,8 @@
           ]
         ]
       ```
-        Each second level array element contain definition of the column. This array can contain up to 3 elements. If array contains more than 3 elements, elements over the 3rd one are ignored.
-        Column N definition has the following structure: 
+        The top array can contain up to 3 elements representing the 3 columns. If array contains more than 3 elements, elements over the 3rd one are ignored.
+        Column N definition consists of 1 or more fields definition of the following structure:
         ```javascript
             {
               "type": " -- value -- ",
@@ -202,7 +202,7 @@
 
         List of supported data types: `string`, `date` and `float`.
 
-        It is also possible to combine attributes into logical groups and
+        It is also possible to combine attributes into logical groups with common header. This construction should be used to do so.
 
         ```javascript
             {
@@ -211,25 +211,13 @@
               "title": "Details",
               "items": [
                 {
-                  "type": "template",
-                  "title": "Hub Project Name",
-                  "key": "customAttributes.projectName",
-                  "templateId": "SIMPLE",
-                  "dataType": "string"
+                  "Field 1 definition"
                 },
                 {
-                  "type": "template",
-                  "title": "Hub Project Id",
-                  "key": "customAttributes.projectId",
-                  "templateId": "SIMPLE",
-                  "dataType": "integer"
+                  "Field 2 definition"
                 },
                 {
-                  "type": "template",
-                  "title": "Level of Exploitability",
-                  "key": "customAttributes.exploitability",
-                  "templateId": "SIMPLE",
-                  "dataType": "integer"
+                  "Field N definition"
                 }
               ]
             }
