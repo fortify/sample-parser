@@ -1,23 +1,85 @@
 # Sample parser plugin (for SSC version 17.10 and Plugin API version 1.0)
 
-## Java API
-- All types of plugins are developed against plugin-api (plugin-api-1.0.jar)
-- Currently the API supports only Parser Plugin (`com.fortify.plugin.spi.ParserPlugin`) type of plugin
+## Java plugin API
+- All types of plugins are developed against plugin-api (current version is plugin-api-1.0.jar)
+- Plugin API version 1.0 supports only Parser Plugin (`com.fortify.plugin.spi.ParserPlugin`) type of plugin
 - The SPI a plugin can implement is in package `com.fortify.plugin.spi` of plugin-api library
 - The API a plugin can use is in `com.fortify.plugin.api` of plugin-api library
 - Sample parser plugin implements `com.fortify.plugin.spi.ParserPlugin`
 
 ## Plugin requirements
 - Plugin have to be a single library (JAR)
-- All plugin dependencies have to be packed inside Plugin JAR
- - Extract all dependencies to plugin JAR
+- All plugin dependencies have to be extracted and packed inside Plugin JAR
 - Plugin has to implement one and only one of service provider interfaces in plugin-api/com.fortify.plugin.spi
  - Plugin API v1.0 supports only ParserPlugin
  - Plugin has to declare SPI implementation in `META-INF/services`; for parser plugin implementation it would be a `com.fortify.plugin.spi.ParserPlugin` file containing declaration of class which implements `com.fortify.plugin.spi.ParserPlugin`
-- Plugin JAR has to contain plugin.xml manifest in root of JAR
- - Plugin.xml schema is provided by plugin-api/schema/pluginmanifest-1.0.xsd
+- Plugin JAR has to contain plugin.xml manifest in root of JAR. See the description of the plugin manifest attributes below.
+
+## Plugin manifest file description
+- Plugin manifest is an xml file which name has to be plugin.xml. Plugins that do not contain this file in the root of plugin jar file cannot be installed in SSC.
+- Plugin.xml schema is provided by plugin-api/schema/pluginmanifest-1.0.xsd.
+- Description of the attributes that can be defined in the plugin.xml:
+  - <b>Plugin id (id):</b> unique plugin identifier defined by plugin developers. It can be any string that identifies plugin: development company domain name, primary package name or anything else. Mandatory. Max length: 80 chars.
+  - <b>Plugin API version (api-version):</b> plugin API version that was used to develop the plugin. Plugin framework uses this value to check if deployed plugin is compatible with the current version of the framework itself. If api version in plguin manifest is not supported by plugin framework, plugin installation will be rejected. Mandatory. Max length is 8 chars. Format: dot separated numbers (e.g. 1.0, 2.3.1).
+  - <b>Plugin info (plugin-info):</b> section contains generic attributes valid for all types of the plugins supported by teh framework.
+    - <b>Plugin name (name):</b> meaningful name of the plugins that will be displayed in SSC UI can help users to identify the plugin. Mandatory. Max length: 40 chars. Allowed symbols: letters, space, hyphen, dot.
+    - <b>Plugin version (version):</b> version of the plugin. SSC performs some checks using this value when plugin is installed and in some cases forbids installation of older versions of the plugin if higher version is already installed in SSC. Mandatory. Max length: 25 chars. Format: dot separated numbers (e.g. 1.0, 2.3.1).
+    - <b>Plugin data version (data-version):</b> attribute helps SSC to understand if new version of the plugin produces data in the same format as previous version of the plugin or not. This is very important attribute used by SSC quite intensively and plugin developers should set value of this attribute very carefully.
+      Value of this attribute must be changed in the new plugin version only if plugin output data format was changed drastically and output data produced by new version of the plugin is not compatible with data produced by older version of the plugin.
+      For example, parser plugin version 1.0 produces vulnerability with only 1 String attribute. Next version of this plugin (2.0) produces vulnerabilities that have 5 attributes. It means that vulnerabilities produced by these 2 versions of the plugin cannot be compared with each other and data versions of the plugins must be different.
+      If new version of the plugin produces output data in exactly the same way as previous version of the plugin, data versions can be the same for both plugins.
+      SSC has a strict limitation about installing plugins with lower data version if the same plugin with higher data version is already installed in SSC.
+      The general rule about setting this value should be this: if no changes in output data format, plugin data version must not be changed. In case any changes in output data format data version must be increased.
+      Mandatory. Data version value must be valid integer number between 1 and Java max integer value.
+    - <b>Plugin vendor name (vendor : name):</b> Name of the company or person that developed the plugin. Optional. Max length: 80 chars.
+    - <b>Plugin vendor URL (vendor : url):</b> Address of the WEB-site of the plugin developer company or person. Optional. Max length: 100 chars.
+    - <b>Plugin description (description):</b> Short description of the plugin. Any information useful for plugin users can be placed here. Optional. Max length: 500 chars.
+    - <b>Plugin resources (resources):</b> This section contains references to the resource files that can be included in the plugin package. Currently, only 2 types of resources are supported: localization files and images.
+        - <b>Plugin localization files (resources : localization):</b> collection of language section that define languages supported by plugin. Each language definition consist of HTML ISO language code and path to localization file located incide plugin package.
+          There is a special language code "default". Language of this type will be used if SSC client requested language which localization is not inclided in the plugin package.
+          If SSC client requested not defined language and there is no default language defined, English language localization will be used as default.
+          Location attribute of the language section must contain full path to localization file inside plugin package.
+          Localization file must be valid key value property file.
+        - <b>Plugin images (resources : localization):</b>
 - Plugin can also provide localization resources as well as logo and icon and declare their location inside JAR in plugin.xml <resources> block
 - Parser Plugin have to declare engine type in plugin manifest (plugin.xml/issue-parser/engine-type) and view template for SSC UI (plugin.xml/issue-parser/view-template)
+
+## Plugin manifest file example
+```xml
+<?xml version="1.0" encoding="utf-8" ?>
+<plugin xmlns="xmlns://www.fortifysoftware.com/schema/pluginmanifest-1.0.xsd"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="PluginDescriptor"
+        id="com.example.parser" api-version="1.0">
+    <plugin-info>
+        <name>Sample parser plugin</name>
+        <version><!--VERSION-->0.0<!--/VERSION--></version>
+        <data-version>1</data-version>
+        <vendor name="Sample vendor" url="https://sample-parser-plugin.example.com/"/>
+        <description>Simple parser plugin implementation example.</description>
+        <resources>
+            <localization>
+                <language id="default" location="/resources/sample_en.properties"/>
+                <language id="cs" location="/resources/sample_cs.properties"/>
+                <language id="en" location="/resources/sample_en.properties"/>
+                <language id="ru" location="/resources/sample_ru.properties"/>
+            </localization>
+            <images>
+                <image imageType="icon" location="/images/sample-icon.png"/>
+                <image imageType="logo" location="/images/sample-logo.png"/>
+            </images>
+        </resources>
+    </plugin-info>
+    <issue-parser xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <engine-type>SAMPLE</engine-type>
+        <supported-engine-versions>[2.2, 4.3]</supported-engine-versions>
+        <view-template location="/viewtemplate/SampleTemplate.json">
+            <description>Default sample vulnerability view template.</description>
+        </view-template>
+    </issue-parser>
+</plugin>
+```
+
+
 
 ## Plugin library build
 - Plugin has to be built with all dependencies contained in plugin library
