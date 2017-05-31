@@ -188,8 +188,53 @@
             }
         
         ```
-        where `type` is type of the attribute field, `key` is name of the vulnerability attribute that must be displayed, `templateId` identifies the way how attribute values must be represented, `dataType` defines the exact type of the attribute value.
-        
+
+        - `type` is type of the attribute field
+        - `key` is name of the vulnerability attribute that must be displayed
+        - `templateId` identifies the way how attribute values must be represented
+        - `dataType` defines the exact type of the attribute value. This attribute is used to format value of vulnerability attribute
+
+        Template rendering engine currently supports 4 types:
+        - `SIMPLE` - simple section without any special styling
+        - `COLLAPSE` - collapsible panel
+        - `TITLEBOX` - this type of field will be displayed as a title
+        - `PRIMARYTAG` - this type says that field should be rendered as a primary custom tag value. Please refer to SSC documentation about the custom tags
+
+        List of supported data types: `string`, `date` and `float`.
+
+        It is also possible to combine attributes into logical groups and
+
+        ```javascript
+            {
+              "type": "template",
+              "templateId": "TITLEBOX",
+              "title": "Details",
+              "items": [
+                {
+                  "type": "template",
+                  "title": "Hub Project Name",
+                  "key": "customAttributes.projectName",
+                  "templateId": "SIMPLE",
+                  "dataType": "string"
+                },
+                {
+                  "type": "template",
+                  "title": "Hub Project Id",
+                  "key": "customAttributes.projectId",
+                  "templateId": "SIMPLE",
+                  "dataType": "integer"
+                },
+                {
+                  "type": "template",
+                  "title": "Level of Exploitability",
+                  "key": "customAttributes.exploitability",
+                  "templateId": "SIMPLE",
+                  "dataType": "integer"
+                }
+              ]
+            }
+        ```
+
         Simple view template example is posted below.
 
       ```javascript
