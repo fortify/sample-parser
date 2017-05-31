@@ -1,8 +1,12 @@
-# Sample parser plugin (for SSC versions 17.10, 17.20 and Plugin API version 1.0, 1.1)
+# Sample parser plugin - example of a plugin that can parse non-Fortify security scan results and import them into Fortify Software Security Center. 
+Plugin API version | Compatible SSC version(s)
+------------ | -------------
+1.0 | 17.10, 17.20(forward looking - release number is not guaranteed)
+1.1 | 17.20(forward looking - release number is not guaranteed)
 
 ## Java plugin API
 - All types of plugins are developed against plugin-api (current version is plugin-api-1.0.jar)
-- Plugin API version 1.0 supports only Parser Plugin (`com.fortify.plugin.spi.ParserPlugin`) type of plugin. Bugtracker plugins support implementation is in progress
+- Plugin API version 1.0 supports only Parser Plugin (`com.fortify.plugin.spi.ParserPlugin`) type of plugin. Bugtracker plugins support implementation is in progress for post-17.10 release. 
 - The SPI a plugin can implement is in package `com.fortify.plugin.spi` of plugin-api library
 - The API a plugin can use is in `com.fortify.plugin.api` of plugin-api library
 - Sample parser plugin implements `com.fortify.plugin.spi.ParserPlugin`
@@ -16,17 +20,17 @@
 - Plugin JAR has to contain plugin.xml manifest in root of JAR. See the description of the plugin manifest attributes below
 
 ## Plugin manifest file description
-- Plugin manifest is an xml file which name has to be plugin.xml. Plugins that do not contain this file in the root of plugin jar file cannot be installed in SSC
+- Plugin manifest is an xml file whose name has to be "plugin.xml". Plugins that do not contain this file in the root of plugin jar file cannot be installed in SSC
 - Plugin.xml schema is provided by plugin-api/schema/pluginmanifest-1.0.xsd schema file
 - Description of the attributes that can be defined in the plugin.xml:
-  - __Plugin id (id):__ unique plugin identifier defined by plugin developers. It can be any string that identifies plugin: development company domain name, primary package name or anything else. 
+  - __Plugin id (id):__ unique plugin identifier defined by plugin developers. It can be any string that identifies plugin - but it is recommended that it be the same value as the fully qualified name of the plugin implementation class.  
     Mandatory. Max length: 80 chars.
 
     Example of plugin ID definition:
     ```
     id="com.example.parser"
     ```
-  - __Plugin API version (api-version):__ plugin API version that was used to develop the plugin. Plugin framework uses this value to check if deployed plugin is compatible with the current version of the framework itself. If api version defined in plugin manifest is not supported by plugin framework, plugin installation will be rejected.
+  - __Plugin API version (api-version):__ plugin API version that was used to develop the plugin. Plugin framework uses this value to check if the deployed plugin is compatible with the current version of the framework itself. If api version defined in plugin manifest is not supported by plugin framework, plugin installation will be rejected.
     Mandatory. Max length is 8 chars. Format: dot separated numbers.
 
     Example of plugin API version definition:
@@ -40,13 +44,13 @@
       ```
       <name>Sample parser plugin</name>
       ```
-    - __Plugin version (version):__ version of the plugin. SSC performs plugin package validation using this value when plugin is installed and in some cases forbids installation of older versions of the plugin if newer version of the same plugin is already installed in SSC.
+    - __Plugin version (version):__ version of the plugin. SSC performs plugin package validation using this value when plugin is installed and forbids installation of older versions of the plugin if newer version of the same plugin is already installed in SSC.  This check helps avoid certain human errors when installing/managing plugins. 
       Mandatory. Max length: 25 chars. Format: dot separated numbers.
       Example of plugin version definition:
       ```
       <version>10.5</version>
       ```
-    - __Plugin data version (data-version):__ attribute helps SSC to understand if new version of the plugin produces data in the same format as previous version of the plugin. This is very important attribute used by SSC quite intensively and plugin developers should set value of this attribute very carefully.
+    - __Plugin data version (data-version):__ This attribute helps SSC to understand if new version of the plugin produces data in the same format as previous version of the plugin. This is very important attribute used by SSC quite intensively and plugin developers should set value of this attribute very carefully.
       Value of this attribute must be changed in the new plugin version only if plugin output data format was changed and output data produced by new version of the plugin is not compatible with data produced by older version of the plugin.
       For example, parser plugin version 1.0 produces vulnerability with only 1 String attribute. Next version of this plugin (2.0) produces vulnerabilities that have 5 attributes. It means that vulnerabilities produced by these 2 versions of the plugin cannot be compared with each other and data versions of the plugins must be different.
       In addition, data version of the plugin must be changed if vulnerability view template definition was updated (see details about vulnerability view template below).
@@ -118,11 +122,11 @@
 
 - __Scan vulnerability (issue) parser specific attributes (issue-parser):__ this section must be used to define parser plugin specific attributes and should not be included in manifest of plugins of any other types.
     - __Vulnerability source engine type (engine-type):__ this attribute is very important and helps SSC to coordinate work of different types of parser plugins installed in SSC and distinguish vulnerabilities parsed by different parser plugins.
-      This attribute contain a meaningful name of the analyser (engine) that produces files that can be parsed by a parser. It is recommended to use public marketing analyser product names to define supported engine type of the plugin.
-      Different plugin developers can develop plugins that can parse the same analysers scan results. So, using public analysers product names as engine types should help SSC to check if multiply plugins installed in SSC are not compatible with each other and are able to parse different types of analysis result files.
-      One plugin can support only one engine type. If plugin developers need to parser that is able to parse results of different analysers, they should develop and release 2 plugins. Each of the plugins must support some specific engine type.
-      It is also not recommended to change supported engine type without a strong reason. If it is really necessary to change name of the supported engine type, data version value must be at least increased. Another option is to release new plugin for new engine type.
-      Mandatory. Max length: 80 chars. Format: upper cased latin characters / numbers separated by space, hyphen, dot, underscore or space.
+      This attribute contain a meaningful name of the analyser (engine) that produces files that can be parsed by a parser. It is recommended that you use the public analyser product name to define the supported engine type of the plugin. 
+      Different plugin developers can develop plugins that can parse the same analysers scan results. So, using public analysers product names as engine types should help SSC to check if multiple plugins installed in SSC are compatible with each other and are able to parse different types of analysis result files.
+      __One plugin can support only one engine type.__
+      If it is really necessary to change the supported engine type, a new plugin must be released for the new engine type and must have a different unique pluginId. 
+      Mandatory. Max length: 80 chars. Format: uppercased latin characters / numbers separated by space, hyphen, dot, underscore or space.
 
       Examples of plugin engine type definition
       ```
@@ -137,9 +141,8 @@
         <engine-type>WEBINSPECT</engine-type>
       ```
 
-    - __Supported engine versions (supported-engine-versions):__ descriptive field that shows which versions of a supported analyzer produces scan results that the parser plugin can parse.
-      This is free form text that can contain comma separated versions, version range, some text comment.
-      Not mandatory. Max length: 40 characters.
+    - __Supported engine versions (supported-engine-versions):__ descriptive field that shows which versions of a supported analyzer produces scan results that the parser plugin can parse. 
+      Not mandatory but if specified it must be in the format specified by the XSD. Max length: 40 characters.
       Example of supported engine versions definition
       ```
         <supported-engine-versions>[2.2, 4.3]</supported-engine-versions>
@@ -147,9 +150,8 @@
 
     - __Vulnerability view template (view-template):__ definition of view template that is used by SSC to represent details of vulnerability parsed by a parser.
     View template is responsible for defining which attributes of a vulnerability will be represented in vulnerability details view and also defines where exactly vulnerability attribute values will be represented.
-    Defining view templates makes sense for the plugins that can produce custom vulnerability attributes that do not exist in SSC data model.
-    In this case SSC will not be able to generate UI to represent the custom attributes and defining vew template is the only way to tell SSC how vulnerability parsed by a plugin should be represented.
-    There are few rules that SSC follows to generate UI from vew template. Understanding of these rules will help plugin developers to create valid template.
+    All parser plugins must specify a view template - even if they only produce attributes already existing in SSC.  This is to avoid any inconsistency of content and dependency of plugin's view on the native view presented by a specific version of SSC. (Although SSC 17.10 currently defaults to using its native view if the viewtemplate is absent, this is being removed. In the next release, no issue details will be displayed if the viewtemplate is absent.) 
+    There are a few rules that SSC follows to generate UI from vew template. Understanding of these rules will help plugin developers to create valid template.
     Vulnerability details area consist of 3 vertical sub-areas (columns). Each of these columns can display 1 or more vulnerability attributes.
     Columns are defined from left to right. It is not allowed to define column's content with higher index and leave column with lower index empty.
     Columns can contain different number of attributes, as in the example below
