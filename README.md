@@ -24,7 +24,7 @@ Plugin API version | Compatible SSC version(s)
 - Plugin manifest is an xml file whose name has to be "plugin.xml". Plugins that do not contain this file in the root of plugin jar file cannot be installed in SSC
 - Plugin.xml schema is provided by plugin-api/schema/pluginmanifest-1.0.xsd schema file
 - Description of the attributes that can be defined in the plugin.xml:
-  - __Plugin id (id):__ unique plugin identifier defined by plugin developers. It can be any unique string that identifies plugin - but it is recommended that it be the same value as the fully qualified name of the plugin implementation class.  
+  - __Plugin id (id):__ unique plugin identifier defined by plugin developers. It can be any unique string that identifies plugin - but it is recommended that it be the same value as the fully qualified name of the plugin implementation class.    
     Mandatory. Max length: 80 chars.
 
     Example of plugin ID definition:
@@ -338,54 +338,57 @@ Plugin API version | Compatible SSC version(s)
  - The location can be modified by setting `fortify.home` VM system property and `plugin.bundles.dir` property in `com.fortify.plugin.framework.properties` (`WEB-INF/plugin-framework/etc`)
 
 ## Installation to SSC (for SSC 17.10)
-- SSC version 17.10 supports only basic installation of plugin through filesystem. This way to install plugins is deprecated in SSC 17.20 in favor of plugin installation through management UI.
-- By default the location for plugin installation is in `<plugin-working-directory>/plugin-framework/plugins`
-- SSC makes an attempt to automatically enable plugins after installation (make them fully available to SSC)
-- Before plugin is enabled, it is first transformed to OSGi bundle that can be started in SSC's plugin container
- - Transformation injects:
-    - OSGi related properties to `META-INF/MANIFEST.MF` of plugin
-    - OSGi blueprint contexts with necessary beans to `OSGI-INF/blueprint`
-- Once plugin is successfully transformed, it is started in plugin container
-- Plugin container log should contain INFO record about plugin being successfully started, e.g.:
+- SSC version 17.10 only supports a basic form of installation by dropping a plugin jar into a specific folder. This way to install plugins is deprecated in SSC 17.20 in favor of plugin installation through SSC administration UI.
+- SSC 17.10 also models plugin state as simply binary - either "installed and enabled" OR "not present/uninstalled". 
+- In 17.10, each installed plugin must have a unique pluginId.  Installing a newer plugin with the same pluginId and higher pluginVersion will result in the older plugin metadata being overwritten with the new plugin. 
+- By default the file-drop location for plugin installation is in `<plugin-working-directory>/plugin-framework/plugins`
+- Before plugin is enabled, it is first transformed into an OSGi bundle that can be started in SSC's plugin container
+- Once plugin is successfully transformed and installed, it can be started (enabled) in the plugin container. (In 17.10, the plugin is automatically started (enabled) without administrator interaction. In 17.20, the administrator is required to explicitly enable a plugin before it can be utilized by SSC.)
+- The plugin container log `<plugin-working-directory>/plugin-framework/log` should contain INFO record about plugin being successfully started, e.g.:
 `org.apache.felix.fileinstall - 3.5.4 | Started bundle: file:<user.home>/.fortify/plugin-framework/plugin-bundles/com.example.parser.jar`
- - plugin container uses Felix file install to poll and install plugin bundles from filesystem location
-- There are several validation steps performed by SSC when plugins are being installed or enabled. Plugin installation as well as plugin enable actions can be blocked by SSC if following conditions are met:
-      - Plugin of lower version is being installed, but plugin of higher versions is already installed in SSC. Since plugins are developed by 3rd party developers, SSC does know any details about the logic implemented in plugins.
+- After a plugin is installed and enabled in the plugin framework, there are several additional validation steps performed by SSC when it is notified by the plugin framework. Plugin installation as well as plugin enable actions can be blocked by SSC due to conditions such as: 
+      - Plugin of lower version is not allowed if a plugin of higher version is already installed in SSC. Since plugins are developed by 3rd party developers, SSC does know any details about the logic implemented in plugins.
         In this case SSC assumes that higher versions of some plugin can produce data that will not be compatible with lower version of the plugins that can make SSC system unstable.
-        If lower version of a plugin must be installed anyway, all higher versions of this plugin must be removed (uninstalled) from SSC.
-      - Plugin of lower __data version__ can be installed in SSC, but cannot be enabled if plugin with the same ID but higher data version is already enabled. It means that if 2 plugins which ID is A are installed in SSC, only one of them can be enabled.
-
-## Installation to SSC and enabling plugin (for SSC 17.20)
-- SSC version 17.20 supports installation of plugin through plugin management UI (Administration - Plugins - Parsers)
-  `Add` button should be used to install new plugin in SSC
-- All installed plugins are disabled after installation. Disabled means that plugin is defined in SSC but cannot do any work and accept any requests from SSC
-- To enable plugin click on plugin row in the plugins list and click `Enable` button
-- Just after installation of a plugin it is first transformed to OSGi bundle that can be started in SSC's plugin container
-- Plugin container log should contain INFO record about plugin being successfully installed or enabled (started), e.g.:
-`org.apache.felix.fileinstall - 3.5.4 | Started bundle: file:<user.home>/.fortify/plugin-framework/plugin-bundles/com.example.parser.jar`
-- There are several validation steps performed by SSC when plugins are being installed or enabled. Plugin installation as well as plugin enable actions can be blocked by SSC if following conditions are met:
-      - Plugin of lower version is being installed, but plugin of higher versions is already installed in SSC. Since plugins are developed by 3rd party developers, SSC does know any details about the logic implemented in plugins.
-        In this case SSC assumes that higher versions of some plugin can produce data that will not be compatible with lower version of the plugins that can make SSC system unstable.
-        If lower version of a plugin must be installed anyway, all higher versions of this plugin must be removed (uninstalled) from SSC.
-      - Plugin of lower __data version__ can be installed in SSC, but cannot be enabled if plugin with the same ID but higher data version is already enabled. It means that if 2 plugins which ID is A are installed in SSC, only one of them can be enabled.
+        If lower version of a plugin must be installed (for example to rollback from a buggy higher version), remove the higher version of this plugin and then install the lower version. 
+      - Do not install a plugin of lower __data version__ than the existing plugins. (SSC 17.10 may not explicitly prevent such installation but it is not a good practice and will be explicitly prevented in 17.20 validations.) 
 
 ## Uninstallation from SSC (for SSC 17.10)
 - SSC version 17.10 supports only uninstallation of plugin through filesystem. This way to uninstall plugins is deprecated in SSC 17.20 in favor plugin uninstallation through management UI.
-- To uninstall plugin from SSC plugin it is necessary
+- To uninstall plugin from SSC plugin it is necessary to
+  - shutdown SSC
   - Delete plugin bundle file from `<plugin-bundles>` folder
   - Delete plugin package file from `<plugins>` folder
+  - restart SSC.
 
-## Uninstallation from SSC (for SSC 17.20)
-- Any plugin previous installed in SSC can be removed
-  - Only disabled plugin can be removed. To disable a plugin select it in the plugins list and click Disable button
-- When parser plugin is uninstalled, all the data parsed by this plugin is preserved in database
-- Vulnerabilities of the engine type that was supported by uninstalled plugin cannot be parsed by SSC after plugin uninstallation
-- Vulnerabilities that have been parsed by removed plugin can still be viewed in the list, but it will not be possible to view details of these vulnerabilities if issue view template was included in removed plugin package.
+## Installation to SSC and enabling plugin (for SSC 17.20)
+- SSC version 17.20 supports installation of plugin through plugin management UI (Administration - Plugins - Parsers)
+- In this version, plugins are modeled in 3 primary states - "installed/disabled", "enabled", "uninstalled/not present".  (It also models some transient and failure states but we can ignore those for now.)
+- In subsequent text, we will use the terms "family of plugins" or "plugin family" to refer to a set of plugins with small code variations which may differ in pluginVersion and/or dataVersion but are based on the same implementation class (pluginId). SSC 17.20 allows multiple plugins of the same family to be installed (with some restrictions). 
+  `Add` button should be used to install new plugin in SSC
+- All installed plugins are disabled after installation. Disabled means that plugin is defined in SSC but cannot do any work and accept any requests from SSC
+- To enable plugin click on plugin row in the plugins list and click `Enable` button
+- Plugin container log `<plugin-working-directory>/plugin-framework/log` should contain INFO record about plugin being successfully installed or enabled (started), e.g.:
+`org.apache.felix.fileinstall - 3.5.4 | Started bundle: file:<user.home>/.fortify/plugin-framework/plugin-bundles/com.example.parser.jar`
+- There are several validation steps performed by SSC when plugins are being installed or enabled. Plugin installation as well as plugin enable actions can be blocked by SSC if certain conditions are met, such as:
+      - A plugin of lower version is not allowed if a plugin from the same family and higher version is already installed in SSC. Since plugins are developed by 3rd party developers, SSC does know any details about the logic implemented in plugins.
+        In this case SSC assumes that higher versions of some plugin can produce data that will not be compatible with lower version of the plugins that can make SSC system unstable.
+        If lower version of a plugin must be installed (for example to rollback from a buggy higher version), remove the higher version of this plugin and then install the lower version.
+      - Only one plugin of a plugin family (ie. sharing the same pluginId and name) can be enabled at a given time. 
+      - Plugin of lower __data version__ cannot be installed in SSC.
+
+## Disabling/Uninstallation from SSC (for SSC 17.20)
+- A plugin previous installed in SSC can be removed if it is in the "disabled" state. 
+  - To disable a plugin select it in the plugins list and click the `Disable` button.
+  - To remove a plugin (which is already in the "disabled" state), view the plugin details and click the `Remove` button.
+- When parser plugin is disabled or uninstalled, SSC can no longer process new result files of the engine type that were supported by that plugin. 
+- However, all the data previously parsed by this plugin is preserved in the database and vulnerabilities that have been parsed by the plugin can still be viewed in the audit page listing. 
+  - Further, if the plugin has been just __disabled__, the details of previously parsed issues can still be seen. 
+  - However, if the plugin has also been __uninstalled__, it will not be possible to view the details of these vulnerabilities since the view template is also removed. 
 - If some plugin was uninstalled by mistake, it is possible to install it again without data loss.
 
-## Scan artifact requirements
-- Scan has be accompanied by `scan.info` metadata and packed into a ZIP file together
-  - ZIP have to contain at least 2 entries
+## Scan artifact uploading requirements
+- The scan result file has to be accompanied by `scan.info` metadata and packed into a ZIP file together
+  - the ZIP has to contain at least 2 entries
     1. /scan.info
     2. /raw.scan - name and location depends on parser implementation and how it retrieves entry from `com.fortify.plugin.api.ScanData` (e.g. `scanData.getInputStream(x -> x.endsWith(".json"))` retrieves file ending with `.json` extension)
 - Optionally, 3rd party scan can be uploaded as a raw scan (not packed in ZIP with `scan.info`) but only through SSC REST API where call to REST API has to provide engine type as parameter of a call. Example:
@@ -408,18 +411,16 @@ The sample plugin library can be also used as a generator for scans, which can b
 - Developer can follow an `ssc.log` and `plugin-framework.log` to monitor what is happening in SSC and plugin container.
   - `ssc.log` is by default located in application server log directory or can be configured by `ssc.log.path` VM system property
   - plugin container log is by default stored in `<user.home>/.fortify/plugin-framework/log` location and can be configured in `org.ops4j.pax.logging.cfg` (`WEB-INF/plugin-framework/etc`)
-- SSC update its plugin registration if plugin version is incremented in `plugin.xml/plugin/plugin-info/version`
-  - version could be incremented by build for seamless development
 
 ## FAQ
 1) What is scan?
-   - Scan means a file of analyser specific format that contains analysis results and can be parsed by scan parser plugin.
+   - Scan means a file of analyser-specific format that contains analysis results and can be parsed by scan parser plugin.
 2) What is vulnerability ID and what are the basic rules that plugin must follow to provide it?
    - SSC uses vulnerability ID quite intensively to track vulnerabilities status. For example, the ID is used to check if some vulnerability was **fixed** (if it is not presented in teh latest scan), **reintroduced** (previous scan did not contain some vulnerability, but the latest scan does), **updated** (both the latest and the previous to the latest scan contain some vulnerability) or **new** if vulnerability was found first time.
-   - ID must be unique among vulnerability IDs in some specific scan. Scan file will be considered as incorrect and will not be processed if plugin provides more than 1 different vulnerabilities which IDs are the same
+   - ID must be unique among vulnerability IDs in some specific scan. Scan file will be considered as incorrect and will not be processed if plugin provides multiple vulnerabilities with the same ID.
    - If the same vulnerability exists in different scans, ID of this vulnerability must be the same in different scans. If IDs are not consistent for the same issues in different scans, vulnerability status will not be calculated correctly and SSC users will not be able to see how many new issues are produced or old issues are fixed after processing of the latest scan
    - Some security analysers already produce IDs that can be passed to SSC by plugin without doing any additional processing
-   - If analysers do not provide vulnerability identifiers in scan result files, parser plugin is responsible for generating this ID using some other set vulnerability attributes if they are unique for issues in one scan and the same for the same issues in different scans
+   - If analysers do not provide vulnerability identifiers in scan result files, parser plugin is responsible for generating this ID using some other set vulnerability attributes if they are unique for issues in one scan and the same for the same issues in different scans.
 3) How to release new version of the plugin if no changes have been done in custom vulnerability attributes definitions?
    - Make any necessary changes in plugin code
    - Increase __plugin version__ in plugin.xml descriptor
@@ -429,10 +430,17 @@ The sample plugin library can be also used as a generator for scans, which can b
    - Enum class that implements `com.fortify.plugin.spi.VulnerabilityAttribute` interface and contains custom attributes definitions must be updated if any changes in custom attributes definitions are required.
      New attributes must be added there or existed attributes definitions must be modified
    - If any changes in vulnerability template are required to modify the way how vulnerabilities are represented in SSC UI, file which location is defined by issue-parser -> view-template section must be edited
-   - If it is necessary, plugin localization files which locations are defined plugin-info -> resources -> localization sections must be modified
+   - If it is necessary, plugin localization files whose locations are defined plugin-info -> resources -> localization sections must be modified
    - Increase __plugin version__ in plugin.xml descriptor
    - Increase __data version__ in plugin.xml descriptor. It will be indicator for SSC that new version of the plugin provides data in new format
    - Plugin can be built and distributed to the users
 5) There is no parser to process a scan
-  - engine type provided with scan is different to engine type provided by parser plugin or no plugin of specified engine type is registered with SSC
+  - engine type provided with scan is different from the engine type provided by parser plugin or there is no installed/enabled plugin of specified engine type in SSC
   - parser plugin registration failed - check plugin container logs and SSC logs for any errors
+6) Will my plugin developed for SSC/PluginFramework 17.10 work automatically with SSC/PluginFramework 17.20 ?
+  - There is a high probability that your plugin will also be compatible with 17.20 - however, due to significant improvements and validations added in SSC 17.20, you must be prepared to test your plugin with SSC/PluginFramework 17.20 and update your plugin to be compatible if needed. 
+
+TODOS:
+- make additional improvements to structure.
+- remove extraneous configuration details that can cause confusion for future debugging such as customization of plugin folders/log paths. 
+- 
