@@ -24,7 +24,7 @@ Plugin API version | Compatible SSC version(s)
 - Plugin manifest is an xml file whose name has to be "plugin.xml". Plugins that do not contain this file in the root of plugin jar file cannot be installed in SSC
 - Plugin.xml schema is provided by plugin-api/schema/pluginmanifest-1.0.xsd schema file
 - Description of the attributes that can be defined in the plugin.xml:
-  - __Plugin id (id):__ unique plugin identifier defined by plugin developers. It can be any string that identifies plugin - but it is recommended that it be the same value as the fully qualified name of the plugin implementation class.  
+  - __Plugin id (id):__ unique plugin identifier defined by plugin developers. It can be any unique string that identifies plugin - but it is recommended that it be the same value as the fully qualified name of the plugin implementation class.  
     Mandatory. Max length: 80 chars.
 
     Example of plugin ID definition:
@@ -41,17 +41,20 @@ Plugin API version | Compatible SSC version(s)
   - __Plugin info (plugin-info):__ section contains generic attributes valid for all types of the plugins supported by SSC.
     - __Plugin name (name):__ meaningful name of the plugins that will be displayed in SSC UI and help users to identify the plugin.
       Mandatory. Max length: 40 chars. Allowed symbols: letters, space, hyphen, dot.
+      
       Example of plugin name definition:
       ```
       <name>Sample parser plugin</name>
       ```
     - __Plugin version (version):__ version of the plugin. SSC performs plugin package validation using this value when plugin is installed and forbids installation of older versions of the plugin if newer version of the same plugin is already installed in SSC.  This check helps avoid certain human errors when installing/managing plugins. 
       Mandatory. Max length: 25 chars. Format: dot separated numbers.
+      
       Example of plugin version definition:
       ```
       <version>10.5</version>
       ```
     - __Plugin data version (data-version):__ This attribute helps SSC to understand if new version of the plugin produces data in the same format as previous version of the plugin. This is very important attribute used by SSC quite intensively and plugin developers should set value of this attribute very carefully.
+    
       Value of this attribute must be changed in the new plugin version only if plugin output data format was changed and output data produced by new version of the plugin is not compatible with data produced by older version of the plugin.
       For example, parser plugin version 1.0 produces vulnerability with only 1 String attribute. Next version of this plugin (2.0) produces vulnerabilities that have 5 attributes. It means that vulnerabilities produced by these 2 versions of the plugin cannot be compared with each other and data versions of the plugins must be different.
       In addition, data version of the plugin must be changed if vulnerability view template definition was updated (see details about vulnerability view template below).
@@ -289,7 +292,7 @@ Plugin API version | Compatible SSC version(s)
         id="com.example.parser" api-version="1.0">
     <plugin-info>
         <name>Sample parser plugin</name>
-        <version><!--VERSION-->0.0<!--/VERSION--></version>
+        <version>2.0</version>
         <data-version>1</data-version>
         <vendor name="Sample vendor" url="https://sample-parser-plugin.example.com/"/>
         <description>Simple parser plugin implementation example.</description>
