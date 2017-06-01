@@ -1,6 +1,6 @@
 # Sample parser plugin 
 ## example of a plugin that can parse non-Fortify security scan results and import them into Fortify Software Security Center. 
-Plugin API version | Compatible SSC version(s)
+Plugin API version | Compatible PluginFramework/SSC version(s)
 ------------ | -------------
 1.0 | 17.10, 17.20(forward looking - release number is not guaranteed)
 1.1 | 17.20(forward looking - release number is not guaranteed)
@@ -22,8 +22,8 @@ Plugin API version | Compatible SSC version(s)
 
 ## Plugin manifest file description
 - Plugin manifest is an xml file whose name has to be "plugin.xml". Plugins that do not contain this file in the root of plugin jar file cannot be installed in SSC
-- Plugin.xml schema is provided by plugin-api/schema/pluginmanifest-1.0.xsd schema file
-- Description of the attributes that can be defined in the plugin.xml:
+- Plugin.xml schema is provided by `plugin-api/schema/pluginmanifest-1.0.xsd` schema file
+- Description of the attributes that can be defined in the plugin.xml: (The constraints listed for the various fields are meant to give a general idea of acceptable values and are not exhaustive. For the authoritative reference, consult the `pluginmanifest-*.xsd` from the release that your plugin needs to be compatible with.). 
   - __Plugin id (id):__ unique plugin identifier defined by plugin developers. It can be any unique string that identifies plugin - but it is recommended that it be the same value as the fully qualified name of the plugin implementation class.    
     Mandatory. Max length: 80 chars.
 
@@ -443,6 +443,7 @@ The sample plugin library can be also used as a generator for scans, which can b
   - There is a high probability that your plugin will also be compatible with 17.20 - however, due to significant improvements and validations added in SSC 17.20, you must be prepared to test your plugin with SSC/PluginFramework 17.20 and update your plugin to be compatible if needed. 
 
 TODOS:
+  - Update the plugin metadata section after the pluginmetadata specification is finalized. (also update the plugin manifest in plugin-api_1.0 to help developers avoid validations failure with SSC_17.20/plugin-api_1.1) 
   - make additional improvements to structure.
   - remove extraneous configuration details that can cause confusion for future debugging such as customization of plugin folders/log paths. 
 
