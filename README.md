@@ -337,7 +337,7 @@ Plugin API version | Compatible PluginFramework/SSC version(s)
 ## Installation to SSC (for SSC 17.10)
 - SSC version 17.10 only supports a basic form of installation by dropping a plugin jar into a specific folder. This way to install plugins is deprecated in SSC 17.20 in favor of plugin installation through SSC administration UI.
 - SSC 17.10 also models plugin state as simply binary - either "installed and enabled" OR "not present/uninstalled". 
-- In 17.10, each installed plugin must have a unique pluginId.  Installing a newer plugin with the same pluginId and higher pluginVersion will result in the older plugin metadata being overwritten with the new plugin. 
+- In 17.10, each installed plugin must have a unique pluginId. Installing a newer plugin with the same pluginId and higher pluginVersion will result in the older plugin metadata being overwritten with the new plugin. 
 - By default the file-drop location for plugin installation is in `<plugin-working-directory>/plugin-framework/plugins`
 - Before plugin is enabled, it is first transformed into an OSGi bundle that can be started in SSC's plugin container
 - Once plugin is successfully transformed and installed, it can be started (enabled) in the plugin container. (In 17.10, the plugin is automatically started (enabled) without administrator interaction. In 17.20, the administrator is required to explicitly enable a plugin before it can be utilized by SSC.)
@@ -359,8 +359,8 @@ Plugin API version | Compatible PluginFramework/SSC version(s)
 
 ## Installation to SSC and enabling plugin (for SSC 17.20)
 - SSC version 17.20 supports installation of plugin through plugin management UI (Administration - Plugins - Parsers)
-- In this version, plugins are modeled in 3 primary states - "installed/disabled", "enabled", "uninstalled/not present".  (It also models some transient and failure states but we can ignore those for now.)
-- In subsequent text, we will use the terms "family of plugins" or "plugin family" to refer to a set of plugins with small code variations which may differ in pluginVersion and/or dataVersion but are based on the same implementation class (pluginId). SSC 17.20 allows multiple plugins of the same family to be installed (with some restrictions). 
+- In this version, plugins are modeled in SSC with three primary states - "installed/disabled", "enabled", "uninstalled/not present".  (It also models some transient and failure states but we can ignore those for now.)
+- In subsequent text, we will use the terms "family of plugins" or "plugin family" to refer to a set of plugins with small code variations which may differ in pluginVersion and/or dataVersion but are identified by the same pluginId. SSC 17.20 allows multiple plugins of the same family to be installed (with some restrictions). 
   `Add` button should be used to install new plugin in SSC
 - All installed plugins are disabled after installation. Disabled means that plugin is defined in SSC but cannot do any work and accept any requests from SSC
 - To enable plugin click on plugin row in the plugins list and click `Enable` button
@@ -370,8 +370,10 @@ Plugin API version | Compatible PluginFramework/SSC version(s)
       - A plugin of lower version is not allowed if a plugin from the same family and higher version is already installed in SSC. Since plugins are developed by 3rd party developers, SSC does know any details about the logic implemented in plugins.
         In this case SSC assumes that higher versions of some plugin can produce data that will not be compatible with lower version of the plugins that can make SSC system unstable.
         If lower version of a plugin must be installed (for example to rollback from a buggy higher version), remove the higher version of this plugin and then install the lower version.
-      - Only one plugin of a plugin family (ie. sharing the same pluginId and name) can be enabled at a given time. 
       - Plugin of lower __data version__ cannot be installed in SSC.
+      - To maintain consistency of visual information in the administration UI with the underlying pluginIds, SSC enforces that plugins in  the same family must have the same name and any other identifying attribute such as engineType. 
+      - Only one plugin of a plugin family (ie. sharing the same pluginId and name) can be enabled at a given time. 
+      
 
 ## Disabling/Uninstallation from SSC (for SSC 17.20)
 - A plugin previous installed in SSC can be removed if it is in the "disabled" state. 
