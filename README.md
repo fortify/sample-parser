@@ -334,9 +334,6 @@ Plugin API version | Compatible SSC version(s)
 - Plugin installation directory is given by VM system property `fortify.home` and plugin directory configuration property `plugin.dir` in `com.fortify.plugin.framework.properties` (`WEB-INF/plugin-framework/etc`)
  - By default the location of plugin working directory is `<user.home>/.fortify/plugin-framework/`
  
-- The plugin bundles folder located inside plugin working directory is used by SSC to keep temporary OSGI plugin bundles transformed from installed plugins. By default this location is `<user.home>/.fortify/plugin-framework/plugin-bundles`
- - The location can be modified by setting `fortify.home` VM system property and `plugin.bundles.dir` property in `com.fortify.plugin.framework.properties` (`WEB-INF/plugin-framework/etc`)
-
 ## Installation to SSC (for SSC 17.10)
 - SSC version 17.10 only supports a basic form of installation by dropping a plugin jar into a specific folder. This way to install plugins is deprecated in SSC 17.20 in favor of plugin installation through SSC administration UI.
 - SSC 17.10 also models plugin state as simply binary - either "installed and enabled" OR "not present/uninstalled". 
