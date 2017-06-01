@@ -333,12 +333,12 @@ Plugin API version | Compatible SSC version(s)
 ## Setting up plugin working directory location
 - Plugin installation directory is given by VM system property `fortify.home` and plugin directory configuration property `plugin.dir` in `com.fortify.plugin.framework.properties` (`WEB-INF/plugin-framework/etc`)
  - By default the location of plugin working directory is `<user.home>/.fortify/plugin-framework/`
-- Plugin bundles folder located inside plugin working directory is used by SSC to keep temporary OSGI plugin bundles transformed from installed plugins
- - Transformed bundles are by default stored in `<user.home>/.fortify/plugin-framework/plugin-bundles`
- - Location can be modified by setting `fortify.home` VM system property and `plugin.bundles.dir` property in `com.fortify.plugin.framework.properties` (`WEB-INF/plugin-framework/etc`)
+ 
+- The plugin bundles folder located inside plugin working directory is used by SSC to keep temporary OSGI plugin bundles transformed from installed plugins. By default this location is `<user.home>/.fortify/plugin-framework/plugin-bundles`
+ - The location can be modified by setting `fortify.home` VM system property and `plugin.bundles.dir` property in `com.fortify.plugin.framework.properties` (`WEB-INF/plugin-framework/etc`)
 
 ## Installation to SSC (for SSC 17.10)
-- SSC version 17.10 supports only basic installation of plugin through filesystem. This way to install plugins is deprecated in SSC 17.20 in favor plugin installation through management UI.
+- SSC version 17.10 supports only basic installation of plugin through filesystem. This way to install plugins is deprecated in SSC 17.20 in favor of plugin installation through management UI.
 - By default the location for plugin installation is in `<plugin-working-directory>/plugin-framework/plugins`
 - SSC makes an attempt to automatically enable plugins after installation (make them fully available to SSC)
 - Before plugin is enabled, it is first transformed to OSGi bundle that can be started in SSC's plugin container
