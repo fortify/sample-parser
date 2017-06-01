@@ -24,12 +24,12 @@ Plugin API version | Compatible PluginFramework/SSC version(s)
 - Plugin manifest is an xml file whose name has to be "plugin.xml". Plugins that do not contain this file in the root of plugin jar file cannot be installed in SSC
 - Plugin.xml schema is provided by `plugin-api/schema/pluginmanifest-1.0.xsd` schema file
 - Description of the attributes that can be defined in the plugin.xml: (The constraints listed for the various fields are meant to give a general idea of acceptable values and are not exhaustive. For the authoritative reference, consult the `pluginmanifest-*.xsd` from the release that your plugin needs to be compatible with.). 
-  - __Plugin id (id):__ unique plugin identifier defined by plugin developers. It can be any unique string that identifies plugin - but it is recommended that it be the same value as the fully qualified name of the plugin implementation class.    
+  - __Plugin id (id):__ unique plugin identifier defined by the plugin developer. It must satisfy a few properties - Uniqueness, Stability over time,  Compactness, and Readability (for logging/debugging purposes). We recommend that it be constructed in the following way: `(your domain name in reverse) + separator + (meaningful name such as build artifactID)`. Do not include any version information - that is specified separately below. 
     Mandatory. Max length: 80 chars.
 
     Example of plugin ID definition:
     ```
-    id="com.example.parser"
+    id="com.example.parser:sampleparser"
     ```
   - __Plugin API version (api-version):__ plugin API version that was used to develop the plugin. Plugin framework uses this value to check if the deployed plugin is compatible with the current version of the framework itself. If api version defined in plugin manifest is not supported by plugin framework, plugin installation will be rejected.
     Mandatory. Max length is 8 chars. Format: dot separated numbers.
