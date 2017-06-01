@@ -413,20 +413,23 @@ The sample plugin library can be also used as a generator for scans, which can b
   - plugin container log is by default stored in `<user.home>/.fortify/plugin-framework/log` location and can be configured in `org.ops4j.pax.logging.cfg` (`WEB-INF/plugin-framework/etc`)
 
 ## FAQ
-1) What is scan?
-   - Scan means a file of analyser-specific format that contains analysis results and can be parsed by scan parser plugin.
+1) What is a scan?
+   - Scan means a file of analyser-specific format that contains analysis results and can be parsed by a scan parser plugin.
+  
 2) What is vulnerability ID and what are the basic rules that plugin must follow to provide it?
    - SSC uses vulnerability ID quite intensively to track vulnerabilities status. For example, the ID is used to check if some vulnerability was **fixed** (if it is not presented in teh latest scan), **reintroduced** (previous scan did not contain some vulnerability, but the latest scan does), **updated** (both the latest and the previous to the latest scan contain some vulnerability) or **new** if vulnerability was found first time.
    - ID must be unique among vulnerability IDs in some specific scan. Scan file will be considered as incorrect and will not be processed if plugin provides multiple vulnerabilities with the same ID.
    - If the same vulnerability exists in different scans, ID of this vulnerability must be the same in different scans. If IDs are not consistent for the same issues in different scans, vulnerability status will not be calculated correctly and SSC users will not be able to see how many new issues are produced or old issues are fixed after processing of the latest scan
    - Some security analysers already produce IDs that can be passed to SSC by plugin without doing any additional processing
    - If analysers do not provide vulnerability identifiers in scan result files, parser plugin is responsible for generating this ID using some other set vulnerability attributes if they are unique for issues in one scan and the same for the same issues in different scans.
-3) How to release new version of the plugin if no changes have been done in custom vulnerability attributes definitions?
+   
+3 A) How to release new version of the plugin *if no changes have been done in custom vulnerability attributes definitions*?
    - Make any necessary changes in plugin code
    - Increase __plugin version__ in plugin.xml descriptor
    - Since plugin's output format __was not changed__ and new version of the plugins produces custom attributes in exactly the same way as in previous version of the plugin, __data version__ of the plugin __must not be changed__
    - Plugin can be built and distributed to the users
-4) How to release new version of the plugin if some changes have to be done in custom vulnerability attributes definitions or vulnerability view template? (e.g. changes in number, names or types of the attributes).
+   
+3 B) How to release new version of the plugin *if some changes have to be done in custom vulnerability attributes definitions or vulnerability view template*? (e.g. changes in number, names or types of the attributes).
    - Enum class that implements `com.fortify.plugin.spi.VulnerabilityAttribute` interface and contains custom attributes definitions must be updated if any changes in custom attributes definitions are required.
      New attributes must be added there or existed attributes definitions must be modified
    - If any changes in vulnerability template are required to modify the way how vulnerabilities are represented in SSC UI, file which location is defined by issue-parser -> view-template section must be edited
@@ -434,13 +437,15 @@ The sample plugin library can be also used as a generator for scans, which can b
    - Increase __plugin version__ in plugin.xml descriptor
    - Increase __data version__ in plugin.xml descriptor. It will be indicator for SSC that new version of the plugin provides data in new format
    - Plugin can be built and distributed to the users
-5) There is no parser to process a scan
+   
+4) There is no parser to process a scan
   - engine type provided with scan is different from the engine type provided by parser plugin or there is no installed/enabled plugin of specified engine type in SSC
   - parser plugin registration failed - check plugin container logs and SSC logs for any errors
-6) Will my plugin developed for SSC/PluginFramework 17.10 work automatically with SSC/PluginFramework 17.20 ?
+  
+5) Will my plugin developed for SSC/PluginFramework 17.10 work automatically with SSC/PluginFramework 17.20 ?
   - There is a high probability that your plugin will also be compatible with 17.20 - however, due to significant improvements and validations added in SSC 17.20, you must be prepared to test your plugin with SSC/PluginFramework 17.20 and update your plugin to be compatible if needed. 
 
 TODOS:
-- make additional improvements to structure.
-- remove extraneous configuration details that can cause confusion for future debugging such as customization of plugin folders/log paths. 
-- 
+  - make additional improvements to structure.
+  - remove extraneous configuration details that can cause confusion for future debugging such as customization of plugin folders/log paths. 
+
