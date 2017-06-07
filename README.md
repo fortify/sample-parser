@@ -20,6 +20,14 @@ Plugin API version | Compatible PluginFramework/SSC version(s)
  - Plugin has to declare SPI implementation in `META-INF/services`; for parser plugin implementation it would be a `com.fortify.plugin.spi.ParserPlugin` file containing declaration of class which implements `com.fortify.plugin.spi.ParserPlugin`
 - Plugin JAR has to contain plugin.xml manifest in root of JAR. See the description of the plugin manifest attributes below
 
+## Plugin Metadata Specification 
+The plugin metadata specification defines the acceptable plugin metadata in a plugin jar. (**TBD: Add the link to the plugin metadata specification 17.20**).  The plugin metadata specification is enforced by the plugin framework when new plugins are installed. The enforcement of the specification is an implementation detail of the plugin framework and can differ for different plugin types - however, currently for parser plugins, it is mainly enforced using a plugin manifest XML file (see below) but can also include additional validations implemented in code.  
+```
+Since the plugin metadata specification is more fully specified in the 17.20 release, it is strongly 
+recommended that plugin developers targeting the 17.10 release also adhere to the 17.20 plugin metadata 
+specification to minimize incompatibility when migrating to 17.20. 
+```
+
 ## Plugin manifest file description
 - Plugin manifest is an xml file whose name has to be "plugin.xml". Plugins that do not contain this file in the root of plugin jar file cannot be installed in SSC
 - Plugin.xml schema is provided by `plugin-api/schema/pluginmanifest-1.0.xsd` schema file
