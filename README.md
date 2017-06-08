@@ -97,7 +97,7 @@ specification to minimize incompatibility when migrating to 17.20.
           There is a special language code "default". Language of this type will be used if SSC client requested language which localization is not included in the plugin package.
           If SSC client requests localization for a language not defined in plugin manifest and there is no default language defined, English language localization will be used as a default.
           Location attribute of the language section must contain full path to localization file inside plugin package.
-          Localization file must be valid key value property file.
+          Localization file must be valid key value property file. Only UTF-8 encoding of the localization files is supported.
 
           Example of plugin localization definition
           ```
@@ -107,7 +107,6 @@ specification to minimize incompatibility when migrating to 17.20.
                 <language id="ru" location="/resources/sample_ru.properties"/>
             </localization>
           ```
-
           Example of plugin localization file
           ```
             artifact=Artifact name
