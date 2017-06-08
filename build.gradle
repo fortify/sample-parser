@@ -16,8 +16,7 @@ if (!project.hasProperty('release')) {
     // Gradle has been run without option -Prelease - auto increment plugin version
     def time = System.currentTimeMillis().intdiv(1000)
     def hours = time.intdiv(3600)
-    def secs = time % 3600
-    version = String.format('%s.%d.%04d', version, hours, secs)
+    version = String.format('%s.%d', version, hours)
 }
 
 repositories {
