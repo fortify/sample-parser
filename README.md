@@ -30,7 +30,7 @@ specification to minimize incompatibility when migrating to 17.20.
 
 ## Plugin manifest file description
 - Plugin manifest is an xml file whose name has to be "plugin.xml". Plugins that do not contain this file in the root of plugin jar file cannot be installed in SSC
-- Plugin.xml schema is provided by `plugin-api/schema/pluginmanifest-1.1.xsd` schema file
+- Plugin.xml schema is provided by `plugin-api/schema/pluginmanifest-1.0.xsd` schema file
 - Description of the attributes that can be defined in the plugin.xml: (The constraints listed for the various fields are meant to give a general idea of acceptable values and are not exhaustive. For the authoritative reference, consult the `pluginmanifest-*.xsd` from the release that your plugin needs to be compatible with.). 
   - __Plugin id (id):__ unique plugin identifier defined by the plugin developer. It must satisfy a few properties - Uniqueness, Stability over time,  Compactness, and Readability (for logging/debugging purposes). We recommend that it be constructed in the following way: `(your domain name in reverse) + separator + (meaningful name such as build artifactID)`. Do not include any version information - that is specified separately below. 
     Mandatory. Max length: 80 chars.
@@ -294,7 +294,7 @@ specification to minimize incompatibility when migrating to 17.20.
 
 ```xml
 <?xml version="1.0" encoding="utf-8" ?>
-<plugin xmlns="xmlns://www.fortifysoftware.com/schema/pluginmanifest-1.1.xsd"
+<plugin xmlns="xmlns://www.fortifysoftware.com/schema/pluginmanifest-1.0.xsd"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="PluginDescriptor"
         id="com.example.parser" api-version="1.0">
     <plugin-info>
