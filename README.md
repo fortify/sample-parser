@@ -294,7 +294,7 @@ specification to minimize incompatibility when migrating to 17.20.
 
 ```xml
 <?xml version="1.0" encoding="utf-8" ?>
-<plugin xmlns="xmlns://www.fortifysoftware.com/schema/pluginmanifest-1.0.xsd"
+<plugin xmlns="xmlns://www.fortify.com/schema/pluginmanifest-1.0.xsd"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="PluginDescriptor"
         id="com.example.parser" api-version="1.0">
     <plugin-info>
