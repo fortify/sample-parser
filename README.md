@@ -1,5 +1,5 @@
 # Sample parser plugin 
-## example of a plugin that can parse non-Fortify security scan results and import them into Fortify Software Security Center. 
+## Example of a plugin that can parse non-Fortify security scan results and import them into Fortify Software Security Center. 
 Plugin API version | Compatible PluginFramework/SSC version(s)
 ------------ | -------------
 1.0 | 17.10, 17.20(forward looking - release number is not guaranteed)
