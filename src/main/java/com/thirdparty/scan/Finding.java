@@ -26,11 +26,10 @@ public class Finding {
     // custom attributes
     private String criticality;
     private String categoryId;
-    private String buildServer;
     private String artifact;
     private String description;
     private String comment;
-    private BigDecimal buildNumber;
+    private String buildNumber;
     private String status;
     private Date lastChangeDate;
     private Date artifactBuildDate;
@@ -96,14 +95,6 @@ public class Finding {
 
     public void setCategoryId(final String categoryId) { this.categoryId = categoryId; }
 
-    public String getBuildServer() {
-        return buildServer;
-    }
-
-    public void setBuildServer(final String buildServer) {
-        this.buildServer = buildServer;
-    }
-
     public String getArtifact() {
         return artifact;
     }
@@ -120,11 +111,11 @@ public class Finding {
 
     public void setComment(final String comment) { this.comment = comment; }
 
-    public BigDecimal getBuildNumber() {
+    public String getBuildNumber() {
         return buildNumber;
     }
 
-    public void setBuildNumber(final BigDecimal buildNumber) {
+    public void setBuildNumber(final String buildNumber) {
         this.buildNumber = buildNumber;
     }
 

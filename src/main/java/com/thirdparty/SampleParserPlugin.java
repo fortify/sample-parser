@@ -21,15 +21,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 import static com.fasterxml.jackson.core.JsonToken.START_OBJECT;
-import static com.thirdparty.SampleParserVulnerabilityAttribute.ARTIFACT;
-import static com.thirdparty.SampleParserVulnerabilityAttribute.ARTIFACT_BUILD_DATE;
-import static com.thirdparty.SampleParserVulnerabilityAttribute.BUILD_NUMBER;
-import static com.thirdparty.SampleParserVulnerabilityAttribute.BUILD_SERVER;
-import static com.thirdparty.SampleParserVulnerabilityAttribute.LAST_CHANGE_DATE;
-import static com.thirdparty.SampleParserVulnerabilityAttribute.CATEGORY_ID;
-import static com.thirdparty.SampleParserVulnerabilityAttribute.DESCRIPTION;
-import static com.thirdparty.SampleParserVulnerabilityAttribute.COMMENT;
-import static com.thirdparty.SampleParserVulnerabilityAttribute.STATUS;
+import static com.thirdparty.SampleParserVulnerabilityAttribute.*;
 import static java.math.BigDecimal.ROUND_HALF_UP;
 
 /**
@@ -83,7 +75,7 @@ public class SampleParserPlugin implements ParserPlugin<SampleParserVulnerabilit
                 case "elapsed":
                     scanBuilder.setElapsedTime(jsonParser.getIntValue());
                     break;
-                case "hostName":
+                case "buildServer":
                     scanBuilder.setHostName(jsonParser.getText());
                     break;
                 default:
@@ -131,9 +123,6 @@ public class SampleParserPlugin implements ParserPlugin<SampleParserVulnerabilit
 
                 // standard attributes
 
-                case "uniqueId":
-                    f.setUniqueId(jsonParser.getText());
-                    break;
                 case "category":
                     f.setCategory(jsonParser.getText());
                     break;
@@ -155,33 +144,30 @@ public class SampleParserPlugin implements ParserPlugin<SampleParserVulnerabilit
 
                 // custom attributes
 
+                case "uniqueId":
+                    f.setUniqueId(jsonParser.getText());
+                    break;
                 case "categoryId":
                     f.setCategoryId(jsonParser.getText());
                     break;
                 case "criticality":
                     f.setCriticality(jsonParser.getText());
                     break;
-                case "buildServer":
-                    f.setBuildServer(jsonParser.getText());
-                    break;
                 case "artifact":
                     f.setArtifact(jsonParser.getText());
                     break;
-
                 case "description":
-                    f.setDescription(new String(jsonParser.getBinaryValue(), StandardCharsets.US_ASCII));
+                    f.setDescription(jsonParser.getText());
                     break;
                 case "comment":
-                    f.setComment(new String(jsonParser.getBinaryValue(), StandardCharsets.US_ASCII));
+                    f.setComment(jsonParser.getText());
                     break;
-
                 case "buildNumber":
-                    f.setBuildNumber(jsonParser.getDecimalValue().setScale(VulnerabilityAttribute.MAX_DECIMAL_SCALE, ROUND_HALF_UP));
+                    f.setBuildNumber(jsonParser.getText());
                     break;
                 case "status":
                     f.setStatus(jsonParser.getText());
                     break;
-
                 case "lastChangeDate":
                     f.setLastChangeDate(DATE_DESERIALIZER.convert(jsonParser.getText()));
                     break;
@@ -205,15 +191,16 @@ public class SampleParserPlugin implements ParserPlugin<SampleParserVulnerabilit
         v.setLineNumber(f.getLineNumber());
         v.setConfidence(f.getConfidence());
         v.setImpact(f.getImpact());
-        if (f.getCriticality() != null) {
-            v.setPriority((BasicVulnerabilityBuilder.Priority.valueOf(f.getCriticality())));
-        }
+
         // set string custom attributes
+        if (f.getUniqueId() != null) {
+            v.setStringCustomAttributeValue(UNIQUE_ID, f.getUniqueId());
+        }
         if (f.getCategoryId() != null) {
             v.setStringCustomAttributeValue(CATEGORY_ID, f.getCategoryId());
         }
-        if (f.getBuildServer() != null) {
-            v.setStringCustomAttributeValue(BUILD_SERVER, f.getBuildServer());
+        if (f.getCriticality() != null) {
+            v.setStringCustomAttributeValue(CRITICALITY, f.getCriticality());
         }
         if (f.getArtifact() != null) {
             v.setStringCustomAttributeValue(ARTIFACT, f.getArtifact());
@@ -228,9 +215,8 @@ public class SampleParserPlugin implements ParserPlugin<SampleParserVulnerabilit
         if (f.getComment() != null) {
             v.setStringCustomAttributeValue(COMMENT, f.getComment());
         }
-        // set big decimal custom attributes
         if (f.getBuildNumber() != null) {
-            v.setDecimalCustomAttributeValue(BUILD_NUMBER, f.getBuildNumber());
+            v.setStringCustomAttributeValue(BUILD_NUMBER, f.getBuildNumber());
         }
         // set date custom attributes
         if (f.getLastChangeDate() != null) {
