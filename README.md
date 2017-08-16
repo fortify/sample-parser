@@ -1,13 +1,9 @@
 # Sample parser plugin 
 ## Example of a plugin that can parse non-Fortify security scan results and import them into Fortify Software Security Center. 
-Plugin API version | Compatible PluginFramework/SSC version(s)
------------- | -------------
-1.0 | 17.10, 17.20(forward looking - release number is not guaranteed)
-1.1 | 17.20(forward looking - release number is not guaranteed)
 
 ## Java plugin API
-- All types of plugins are developed against plugin-api (current version is plugin-api-1.0.jar)
-- Plugin API version 1.0 supports only Parser Plugin (`com.fortify.plugin.spi.ParserPlugin`) type of plugin. Bugtracker plugins support implementation is in progress for post-17.10 release. 
+- All types of plugins are developed against plugin-api (current version is plugin-api-1.0.1.jar)
+- Plugin API version 1.0 supports only Parser Plugin (`com.fortify.plugin.spi.ParserPlugin`) type of plugin. 
 - The SPI a plugin can implement is in package `com.fortify.plugin.spi` of plugin-api library
 - The API a plugin can use is in `com.fortify.plugin.api` of plugin-api library
 - Sample parser plugin implements `com.fortify.plugin.spi.ParserPlugin`
@@ -16,30 +12,24 @@ Plugin API version | Compatible PluginFramework/SSC version(s)
 - Plugin has to be a single Java library (JAR)
 - All plugin dependencies have to be extracted and packed inside Plugin JAR as individual classes. Including other JARs inside plugin JAR file is not supported
 - Plugin has to implement one and only one of service provider interfaces in plugin-api/com.fortify.plugin.spi
- - Plugin API v1.0 supports only ParserPlugin
- - Plugin has to declare SPI implementation in `META-INF/services`; for parser plugin implementation it would be a `com.fortify.plugin.spi.ParserPlugin` file containing declaration of class which implements `com.fortify.plugin.spi.ParserPlugin`
+  - Plugin has to declare SPI implementation in `META-INF/services` for parser plugin implementation it would be a `com.fortify.plugin.spi.ParserPlugin` file containing declaration of class which implements `com.fortify.plugin.spi.ParserPlugin` interface
 - Plugin JAR has to contain plugin.xml manifest in root of JAR. See the description of the plugin manifest attributes below
 
 ## Plugin Metadata Specification 
-The plugin metadata specification defines the acceptable plugin metadata in a plugin jar. (**TBD: Add the link to the plugin metadata specification 17.20**).  The plugin metadata specification is enforced by the plugin framework when new plugins are installed. The enforcement of the specification is an implementation detail of the plugin framework and can differ for different plugin types - however, currently for parser plugins, it is mainly enforced using a plugin manifest XML file (see below) but can also include additional validations implemented in code.  
-```
-Since the plugin metadata specification is more fully specified in the 17.20 release, it is strongly 
-recommended that plugin developers targeting the 17.10 release also adhere to the 17.20 plugin metadata 
-specification to minimize incompatibility when migrating to 17.20. 
-```
+The [plugin metadata specification](https://github.com/FortifySaTPublish/plugin-api/blob/master/src/main/resources/schema/pluginmanifest-1.0.xsd "Plugin manifest XSD") defines the acceptable plugin metadata in a plugin jar. The plugin metadata specification is enforced by the plugin framework when new plugins are installed. The enforcement of the specification is an implementation detail of the plugin framework and can differ for different plugin types - however, currently for parser plugins, it is mainly enforced using a plugin manifest XML file (see below) but can also include additional validations implemented in code.  
 
 ## Plugin manifest file description
 - Plugin manifest is an xml file whose name has to be "plugin.xml". Plugins that do not contain this file in the root of plugin jar file cannot be installed in SSC
-- Plugin.xml schema is provided by `plugin-api/schema/pluginmanifest-1.0.xsd` schema file
-- Description of the attributes that can be defined in the plugin.xml: (The constraints listed for the various fields are meant to give a general idea of acceptable values and are not exhaustive. For the authoritative reference, consult the `pluginmanifest-*.xsd` from the release that your plugin needs to be compatible with.). 
+- plugin.xml schema is provided by [plugin manifest XSD](https://github.com/FortifySaTPublish/plugin-api/blob/master/src/main/resources/schema "Plugin manifest XSD")
+- Description of the attributes that can be defined in the plugin.xml: (The constraints listed for the various fields are meant to give a general idea of acceptable values and are not exhaustive. For the authoritative reference, consult the `pluginmanifest XSD` from the release that your plugin needs to be compatible with.) 
   - __Plugin id (id):__ unique plugin identifier defined by the plugin developer. It must satisfy a few properties - Uniqueness, Stability over time,  Compactness, and Readability (for logging/debugging purposes). We recommend that it be constructed in the following way: `(your domain name in reverse) + separator + (meaningful name such as build artifactID)`. Do not include any version information - that is specified separately below. 
     Mandatory. Max length: 80 chars.
 
     Example of plugin ID definition:
     ```
-    id="com.example.parser:sampleparser"
+    id="com.example.parser.SampleParser"
     ```
-  - __Plugin API version (api-version):__ plugin API version that was used to develop the plugin. Plugin framework uses this value to check if the deployed plugin is compatible with the current version of the framework itself. If api version defined in plugin manifest is not supported by plugin framework, plugin installation will be rejected.
+  - __Plugin API version (api-version):__ plugin API version that was used to develop the plugin. Plugin framework uses this value to check if the deployed plugin is compatible with plugin API supported in current plugin framework. If api version defined in plugin manifest is not supported by plugin framework, plugin installation will be rejected.
     Mandatory. Max length is 8 chars. Format: dot separated numbers.
 
     Example of plugin API version definition:
@@ -54,7 +44,7 @@ specification to minimize incompatibility when migrating to 17.20.
       ```
       <name>Sample parser plugin</name>
       ```
-    - __Plugin version (version):__ version of the plugin. SSC performs plugin package validation using this value when plugin is installed and forbids installation of older versions of the plugin if newer version of the same plugin is already installed in SSC.  This check helps avoid certain human errors when installing/managing plugins. 
+    - __Plugin version (version):__ version of the plugin. SSC performs plugin package validation using this value when plugin is installed and forbids installation of older versions of the plugin if newer version of the same plugin is already installed in SSC. This check helps avoid certain human errors when installing/managing plugins. 
       Mandatory. Max length: 25 chars. Format: dot separated numbers.
       
       Example of plugin version definition:
@@ -76,7 +66,7 @@ specification to minimize incompatibility when migrating to 17.20.
       ```
     - __Plugin vendor (vendor):__ basic information about company or individual that developed a plugin.
         - __Plugin vendor name (vendor : name):__ Name of the company or person that developed the plugin. Optional. Max length: 80 chars.
-        - __Plugin vendor URL (vendor : url):__ Address of the WEB-site of the plugin developer company or person. Optional. Max length: 100 chars.
+        - __Plugin vendor URL (vendor : url):__ Address of the website of the plugin developer company or person. Optional. Max length: 100 chars.
 
       Example of plugin vendor definition
       ```
@@ -116,7 +106,7 @@ specification to minimize incompatibility when migrating to 17.20.
           ```
 
         - __Plugin images (resources : images):__ collection of images definitions provided by plugin. For each image definition image type (image : imageType attribute) and location (image : location attribute) must be be set.
-          Current version of the framework supports only 2 types if images: __icon__ and <icon>logo</logo>.
+          Current version of the framework supports only 2 types if images: __icon__ and __logo__.
           Location attribute must contain full path to the image file inside plugin package.
           Icons are displayed in the plugins list in SSC plugin management UI. Icon images also used to mark issues parsed by scan parser plugin to make it easier to distinguish those issues from the once parsed by native SSC parsers.
           The idea of logo image is to represent plugin developer logotype.
@@ -337,19 +327,24 @@ specification to minimize incompatibility when migrating to 17.20.
     - `gradle idea` task can be used for IntelliJ Idea IDE users to generate IDE project files
 - Sources includes Gradle wrapper that can be used to build the project. The wrapper will download Gradle distribution on first run. The build also needs access to Maven Central repository for downloading some project dependencies. Depending on your platform either `gradlew.bat` or `gradlew` scripts should be used.
 
-## Setting up plugin working directory location
-- Plugin installation directory is given by VM system property `fortify.home` and plugin directory configuration property `plugin.dir` in `com.fortify.plugin.framework.properties` (`WEB-INF/plugin-framework/etc`)
- - By default the location of plugin working directory is `<user.home>/.fortify/plugin-framework/`
+## Setting up plugin framework working directory location (SSC 17.10)
+- Plugin installation directory is given by JVM system property `fortify.home` and plugin directory configuration property `plugin.dir` in `com.fortify.plugin.framework.properties` (`WEB-INF/plugin-framework/etc`)
+- By default the location of plugin working directory is `<user.home>/.fortify/plugin-framework/`
+
+## Setting up plugin framework working directory location (SSC 17.20)
+- Plugin installation directory is given by JVM system property `fortify.plugins.home`
+- `fortify.plugins.home` is set by default to `<fortify.home>/plugin-framework/` or `<fortify.home>/<app-context>/plugin-framework/` if plugin framework runs inside Software Security Center web application
+ - By default the location of plugin directory is `<fortify.plugins.home>/plugins`
  
 ## Installation to SSC (for SSC 17.10)
-- SSC version 17.10 only supports a basic form of installation by dropping a plugin jar into a specific folder. This way to install plugins is deprecated in SSC 17.20 in favor of plugin installation through SSC administration UI.
+- SSC version 17.10 only supports a basic form of installation by dropping a plugin jar into a specific folder. SSC version 17.20 introduces plugin installation through SSC administration UI.
 - SSC 17.10 also models plugin state as simply binary - either "installed and enabled" OR "not present/uninstalled". 
 - In 17.10, each installed plugin must have a unique pluginId. Installing a newer plugin with the same pluginId and higher pluginVersion will result in the older plugin metadata being overwritten with the new plugin. 
-- By default the file-drop location for plugin installation is in `<plugin-working-directory>/plugin-framework/plugins`
+- By default the file-drop location for plugin installation is `<fortify.home>/plugin-framework/plugins`
 - Before plugin is enabled, it is first transformed into an OSGi bundle that can be started in SSC's plugin container
 - Once plugin is successfully transformed and installed, it can be started (enabled) in the plugin container. (In 17.10, the plugin is automatically started (enabled) without administrator interaction. In 17.20, the administrator is required to explicitly enable a plugin before it can be utilized by SSC.)
-- The plugin container log `<plugin-working-directory>/plugin-framework/log` should contain INFO record about plugin being successfully started, e.g.:
-`org.apache.felix.fileinstall - 3.5.4 | Started bundle: file:<user.home>/.fortify/plugin-framework/plugin-bundles/com.example.parser.jar`
+- The plugin container log `<fortify.plugins.home>/log` should contain INFO record about plugin being successfully started, e.g.:
+`org.apache.felix.fileinstall - 3.5.4 | Started bundle: file:<fortify.home>/plugin-framework/plugin-bundles/com.example.parser.jar`
 - After a plugin is installed and enabled in the plugin framework, there are several additional validation steps performed by SSC when it is notified by the plugin framework. Plugin installation as well as plugin enable actions can be blocked by SSC due to conditions such as: 
       - Plugin of lower version is not allowed if a plugin of higher version is already installed in SSC. Since plugins are developed by 3rd party developers, SSC does know any details about the logic implemented in plugins.
         In this case SSC assumes that higher versions of some plugin can produce data that will not be compatible with lower version of the plugins that can make SSC system unstable.
@@ -357,7 +352,7 @@ specification to minimize incompatibility when migrating to 17.20.
       - Do not install a plugin of lower __data version__ than the existing plugins. (SSC 17.10 may not explicitly prevent such installation but it is not a good practice and will be explicitly prevented in 17.20 validations.) 
 
 ## Uninstallation from SSC (for SSC 17.10)
-- SSC version 17.10 supports only uninstallation of plugin through filesystem. This way to uninstall plugins is deprecated in SSC 17.20 in favor plugin uninstallation through management UI.
+- SSC version 17.10 supports only uninstallation of plugin through filesystem. SSC version 17.20 enables you to uninstall plugin through management UI.
 - To uninstall plugin from SSC plugin it is necessary to
   - shutdown SSC
   - Delete plugin bundle file from `<plugin-bundles>` folder
@@ -365,14 +360,14 @@ specification to minimize incompatibility when migrating to 17.20.
   - restart SSC.
 
 ## Installation to SSC and enabling plugin (for SSC 17.20)
-- SSC version 17.20 supports installation of plugin through plugin management UI (Administration - Plugins - Parsers)
+- SSC version 17.20 supports installation of plugin through plugin management UI (Administration - Plugins)
 - In this version, plugins are modeled in SSC with three primary states - "installed/disabled", "enabled", "uninstalled/not present".  (It also models some transient and failure states but we can ignore those for now.)
 - In subsequent text, we will use the terms "family of plugins" or "plugin family" to refer to a set of plugins with small code variations which may differ in pluginVersion and/or dataVersion but are identified by the same pluginId. SSC 17.20 allows multiple plugins of the same family to be installed (with some restrictions). 
   `Add` button should be used to install new plugin in SSC
 - All installed plugins are disabled after installation. Disabled means that plugin is defined in SSC but cannot do any work and accept any requests from SSC
 - To enable plugin click on plugin row in the plugins list and click `Enable` button
-- Plugin container log `<plugin-working-directory>/plugin-framework/log` should contain INFO record about plugin being successfully installed or enabled (started), e.g.:
-`org.apache.felix.fileinstall - 3.5.4 | Started bundle: file:<user.home>/.fortify/plugin-framework/plugin-bundles/com.example.parser.jar`
+- Plugin container log `<fortify.plugins.home>/log` should contain INFO record about plugin being successfully installed or enabled (started), e.g.:
+`org.apache.felix.fileinstall - 3.5.4 | Started bundle: file:<fortify.plugins.home>/plugins/com.example.parser.jar`
 - There are several validation steps performed by SSC when plugins are being installed or enabled. Plugin installation as well as plugin enable actions can be blocked by SSC if certain conditions are met, such as:
       - A plugin of lower version is not allowed if a plugin from the same family and higher version is already installed in SSC. Since plugins are developed by 3rd party developers, SSC does know any details about the logic implemented in plugins.
         In this case SSC assumes that higher versions of some plugin can produce data that will not be compatible with lower version of the plugins that can make SSC system unstable.
@@ -403,7 +398,7 @@ specification to minimize incompatibility when migrating to 17.20.
 
 ## `scan.info` metadata contract
 - `scan.info` is a property file
-  - SSC v17.10 can retrieve 2 properties from the file: `engineType` (STRING) and `scanDate` (STRING)
+  - SSC can retrieve 2 properties from the file: `engineType` (STRING) and `scanDate` (STRING)
 - `scan.info` file has to provide at least engineType property, designating scan producer, which will match engine type registered by parser plugin (`plugin.xml/plugin/issue-parser/engine-type`)
 - `scan.info` can also provide `scanDate` property value in ISO-8601 format
   - if `scanDate` is not provided the parser plugin will be responsible to provide a meaningful scan date value for SSC operations
@@ -415,8 +410,8 @@ The sample plugin library can be also used as a generator for scans, which can b
 
 ## Debugging
 - Developer can follow an `ssc.log` and `plugin-framework.log` to monitor what is happening in SSC and plugin container.
-  - `ssc.log` is by default located in application server log directory or can be configured by `ssc.log.path` VM system property
-  - plugin container log is by default stored in `<user.home>/.fortify/plugin-framework/log` location and can be configured in `org.ops4j.pax.logging.cfg` (`WEB-INF/plugin-framework/etc`)
+  - `ssc.log` is by default located in application server log directory or can be configured by `com.fortify.ssc.logPath` JVM system property
+  - plugin container log is by default stored in `<fortify.plugins.home>/log` location and can be configured in `org.ops4j.pax.logging.cfg` (`WEB-INF/plugin-framework/etc`)
 
 ## FAQ
 1) What is a scan?
@@ -424,18 +419,18 @@ The sample plugin library can be also used as a generator for scans, which can b
   
 2) What is vulnerability ID and what are the basic rules that plugin must follow to provide it?
    - SSC uses vulnerability ID quite intensively to track vulnerabilities status. For example, the ID is used to check if some vulnerability was **fixed** (if it is not presented in teh latest scan), **reintroduced** (previous scan did not contain some vulnerability, but the latest scan does), **updated** (both the latest and the previous to the latest scan contain some vulnerability) or **new** if vulnerability was found first time.
-   - ID must be unique among vulnerability IDs in some specific scan. Scan file will be considered as incorrect and will not be processed if plugin provides multiple vulnerabilities with the same ID.
+   - __ID must be unique__ among vulnerability IDs in some specific scan. Scan file will be considered as incorrect and will not be processed if plugin provides multiple vulnerabilities with the same ID.
    - If the same vulnerability exists in different scans, ID of this vulnerability must be the same in different scans. If IDs are not consistent for the same issues in different scans, vulnerability status will not be calculated correctly and SSC users will not be able to see how many new issues are produced or old issues are fixed after processing of the latest scan
    - Some security analysers already produce IDs that can be passed to SSC by plugin without doing any additional processing
    - If analysers do not provide vulnerability identifiers in scan result files, parser plugin is responsible for generating this ID using some other set vulnerability attributes if they are unique for issues in one scan and the same for the same issues in different scans.
    
-3 A) How to release new version of the plugin *if no changes have been done in custom vulnerability attributes definitions*?
+3) How to release new version of the plugin *if no changes have been done in custom vulnerability attributes definitions*?
    - Make any necessary changes in plugin code
    - Increase __plugin version__ in plugin.xml descriptor
    - Since plugin's output format __was not changed__ and new version of the plugins produces custom attributes in exactly the same way as in previous version of the plugin, __data version__ of the plugin __must not be changed__
    - Plugin can be built and distributed to the users
    
-3 B) How to release new version of the plugin *if some changes have to be done in custom vulnerability attributes definitions or vulnerability view template*? (e.g. changes in number, names or types of the attributes).
+4) How to release new version of the plugin *if some changes have to be done in custom vulnerability attributes definitions or vulnerability view template*? (e.g. changes in number, names or types of the attributes).
    - Enum class that implements `com.fortify.plugin.spi.VulnerabilityAttribute` interface and contains custom attributes definitions must be updated if any changes in custom attributes definitions are required.
      New attributes must be added there or existed attributes definitions must be modified
    - If any changes in vulnerability template are required to modify the way how vulnerabilities are represented in SSC UI, file which location is defined by issue-parser -> view-template section must be edited
@@ -444,15 +439,10 @@ The sample plugin library can be also used as a generator for scans, which can b
    - Increase __data version__ in plugin.xml descriptor. It will be indicator for SSC that new version of the plugin provides data in new format
    - Plugin can be built and distributed to the users
    
-4) There is no parser to process a scan
-  - engine type provided with scan is different from the engine type provided by parser plugin or there is no installed/enabled plugin of specified engine type in SSC
-  - parser plugin registration failed - check plugin container logs and SSC logs for any errors
+5) There is no parser to process a scan
+   - engine type provided with scan is different from the engine type provided by parser plugin or there is no installed/enabled plugin of specified engine type in SSC
+   - parser plugin registration failed - check plugin container logs and SSC logs for any errors
   
-5) Will my plugin developed for SSC/PluginFramework 17.10 work automatically with SSC/PluginFramework 17.20 ?
-  - There is a high probability that your plugin will also be compatible with 17.20 - however, due to significant improvements and validations added in SSC 17.20, you must be prepared to test your plugin with SSC/PluginFramework 17.20 and update your plugin to be compatible if needed. 
-
-TODOS:
-  - Update the plugin metadata section after the pluginmetadata specification is finalized. (also update the plugin manifest in plugin-api_1.0 to help developers avoid validations failure with SSC_17.20/plugin-api_1.1) 
-  - make additional improvements to structure.
-  - remove extraneous configuration details that can cause confusion for future debugging such as customization of plugin folders/log paths. 
+6) Will my plugin developed for SSC/PluginFramework 17.10 work automatically with SSC/PluginFramework 17.20 ?
+   - There is a high probability that your plugin will also be compatible with 17.20 - however, due to significant improvements and validations added in SSC 17.20, you must be prepared to test your plugin with SSC/PluginFramework 17.20 and update your plugin to be compatible if needed. 
 
