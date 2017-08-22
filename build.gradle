@@ -21,11 +21,9 @@ if (!project.hasProperty('release')) {
 
 repositories {
     // repository with fortify artifacts
-    ivy {
-        name 'sample'
-        url = [projectDir, "fortifyRepository"].join(File.separator)
+    maven {
+        url  "http://dl.bintray.com/fortify/fortify-public" 
     }
-
     mavenCentral()
 }
 
