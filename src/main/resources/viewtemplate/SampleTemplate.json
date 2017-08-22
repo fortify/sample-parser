@@ -1,0 +1,159 @@
+[
+  [
+    {
+      "type": "template",
+      "title": "Overview",
+      "key": "customAttributes.description",
+      "templateId": "COLLAPSE",
+      "dataType": "string"
+    },
+    {
+      "type": "fieldset",
+      "htmlClass": "container-spacer-bottom",
+      "items": [
+        {
+          "type": "template",
+          "title": "Category",
+          "key": "category",
+          "templateId": "SIMPLE",
+          "dataType": "string"
+        },
+        {
+          "type": "template",
+          "title": "File name",
+          "key": "fullFileName",
+          "templateId": "SIMPLE",
+          "dataType": "string"
+        },
+        {
+          "type": "template",
+          "title": "Line number",
+          "key": "customAttributes.lineNumber",
+          "templateId": "SIMPLE",
+          "dataType": "integer"
+        },
+        {
+          "type": "template",
+          "title": "Confidence",
+          "key": "confidence",
+          "templateId": "SIMPLE",
+          "dataType": "float"
+        },
+        {
+          "type": "template",
+          "title": "Impact",
+          "key": "impact",
+          "templateId": "SIMPLE",
+          "dataType": "float"
+        },
+        {
+          "type": "template",
+          "key": "primaryTag",
+          "templateId": "PRIMARYTAG",
+          "dataType": "string"
+        }
+      ]
+    }
+  ],
+  [
+    {
+      "type": "template",
+      "title": "Custom attributes",
+      "templateId": "TITLEBOX",
+      "items": [
+        {
+          "type": "template",
+          "title": "Scan Status",
+          "key": "customAttributes.scanStatus",
+          "templateId": "SIMPLE",
+          "dataType": "string"
+        },
+        {
+          "type": "template",
+          "title": "Build server",
+          "key": "customAttributes.buildServer",
+          "templateId": "SIMPLE",
+          "dataType": "string"
+        },
+        {
+          "type": "template",
+          "title": "Unique ID",
+          "key": "customAttributes.uniqueId",
+          "templateId": "SIMPLE",
+          "dataType": "string"
+        },
+        {
+          "type": "template",
+          "title": "Category ID",
+          "key": "customAttributes.categoryId",
+          "templateId": "SIMPLE",
+          "dataType": "string"
+        },
+        {
+          "type": "template",
+          "title": "Criticality",
+          "key": "customAttributes.criticality",
+          "templateId": "SIMPLE",
+          "dataType": "string"
+        },
+        {
+          "type": "template",
+          "title": "Artifact name",
+          "key": "customAttributes.artifact",
+          "templateId": "SIMPLE",
+          "dataType": "string"
+        },
+        {
+          "type": "template",
+          "title": "Build number",
+          "key": "customAttributes.buildNumber",
+          "templateId": "SIMPLE",
+          "dataType": "string"
+        },
+        {
+          "type": "template",
+          "title": "Last change date",
+          "key": "customAttributes.lastChangeDate",
+          "templateId": "SIMPLE",
+          "dataType": "date"
+        },
+        {
+          "type": "template",
+          "title": "Artifact build date",
+          "key": "customAttributes.artifactBuildDate",
+          "templateId": "SIMPLE",
+          "dataType": "date"
+        }
+      ]
+    }
+  ],
+  [
+    {
+      "type": "template",
+      "title": "Vulnerability abstract",
+      "templateId": "TITLEBOX",
+      "items": [
+        {
+          "type": "template",
+          "title": "Abstract",
+          "key": "brief",
+          "templateId": "SIMPLE",
+          "dataType": "string"
+        }
+      ]
+    },
+    {
+      "type": "template",
+      "title": "Comment",
+      "templateId": "TITLEBOX",
+      "items": [
+        {
+          "type": "template",
+          "key": "customAttributes.comment",
+          "templateId": "SIMPLE",
+          "dataType": "string"
+        }
+      ]
+    }
+  ]
+]
