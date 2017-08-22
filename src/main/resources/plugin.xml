@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<plugin xmlns="xmlns://www.fortify.com/schema/pluginmanifest-1.0.xsd"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="PluginDescriptor"
+        id="com.example.parser" api-version="1.0">
+    <plugin-info>
+        <name>Sample parser plugin</name>
+        <version><!--VERSION-->0.0<!--/VERSION--></version>
+        <data-version>1</data-version>
+        <vendor name="Sample vendor" url="https://sample-parser-plugin.example.com/"/>
+        <description>Simple parser plugin implementation example.</description>
+        <resources>
+            <localization>
+                <language id="default" location="/resources/sample_en.properties"/>
+                <language id="cs" location="/resources/sample_cs.properties"/>
+                <language id="en" location="/resources/sample_en.properties"/>
+                <language id="ru" location="/resources/sample_ru.properties"/>
+            </localization>
+            <images>
+                <image imageType="icon" location="/images/sample-icon.png"/>
+                <image imageType="logo" location="/images/sample-logo.png"/>
+            </images>
+        </resources>
+    </plugin-info>
+    <issue-parser xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <engine-type>SAMPLE</engine-type>
+        <supported-engine-versions>[2.2, 4.3]</supported-engine-versions>
+        <view-template location="/viewtemplate/SampleTemplate.json">
+            <description>Default sample vulnerability view template.</description>
+        </view-template>
+    </issue-parser>
+</plugin>
+

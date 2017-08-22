@@ -1,0 +1,62 @@
+group 'com.thirdparty'
+
+apply plugin: 'java'
+apply plugin: 'idea'
+
+ext {
+    versionRegex = '(\\d+)(\\.\\d+)*'
+
+    jacksonVersion = "2.8.4"
+}
+
+// plugin version, note the version must match versionRegex.
+version = '1.0'
+
+if (!project.hasProperty('release')) {
+    // Gradle has been run without option -Prelease - auto increment plugin version
+    def time = System.currentTimeMillis().intdiv(1000)
+    def hours = time.intdiv(3600)
+    version = String.format('%s.%d', version, hours)
+}
+
+repositories {
+    // repository with fortify artifacts
+    maven {
+        url  "http://dl.bintray.com/fortify/fortify-public" 
+    }
+    mavenCentral()
+}
+
+configurations {
+    compileExport
+    compile.extendsFrom compileExport
+}
+
+dependencies {
+    // dependencies provided by plugin runtime
+    compile 'com.fortify.plugin:plugin-api:1.0.1'
+    compile 'org.slf4j:slf4j-api:1.7.21'
+
+    // plugin specific dependencies
+    compileExport(group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: "$jacksonVersion") { transitive = false }
+    compileExport(group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "$jacksonVersion") { transitive = false }
+    compileExport(group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: "$jacksonVersion") { transitive = false }
+}
+
+
+jar {
+    doFirst {
+        // check if version matches requirements
+        if (!version.matches(versionRegex)) {
+            throw new InvalidUserDataException("Plugin version '$version' does not match '$versionRegex'")
+        }
+    }
+    // replace version placeholders in plugin.xml
+    filesMatching('plugin.xml') {
+        filter {
+            it.replaceAll('<!--VERSION-->.*?<!--/VERSION-->', version)
+        }
+    }
+    // include files from compileExport dependencies
+    from { configurations.compileExport.collect { it.isDirectory() ? it : zipTree(it).matching { exclude 'META-INF/*' } } }
+}
