@@ -151,7 +151,7 @@ The [plugin metadata specification](https://github.com/FortifySaTPublish/plugin-
 
     - __Vulnerability view template (view-template):__ definition of view template that is used by SSC to represent details of vulnerability parsed by a parser.
     View template is responsible for defining which attributes of a vulnerability will be represented in vulnerability details view and also defines where exactly vulnerability attribute values will be represented.
-    All parser plugins must specify a view template - even if they only produce attributes already existing in SSC.  This is to avoid any inconsistency of content and dependency of plugin's view on the native view presented by a specific version of SSC. (Although SSC 17.10 currently defaults to using its native view if the viewtemplate is absent, this is being removed. In the next release, no issue details will be displayed if the viewtemplate is absent.) 
+    All parser plugins must specify a view template - even if they only produce attributes already existing in SSC.  This is to avoid any inconsistency of content and dependency of plugin's view on the native view presented by a specific version of SSC. No issue details will be displayed if the viewtemplate is absent. 
     There are a few rules that SSC follows to generate UI from vew template. Understanding of these rules will help plugin developers to create valid template.
     Vulnerability details area consist of 3 vertical sub-areas (columns). Each of these columns can display 1 or more vulnerability attributes.
     Columns are defined from left to right. It is not allowed to define column's content with higher index and leave column with lower index empty.
@@ -327,38 +327,11 @@ The [plugin metadata specification](https://github.com/FortifySaTPublish/plugin-
     - `gradle idea` task can be used for IntelliJ Idea IDE users to generate IDE project files
 - Sources includes Gradle wrapper that can be used to build the project. The wrapper will download Gradle distribution on first run. The build also needs access to Maven Central repository for downloading some project dependencies. Depending on your platform either `gradlew.bat` or `gradlew` scripts should be used.
 
-## Setting up plugin framework working directory location (SSC 17.10)
-- Plugin installation directory is given by JVM system property `fortify.home` and plugin directory configuration property `plugin.dir` in `com.fortify.plugin.framework.properties` (`WEB-INF/plugin-framework/etc`)
-- By default the location of plugin working directory is `<user.home>/.fortify/plugin-framework/`
-
 ## Setting up plugin framework working directory location (SSC 17.20)
 - Plugin installation directory is given by JVM system property `fortify.plugins.home`
 - `fortify.plugins.home` is set by default to `<fortify.home>/plugin-framework/` or `<fortify.home>/<app-context>/plugin-framework/` if plugin framework runs inside Software Security Center web application
  - By default the location of plugin directory is `<fortify.plugins.home>/plugins`
  
-## Installation to SSC (for SSC 17.10)
-- SSC version 17.10 only supports a basic form of installation by dropping a plugin jar into a specific folder. SSC version 17.20 introduces plugin installation through SSC administration UI.
-- SSC 17.10 also models plugin state as simply binary - either "installed and enabled" OR "not present/uninstalled". 
-- In 17.10, each installed plugin must have a unique pluginId. Installing a newer plugin with the same pluginId and higher pluginVersion will result in the older plugin metadata being overwritten with the new plugin. 
-- By default the file-drop location for plugin installation is `<fortify.home>/plugin-framework/plugins`
-- Before plugin is enabled, it is first transformed into an OSGi bundle that can be started in SSC's plugin container
-- Once plugin is successfully transformed and installed, it can be started (enabled) in the plugin container. (In 17.10, the plugin is automatically started (enabled) without administrator interaction. In 17.20, the administrator is required to explicitly enable a plugin before it can be utilized by SSC.)
-- The plugin container log `<fortify.plugins.home>/log` should contain INFO record about plugin being successfully started, e.g.:
-`org.apache.felix.fileinstall - 3.5.4 | Started bundle: file:<fortify.home>/plugin-framework/plugin-bundles/com.example.parser.jar`
-- After a plugin is installed and enabled in the plugin framework, there are several additional validation steps performed by SSC when it is notified by the plugin framework. Plugin installation as well as plugin enable actions can be blocked by SSC due to conditions such as: 
-      - Plugin of lower version is not allowed if a plugin of higher version is already installed in SSC. Since plugins are developed by 3rd party developers, SSC does know any details about the logic implemented in plugins.
-        In this case SSC assumes that higher versions of some plugin can produce data that will not be compatible with lower version of the plugins that can make SSC system unstable.
-        If lower version of a plugin must be installed (for example to rollback from a buggy higher version), remove the higher version of this plugin and then install the lower version. 
-      - Do not install a plugin of lower __data version__ than the existing plugins. (SSC 17.10 may not explicitly prevent such installation but it is not a good practice and will be explicitly prevented in 17.20 validations.) 
-
-## Uninstallation from SSC (for SSC 17.10)
-- SSC version 17.10 supports only uninstallation of plugin through filesystem. SSC version 17.20 enables you to uninstall plugin through management UI.
-- To uninstall plugin from SSC plugin it is necessary to
-  - shutdown SSC
-  - Delete plugin bundle file from `<plugin-bundles>` folder
-  - Delete plugin package file from `<plugins>` folder
-  - restart SSC.
-
 ## Installation to SSC and enabling plugin (for SSC 17.20)
 - SSC version 17.20 supports installation of plugin through plugin management UI (Administration - Plugins)
 - In this version, plugins are modeled in SSC with three primary states - "installed/disabled", "enabled", "uninstalled/not present".  (It also models some transient and failure states but we can ignore those for now.)
