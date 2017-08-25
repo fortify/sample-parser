@@ -3,64 +3,64 @@
 
 ## Java plugin API
 - All types of plugins are developed against plugin-api (current version is plugin-api-1.0.1.jar)
-- Plugin API version 1.0 supports only Parser Plugin (`com.fortify.plugin.spi.ParserPlugin`) type of plugin. 
-- The SPI a plugin can implement is in package `com.fortify.plugin.spi` of plugin-api library
-- The API a plugin can use is in `com.fortify.plugin.api` of plugin-api library
+- Plugin API version 1.0 supports only parser plugins (`com.fortify.plugin.spi.ParserPlugin`). 
+- The SPI that a plugin can implement is in package `com.fortify.plugin.spi` of plugin-api library
+- The API that a plugin can use is in `com.fortify.plugin.api` of plugin-api library
 - Sample parser plugin implements `com.fortify.plugin.spi.ParserPlugin`
 
 ## Plugin requirements
 - Plugin has to be a single Java library (JAR)
-- All plugin dependencies have to be extracted and packed inside Plugin JAR as individual classes. Including other JARs inside plugin JAR file is not supported
-- Plugin has to implement one and only one of service provider interfaces in plugin-api/com.fortify.plugin.spi
-  - Plugin has to declare SPI implementation in `META-INF/services` for parser plugin implementation it would be a `com.fortify.plugin.spi.ParserPlugin` file containing declaration of class which implements `com.fortify.plugin.spi.ParserPlugin` interface
-- Plugin JAR has to contain plugin.xml manifest in root of JAR. See the description of the plugin manifest attributes below
+- All plugin dependencies have to be extracted and packed inside Plugin JAR as individual classes. Software Security Center (SSC) does not support the inclusion of other JARs inside of the plugin JAR file.
+- The plugin must implement one, and only one, service provider interface in plugin-api/com.fortify.plugin.spi.
+  - The plugin must declare SPI implementation in `META-INF/services`. For parser plugin implementation, it would be a `com.fortify.plugin.spi.ParserPlugin` file containing declaration of a class that implements the `com.fortify.plugin.spi.ParserPlugin` interface.
+- Plugin JAR must contain the plugin.xml manifest in root of the JAR file. See the description of the plugin manifest attributes below.
 
 ## Plugin Metadata Specification 
-The [plugin metadata specification](https://github.com/FortifySaTPublish/plugin-api/blob/master/src/main/resources/schema/pluginmanifest-1.0.xsd "Plugin manifest XSD") defines the acceptable plugin metadata in a plugin jar. The plugin metadata specification is enforced by the plugin framework when new plugins are installed. The enforcement of the specification is an implementation detail of the plugin framework and can differ for different plugin types - however, currently for parser plugins, it is mainly enforced using a plugin manifest XML file (see below) but can also include additional validations implemented in code.  
+The [plugin metadata specification](https://github.com/FortifySaTPublish/plugin-api/blob/master/src/main/resources/schema/pluginmanifest-1.0.xsd "Plugin manifest XSD") defines the acceptable plugin metadata in a plugin jar. When new plugins are installed, the plugin framework enforces the plugin metadata specification. The enforcement of the specification is an implementation detail of the plugin framework and can differ for different plugin types. However, for parser plugins, the specification is mainly enforced using a plugin manifest XML file (see the Plugin manifest file description below), but can also include additional validations implemented in code.  
 
 ## Plugin manifest file description
-- Plugin manifest is an xml file whose name has to be "plugin.xml". Plugins that do not contain this file in the root of plugin jar file cannot be installed in SSC
-- plugin.xml schema is provided by [plugin manifest XSD](https://github.com/FortifySaTPublish/plugin-api/blob/master/src/main/resources/schema "Plugin manifest XSD")
-- Description of the attributes that can be defined in the plugin.xml: (The constraints listed for the various fields are meant to give a general idea of acceptable values and are not exhaustive. For the authoritative reference, consult the `pluginmanifest XSD` from the release that your plugin needs to be compatible with.) 
-  - __Plugin id (id):__ unique plugin identifier defined by the plugin developer. It must satisfy a few properties - Uniqueness, Stability over time,  Compactness, and Readability (for logging/debugging purposes). We recommend that it be constructed in the following way: `(your domain name in reverse) + separator + (meaningful name such as build artifactID)`. Do not include any version information - that is specified separately below. 
+- The plugin manifest is an XML file named plugin.xml. You cannot install a plugin in SSC if the plugin does not contain the plugin.xml file in the root of the plugin JAR.
+- The [plugin manifest XSD](https://github.com/FortifySaTPublish/plugin-api/blob/master/src/main/resources/schema "Plugin manifest XSD") provides the - plugin.xml schema.
+- Description of the attributes that can be defined in the plugin.xml: (The constraints listed for the various fields are meant to give a general idea of acceptable values. The list is not exhaustive. For the authoritative reference, consult the `pluginmanifest XSD` for the release with which your plugin is compatible.) 
+  - __Plugin id (id):__ unique plugin identifier defined by the plugin developer. The indentifier must be unique, stable over time,  compact, and readable (for logging/debugging purposes). Fortify recommends that you construct the plugin identifier in the following way: `(your domain name in reverse) + separator + (meaningful name, such as build artifactID)`. Do not include version information. That is specified separately below. 
     Mandatory. Max length: 80 chars.
 
-    Example of plugin ID definition:
+    Example plugin ID definition:
     ```
     id="com.example.parser.SampleParser"
     ```
-  - __Plugin API version (api-version):__ plugin API version that was used to develop the plugin. Plugin framework uses this value to check if the deployed plugin is compatible with plugin API supported in current plugin framework. If api version defined in plugin manifest is not supported by plugin framework, plugin installation will be rejected.
-    Mandatory. Max length is 8 chars. Format: dot separated numbers.
+  - __Plugin API version (api-version):__ plugin API version used to develop the plugin. The plugin framework uses this value to determine whether the deployed plugin is compatible with plugin API supported in current plugin framework. If the API version defined in the plugin manifest is not supported by plugin framework, the plugin installation will fail.
+    Mandatory. Max length is 8 chars. Format: dot-separated numbers
 
-    Example of plugin API version definition:
+    Example plugin API version definition:
     ```
     api-version="1.0"
     ```
-  - __Plugin info (plugin-info):__ section contains generic attributes valid for all types of the plugins supported by SSC.
-    - __Plugin name (name):__ meaningful name of the plugins that will be displayed in SSC UI and help users to identify the plugin.
-      Mandatory. Max length: 40 chars. Allowed symbols: letters, space, hyphen, dot.
+  - __Plugin info (plugin-info):__ section contains generic attributes valid for all the plugin types that SSC supports.
+    - __Plugin name (name):__ meaningful name of the plugins to be displayed in the SSC UI. The name should help users to identify the plugin.
+      Mandatory. Max length: 40 chars. Allowed symbols: letters, space, hyphen, and dot.
       
-      Example of plugin name definition:
+      Example lugin name definition:
       ```
       <name>Sample parser plugin</name>
       ```
-    - __Plugin version (version):__ version of the plugin. SSC performs plugin package validation using this value when plugin is installed and forbids installation of older versions of the plugin if newer version of the same plugin is already installed in SSC. This check helps avoid certain human errors when installing/managing plugins. 
-      Mandatory. Max length: 25 chars. Format: dot separated numbers.
+    - __Plugin version (version):__ version of the plugin. SSC uses this value to validate the plugin package when a plugin is installed. SSC prevents plugin installation if a newer version of that plugin is already installed in SSC. This check helps avoid certain human errors when installing/managing plugins. 
+      Mandatory. Max length: 25 chars. Format: dot-separated numbers.
       
-      Example of plugin version definition:
+      Example plugin version definition:
       ```
       <version>10.5</version>
       ```
-    - __Plugin data version (data-version):__ This attribute helps SSC to understand if new version of the plugin produces data in the same format as previous version of the plugin. This is very important attribute used by SSC quite intensively and plugin developers should set value of this attribute very carefully.
+    - __Plugin data version (data-version):__ This attribute helps SSC determine whether a new version of the plugin produces data in the same format as the previous plugin version. This is an important attribute that SSC uses heavily. Plugin developers must set value for this attribute very carefully.
     
-      Value of this attribute must be changed in the new plugin version only if plugin output data format was changed and output data produced by new version of the plugin is not compatible with data produced by older version of the plugin.
-      For example, parser plugin version 1.0 produces vulnerability with only 1 String attribute. Next version of this plugin (2.0) produces vulnerabilities that have 5 attributes. It means that vulnerabilities produced by these 2 versions of the plugin cannot be compared with each other and data versions of the plugins must be different.
-      In addition, data version of the plugin must be changed if vulnerability view template definition was updated (see details about vulnerability view template below).
-      If new version of the plugin produces output data in exactly the same way as previous version of the plugin, data versions must be the same for both plugins.
+      The value of this attribute must be changed in the new plugin version only if the plugin output data format was changed and the output data that the new plugin version produces is incompatible with the data that the older version produced.
+      For example, parser plugin version 1.0 produces vulnerability with only 1 String attribute. The next version (2.0) produces vulnerabilities that have five attributes. The vulnerabilities that these two versions produce cannot be compared with each other, and data versions of the plugins must be different.
+      In addition, you must change the data version of the plugin if the vulnerability view template definition was updated. (See details about vulnerability view template below.)
+      If a new plugin version produces output data in exactly the same way as the previous version, the data versions must be the same for both plugins.
       SSC has a strict limitation about installing plugins with lower data version if the same plugin with higher data version is already installed in SSC.
-      The general rule about setting this value should be this: if no changes in output data format, plugin data version must not be changed. In case any changes in output data format data version must be increased.
-      Mandatory. Data version value must be valid integer number between 1 and Java max integer value.
-      Example of plugin data version definition
+      The general rule for setting this value is this: If the output data format has not changed, then you must not change the plugin data version. If the output data format changes, you must increase the data version.
+      Mandatory. Data version value must be a valid integer between 1 and the Java max integer value.
+      Example plugin data version definition:
       ```
       <data-version>1</data-version>
       ```
@@ -68,7 +68,7 @@ The [plugin metadata specification](https://github.com/FortifySaTPublish/plugin-
         - __Plugin vendor name (vendor : name):__ Name of the company or person that developed the plugin. Optional. Max length: 80 chars.
         - __Plugin vendor URL (vendor : url):__ Address of the website of the plugin developer company or person. Optional. Max length: 100 chars.
 
-      Example of plugin vendor definition
+      Example plugin vendor definition:
       ```
       <vendor name="A vendor" url="https://plugin.dev.com/"/>
       ```
@@ -76,20 +76,20 @@ The [plugin metadata specification](https://github.com/FortifySaTPublish/plugin-
     - __Plugin description (description):__ description of the plugin. Any information useful for plugin users can be placed here.
       Optional. Max length: 500 chars.
 
-      Example of plugin description definition
+      Example plugin description definition:
       ```
       <description>Parser description.</description>
       ```
 
-    - __Plugin resources (resources):__ This section contains references to the resource files that can be included in the plugin package. Currently, only 2 types of resources are supported: localization files and images.
-        - __Plugin localization files (resources : localization):__ collection of language sections that define languages supported by plugin. For parser plugins localization files must contain valid names of the vulnerability attributes that parser plugin can produce.
-          Each language definition consist of HTML ISO language code and path to localization file located inside plugin package.
-          There is a special language code "default". Language of this type will be used if SSC client requested language which localization is not included in the plugin package.
-          If SSC client requests localization for a language not defined in plugin manifest and there is no default language defined, English language localization will be used as a default.
-          Location attribute of the language section must contain full path to localization file inside plugin package.
-          Localization file must be valid key value property file. Only UTF-8 encoding of the localization files is supported.
+    - __Plugin resources (resources):__ This section contains references to the resource files that can be included in the plugin package. Currently, only two types of resources are supported: localization files and images.
+        - __Plugin localization files (resources : localization):__ collection of language sections that define languages that the plugin suppports. For parser plugins, localization files must contain valid names of the vulnerability attributes that the parser plugin can produce.
+          Each language definition consist of HTML ISO language code and the path to the localization file located inside the plugin package.
+          There is a special language code "default". This language type is used if an SSC client requests a language that has not been localized in the plugin package.
+          If SSC client requests localization for a language that is not defined in the plugin manifest, and no default language is defined, English language localization is used as the default.
+          The location attribute of the language section must contain the full path to the localization file in the plugin package.
+          The localization file must be a valid key value property file. SSC supports only UTF-8 encoding of the localization files.
 
-          Example of plugin localization definition
+          Example plugin localization definition:
           ```
             <localization>
                 <language id="default" location="/resources/sample_en.properties"/>
@@ -97,7 +97,7 @@ The [plugin metadata specification](https://github.com/FortifySaTPublish/plugin-
                 <language id="ru" location="/resources/sample_ru.properties"/>
             </localization>
           ```
-          Example of plugin localization file
+          Example plugin localization file:
           ```
             artifact=Artifact name
             artifactBuildDate=Artifact build date
@@ -105,15 +105,15 @@ The [plugin metadata specification](https://github.com/FortifySaTPublish/plugin-
             buildNumber=Build number
           ```
 
-        - __Plugin images (resources : images):__ collection of images definitions provided by plugin. For each image definition image type (image : imageType attribute) and location (image : location attribute) must be be set.
-          Current version of the framework supports only 2 types if images: __icon__ and __logo__.
-          Location attribute must contain full path to the image file inside plugin package.
-          Icons are displayed in the plugins list in SSC plugin management UI. Icon images also used to mark issues parsed by scan parser plugin to make it easier to distinguish those issues from the once parsed by native SSC parsers.
-          The idea of logo image is to represent plugin developer logotype.
-          Only one image of each type can be defined in this section.
-          Both images must be PNG files with transparent background. Preferred resolution for icons is 50 x 50 pixels or less. Preferred resolution for logos is 225 x 50 or less.
+        - __Plugin images (resources : images):__ collection of images definitions provided by the plugin. For each image definition, you must set the image type (image : imageType attribute) and location (image : location attribute).
+          Current version of the framework supports only two image types: __icon__ and __logo__.
+          The location attribute must include the full path to the image file inside of the plugin package.
+          Icons are displayed in the plugins list in the SSC plugin management user interface. Icon images used to mark issues parsed by scan parser plugin make it easier to distinguish those issues from the ones parsed by native SSC parsers.
+          The idea of the logo image is to represent the plugin developer logotype.
+          You can define only one image of each type can in this section.
+          Both image types must be PNG files with transparent backgrounds. The preferred resolution for icons is 50 x 50 pixels or less. The preferred resolution for logos is 225 x 50 pixels or less.
 
-          Example of plugin images definition
+          Example plugin images definition:
           ```
             <images>
                 <image imageType="icon" location="/images/sample-icon.png"/>
@@ -121,15 +121,15 @@ The [plugin metadata specification](https://github.com/FortifySaTPublish/plugin-
             </images>
           ```
 
-- __Scan vulnerability (issue) parser specific attributes (issue-parser):__ this section must be used to define parser plugin specific attributes and should not be included in manifest of plugins of any other types.
-    - __Vulnerability source engine type (engine-type):__ this attribute is very important and helps SSC to coordinate work of different types of parser plugins installed in SSC and distinguish vulnerabilities parsed by different parser plugins.
-      This attribute contain a meaningful name of the analyser (engine) that produces files that can be parsed by a parser. It is recommended that you use the public analyser product name to define the supported engine type of the plugin. 
-      Different plugin developers can develop plugins that can parse the same analysers scan results. So, using public analysers product names as engine types should help SSC to check if multiple plugins installed in SSC are compatible with each other and are able to parse different types of analysis result files.
+- __Scan vulnerability (issue) parser specific attributes (issue-parser):__ Use this section to define parser plugin-specific attributes. Do not include this section in the manifest of other plugin types.
+    - __Vulnerability source engine type (engine-type):__ This important attribute helps SSC to coordinate work of different parser plugins types installed in SSC and to distinguish vulnerabilities parsed by different parser plugins.
+      This attribute contains a meaningful name for the analyser (engine) that produces files that a parser can parse. Fortify recommends that you use the public analyser product name to define the supported engine type for the plugin. 
+      Different developers can develop plugins that can parse the same analyser's scan results. So, using public analysers' product names as engine types should help SSC to determine whether multiple plugins installed in SSC are compatible with each other and whether they can parse different types of analysis result files.
       __One plugin can support only one engine type.__
-      If it is really necessary to change the supported engine type, a new plugin must be released for the new engine type and must have a different unique pluginId. 
-      Mandatory. Max length: 80 chars. Format: uppercased latin characters / numbers separated by space, hyphen, dot, underscore or space.
+      If you absolutely must change the supported engine type, a new plugin (with a different, unique plugin ID) must be released for the new engine type. 
+      Mandatory. Max length: 80 chars. Format: uppercase Latin characters / numbers to be separated by spaces, hyphens, dots, or underscores.
 
-      Examples of plugin engine type definition
+      Example plugin engine type definitions:
       ```
         <engine-type>SAMPLE</engine-type>
 
@@ -142,20 +142,20 @@ The [plugin metadata specification](https://github.com/FortifySaTPublish/plugin-
         <engine-type>WEBINSPECT</engine-type>
       ```
 
-    - __Supported engine versions (supported-engine-versions):__ descriptive field that shows which versions of a supported analyzer produces scan results that the parser plugin can parse. 
-      Not mandatory but if specified it must be in the format specified by the XSD. Max length: 40 characters.
-      Example of supported engine versions definition
+    - __Supported engine versions (supported-engine-versions):__ Descriptive field that shows which versions of a supported analyzer produces scan results that the parser plugin can parse. 
+      This is not mandatory, but if set, the value must be in the format specified by the XSD. Max length: 40 characters.
+      Example supported engine versions definition:
       ```
         <supported-engine-versions>[2.2, 4.3]</supported-engine-versions>
       ```
 
-    - __Vulnerability view template (view-template):__ definition of view template that is used by SSC to represent details of vulnerability parsed by a parser.
-    View template is responsible for defining which attributes of a vulnerability will be represented in vulnerability details view and also defines where exactly vulnerability attribute values will be represented.
-    All parser plugins must specify a view template - even if they only produce attributes already existing in SSC.  This is to avoid any inconsistency of content and dependency of plugin's view on the native view presented by a specific version of SSC. No issue details will be displayed if the viewtemplate is absent. 
-    There are a few rules that SSC follows to generate UI from vew template. Understanding of these rules will help plugin developers to create valid template.
-    Vulnerability details area consist of 3 vertical sub-areas (columns). Each of these columns can display 1 or more vulnerability attributes.
-    Columns are defined from left to right. It is not allowed to define column's content with higher index and leave column with lower index empty.
-    Columns can contain different number of attributes, as in the example below
+    - __Vulnerability view template (view-template):__ Definition of view template that is used by SSC to represent details of a vulnerability parsed by a parser.
+    The view template defines which vulnerability attributes are represented in vulnerability details view, and also indicates where exactly vulnerability attribute values are represented.
+    All parser plugins must specify a view template, even if they produce only attributes that already exist in SSC.  This is meant to prevent any inconsistency in content and dependency of the plugin's view on the native view presented by a specific SSC version. If no view template is specified, SSC displays no issue details.
+    There are a few rules that SSC follows to generate the UI from view template. Understanding these rules will help plugin developers to create valid templates.
+    The vulnerability details area consist of three vertical sub-areas (columns). Each of these columns can display one or more vulnerability attributes.
+    Columns are defined from left to right. You cannot define the content for a column, but leave a column with a lower index empty.
+    Columns can contain different numbers of attributes, as shown in the following example:
     
         | Column1       | Column2       | Column3     |
         |:-------------:|:-------------:|:-----------:|
@@ -164,8 +164,8 @@ The [plugin metadata specification](https://github.com/FortifySaTPublish/plugin-
         | Attribute C   | Attribute F   |             |
         |               | Attribute G   |             |
     
-        Vulnerability template contains only names of the attributes which values should be displayed. Actual values fo vulnerability attributes are taken from issue object returned by `/issueDetails/{id}`  REST service.
-    This is high level structure of vulnerability template:
+        A vulnerability template contains only names of the attributes for which values should be displayed. The actual values of vulnerability attributes are taken from issue objects returned by `/issueDetails/{id}`  REST service.
+    The high-level structure of a vulnerability template is as follows:
 
       ```javascript
         [
@@ -180,8 +180,8 @@ The [plugin metadata specification](https://github.com/FortifySaTPublish/plugin-
           ]
         ]
       ```
-        The top array can contain up to 3 elements representing the 3 columns. If array contains more than 3 elements, elements over the 3rd one are ignored.
-        Column N definition consists of 1 or more fields definition of the following structure:
+        The top array can contain up to three elements representing the three columns. If the array contains more than three elements, only the first three elements are "seen." The rest are ignored.
+        Column N definition consists of one or more fields defined with the following structure:
         ```javascript
             {
               "type": " -- value -- ",
@@ -192,20 +192,20 @@ The [plugin metadata specification](https://github.com/FortifySaTPublish/plugin-
         
         ```
 
-        - `type` is type of the attribute field
-        - `key` is name of the vulnerability attribute that must be displayed
-        - `templateId` identifies the way how attribute values must be represented
-        - `dataType` defines the exact type of the attribute value. This attribute is used to format value of vulnerability attribute
+        - `type` is the attribute field type
+        - `key` is name of the vulnerability attribute to display
+        - `templateId` identifies how to represent attribute values
+        - `dataType` defines the exact type of the attribute value. This is used to format the vulnerability attribute value 
 
-        Template rendering engine currently supports 4 types:
-        - `SIMPLE` - simple section without any special styling
+        Template rendering engine currently supports four types:
+        - `SIMPLE` - simple section with no special styling
         - `COLLAPSE` - collapsible panel
-        - `TITLEBOX` - this type of field will be displayed as a title
-        - `PRIMARYTAG` - this type says that field should be rendered as a primary custom tag value. Please refer to SSC documentation about the custom tags
+        - `TITLEBOX` - field type to be displayed as a title
+        - `PRIMARYTAG` - this type says that the field is to be rendered as a primary custom tag value. For more information, see the SSC documentation about the custom tags.
 
-        List of supported data types: `string`, `date` and `float`.
+        List of supported data types: `string`, `date` and `float`
 
-        It is also possible to combine attributes into logical groups with common header. This construction should be used to do so.
+        You can combine attributes into logical groups with a common header. This construction should be used to do so.
 
         ```javascript
             {
