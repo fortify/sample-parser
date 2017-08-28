@@ -149,11 +149,11 @@ The [plugin metadata specification](https://github.com/FortifySaTPublish/plugin-
         <supported-engine-versions>[2.2, 4.3]</supported-engine-versions>
       ```
 
-    - __Vulnerability view template (view-template):__ definition of view template that is used by SSC to represent details of vulnerability parsed by a parser.
-    View template is responsible for defining which attributes of a vulnerability will be represented in vulnerability details view and also defines where exactly vulnerability attribute values will be represented.
-    All parser plugins must specify a view template - even if they only produce attributes already existing in SSC.  This is to avoid any inconsistency of content and dependency of plugin's view on the native view presented by a specific version of SSC. No issue details will be displayed if the viewtemplate is absent. 
-    There are a few rules that SSC follows to generate UI from vew template. Understanding of these rules will help plugin developers to create valid template.
-    Vulnerability details area consist of 3 vertical sub-areas (columns). Each of these columns can display 1 or more vulnerability attributes.
+    - __Vulnerability view template (view-template):__ definition of view template that SSC uses to represent details of vulnerability parsed by a parser.
+    The view template is responsible for determining which vulnerability attributes are to be represented in the vulnerability details view. It also defines where, exactly, vulnerability attribute values are to be represented.
+    All parser plugins must specify a view template - even if they only produce attributes that already exist in SSC.  This prevents content inconsistencies and dependency of the plugin's view on the native view presented by a specific SSC version. SSC displays no issue details if the view template is absent. 
+    SSC follows a few rules to generate the UI from the view template. Understanding these rules will help plugin developers to create valid templates.
+    The vulnerability details area consists of three vertical sub-areas (columns). Each of these columns can display one or more vulnerability attributes.
     Columns are defined from left to right. It is not allowed to define column's content with higher index and leave column with lower index empty.
     Columns can contain different number of attributes, as in the example below
     
@@ -226,7 +226,7 @@ The [plugin metadata specification](https://github.com/FortifySaTPublish/plugin-
             }
         ```
 
-        Simple view template example is posted below.
+        Simple view template example:
 
       ```javascript
         [
@@ -292,7 +292,7 @@ The [plugin metadata specification](https://github.com/FortifySaTPublish/plugin-
         <version>2.0</version>
         <data-version>1</data-version>
         <vendor name="Sample vendor" url="https://sample-parser-plugin.example.com/"/>
-        <description>Simple parser plugin implementation example.</description>
+        <description>Simple parser plugin implementation example:</description>
         <resources>
             <localization>
                 <language id="default" location="/resources/sample_en.properties"/>
@@ -317,17 +317,17 @@ The [plugin metadata specification](https://github.com/FortifySaTPublish/plugin-
 ```
 
 ## Plugin library build
-- Plugin has to be built with all dependencies contained in plugin library
- - All dependencies has to be extracted and included in plugin jar as individual packages and classes, plugin class loader can't access JARs in JAR. It is implemented in the Gradle build script provided with sample plugin.
+- A plugin must be built with all dependencies contained in the plugin library.
+ - All dependencies must be extracted and included in the plugin JAR as individual packages and classes. The plugin class loader cannot access JARs within the JAR file. It is implemented in the Gradle build script provided with the sample plugin.
 - Example Gradle build `build.gradle` is provided with the plugin.
     Tasks supported by build script:
-    - `gradle clean` clean up previous build results
-    - `gradle build` build plugin binary. Produced plugin library artifact is created as `build/libs/sample-parser-[version].jar`
-    - `gradle cleanIdea` task can be useful for IntelliJ Idea IDE users to cleaning up IDE work folder
-    - `gradle idea` task can be used for IntelliJ Idea IDE users to generate IDE project files
-- Sources includes Gradle wrapper that can be used to build the project. The wrapper will download Gradle distribution on first run. The build also needs access to Maven Central repository for downloading some project dependencies. Depending on your platform either `gradlew.bat` or `gradlew` scripts should be used.
+    - `gradle clean` Cleans up previous build results
+    - `gradle build` Builds plugin binary. The plugin library artifact is created as `build/libs/sample-parser-[version].jar`
+    - `gradle cleanIdea` IntelliJ Idea IDE users can use this to clean up the IDE work folder.
+    - `gradle idea` IntelliJ Idea IDE users can use this to generate IDE project files.
+- Sources includes a Gradle wrapper that can be used to build the project. The wrapper downloads the Gradle distribution on first run. The build must also have access to the Maven Central repository for downloading some project dependencies. Depending on your platform, use either the `gradlew.bat` or the `gradlew` script.
 
-## Setting up plugin framework working directory location (SSC 17.20)
+## Setting up the plugin framework working directory location (SSC 17.20)
 - Plugin installation directory is given by JVM system property `fortify.plugins.home`
 - `fortify.plugins.home` is set by default to `<fortify.home>/plugin-framework/` or `<fortify.home>/<app-context>/plugin-framework/` if plugin framework runs inside Software Security Center web application
  - By default the location of plugin directory is `<fortify.plugins.home>/plugins`
