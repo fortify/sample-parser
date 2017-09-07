@@ -280,6 +280,44 @@ The [plugin metadata specification](https://github.com/FortifySaTPublish/plugin-
         ]
       ```
 
+## Matching attributes provided by parser and /issueDetail/{id} endpoint response attributes 
+
+To make it possible to build issue view template, developers must know how /issueDetails response attributes matched to issue attributes that are set when issues are parsed by a plugin. 
+
+Issue builder attributes | issue details attribute
+--- | --- 
+accuracy | **Not exposed, used internally** 
+analyzer | analyzer
+engineType | engineType
+category | issueName prefix (before :)
+subCategory | issueName suffix (after :)
+mappedCategory | **Not exposed, used internally** 
+confidence | confidence
+priority | friority
+impact | impact
+vulnerabilityAbstract | detail
+vulnerabilityRecommendation | tips
+kingdom | kingdom
+likelihood | likelihood
+probability | **Not exposed, used internally** 
+ruleGuid | primaryRuleGuid
+severity | severity
+className | **Not exposed, used internally**
+fileName | fullFileName, shortFileName
+functionName | **Not exposed, used internally**
+lineNumber | **Not exposed, used internally**
+sourceFile | **Not exposed, used internally**
+sourceLine | **Not exposed, used internally**
+packageName | **Not exposed, used internally**
+sink | **Not exposed, used internally**
+sinkContext | **Not exposed, used internally**
+source | **Not exposed, used internally**
+sourceContext | **Not exposed, used internally**
+minVirtualCallConfidence | **Not exposed, used internally**
+remediationConstant | **Not exposed, used internally**
+taintFlag | **Not exposed, used internally**
+customAttributeName | customAttributes.*customAttributeName*
+
 ## Plugin manifest file example
 
 ```xml
