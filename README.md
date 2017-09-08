@@ -286,12 +286,12 @@ To make it possible to build issue view template, developers must know how /issu
 
 Issue builder attributes | issue details attribute
 --- | --- 
-accuracy | **Not exposed, used internally** 
+accuracy | Not exposed
 analyzer | analyzer
 engineType | engineType
 category | issueName prefix (before :)
 subCategory | issueName suffix (after :)
-mappedCategory | **Not exposed, used internally** 
+mappedCategory | Not exposed
 confidence | confidence
 priority | friority
 impact | impact
@@ -299,23 +299,23 @@ vulnerabilityAbstract | detail
 vulnerabilityRecommendation | tips
 kingdom | kingdom
 likelihood | likelihood
-probability | **Not exposed, used internally** 
+probability | Not exposed
 ruleGuid | primaryRuleGuid
 severity | severity
-className | **Not exposed, used internally**
+className | Not exposed
 fileName | fullFileName, shortFileName
-functionName | **Not exposed, used internally**
-lineNumber | **Not exposed, used internally**
-sourceFile | **Not exposed, used internally**
-sourceLine | **Not exposed, used internally**
-packageName | **Not exposed, used internally**
-sink | **Not exposed, used internally**
-sinkContext | **Not exposed, used internally**
-source | **Not exposed, used internally**
-sourceContext | **Not exposed, used internally**
-minVirtualCallConfidence | **Not exposed, used internally**
-remediationConstant | **Not exposed, used internally**
-taintFlag | **Not exposed, used internally**
+functionName | Not exposed
+lineNumber | Not exposed
+sourceFile | Not exposed
+sourceLine | Not exposed
+packageName | Not exposed
+sink | Not exposed
+sinkContext | Not exposed
+source | Not exposed
+sourceContext | Not exposed
+minVirtualCallConfidence | Not exposed
+remediationConstant | Not exposed
+taintFlag | Not exposed
 customAttributeName | customAttributes.*customAttributeName*
 
 ## Plugin manifest file example
