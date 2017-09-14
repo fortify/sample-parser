@@ -5,8 +5,10 @@ apply plugin: 'idea'
 
 ext {
     versionRegex = '(\\d+)(\\.\\d+)*'
-
     jacksonVersion = "2.8.4"
+
+    distDir = "$projectDir/dist"
+    steadyZipFileName = 'steady_sample_scan.zip'
 }
 
 // plugin version, note the version must match versionRegex.
@@ -60,3 +62,32 @@ jar {
     // include files from compileExport dependencies
     from { configurations.compileExport.collect { it.isDirectory() ? it : zipTree(it).matching { exclude 'META-INF/*' } } }
 }
+
+
+task deleteSteadyScan {
+    doLast {
+        delete "$distDir/$steadyZipFileName"
+    }
+}
+
+task cleanDistDir {
+    doLast {
+        delete fileTree(dir: "$distDir", include: '**/*')
+    }
+}
+
+task createDistDir {
+    doFirst {
+        mkdir "$distDir"
+    }
+}
+
+task (genSteadyScan, dependsOn: [classes, createDistDir, deleteSteadyScan], type: JavaExec) {
+    main = 'com.thirdparty.ScanGenerator'
+    classpath = sourceSets.main.runtimeClasspath
+    args 'steady', "$distDir/$steadyZipFileName"
+}
+
+build.dependsOn genSteadyScan
+
+clean.dependsOn cleanDistDir

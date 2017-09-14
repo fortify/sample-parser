@@ -2,8 +2,8 @@ package com.thirdparty.scan;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fortify.plugin.api.BasicVulnerabilityBuilder;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -22,18 +22,18 @@ public class Finding {
     private Integer lineNumber;
     private Float confidence;
     private Float impact;
+    private BasicVulnerabilityBuilder.Priority priority;
 
     // custom attributes
-    private String criticality;
     private String categoryId;
     private String artifact;
     private String description;
     private String comment;
     private String buildNumber;
-    private String status;
+    private String customStatus;
     private Date lastChangeDate;
     private Date artifactBuildDate;
-
+    private String text64;
 
     public String getUniqueId() {
         return uniqueId;
@@ -87,9 +87,9 @@ public class Finding {
         this.uniqueId = uniqueId;
     }
 
-    public String getCriticality() { return criticality; }
+    public BasicVulnerabilityBuilder.Priority getPriority() { return priority; }
 
-    public void setCriticality(final String criticality) { this.criticality = criticality; }
+    public void setPriority(final BasicVulnerabilityBuilder.Priority priority) { this.priority = priority; }
 
     public String getCategoryId() { return categoryId; }
 
@@ -119,9 +119,10 @@ public class Finding {
         this.buildNumber = buildNumber;
     }
 
-    public String getStatus() { return status; }
+    public String getCustomStatus() { return customStatus; }
 
-    public void setStatus(final String status) { this.status = status; }
+    public void setCustomStatus(final String customStatus) { this.customStatus = customStatus; }
+
 
     @JsonSerialize(converter = DateSerializer.class)
     public Date getLastChangeDate() {
@@ -141,5 +142,13 @@ public class Finding {
     @JsonDeserialize(converter = DateDeserializer.class)
     public void setArtifactBuildDate(final Date artifactBuildDate) {
         this.artifactBuildDate = artifactBuildDate;
+    }
+
+    public String getText64() {
+        return text64;
+    }
+
+    public void setText64(String text64) {
+        this.text64 = text64;
     }
 }

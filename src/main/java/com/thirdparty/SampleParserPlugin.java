@@ -10,7 +10,6 @@ import com.fortify.plugin.api.ScanParsingException;
 import com.fortify.plugin.api.StaticVulnerabilityBuilder;
 import com.fortify.plugin.api.VulnerabilityHandler;
 import com.fortify.plugin.spi.ParserPlugin;
-import com.fortify.plugin.spi.VulnerabilityAttribute;
 import com.thirdparty.scan.DateDeserializer;
 import com.thirdparty.scan.Finding;
 import org.slf4j.Logger;
@@ -21,8 +20,8 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 import static com.fasterxml.jackson.core.JsonToken.START_OBJECT;
+import static com.thirdparty.SscBuiltInVulnerabilityAttribute.*;
 import static com.thirdparty.SampleParserVulnerabilityAttribute.*;
-import static java.math.BigDecimal.ROUND_HALF_UP;
 
 /**
  * (C) Copyright 2015,2016 Hewlett Packard Enterprise Development, L.P.
@@ -65,23 +64,22 @@ public class SampleParserPlugin implements ParserPlugin<SampleParserVulnerabilit
         while (jsonParser.nextToken() != JsonToken.END_OBJECT) {
             final String fieldName = jsonParser.getCurrentName();
             jsonParser.nextToken();
-            switch (fieldName) {
-                case "scanDate":
-                    scanBuilder.setScanDate(DATE_DESERIALIZER.convert(jsonParser.getText()));
-                    break;
-                case "engineVersion":
-                    scanBuilder.setEngineVersion(jsonParser.getText());
-                    break;
-                case "elapsed":
-                    scanBuilder.setElapsedTime(jsonParser.getIntValue());
-                    break;
-                case "buildServer":
-                    scanBuilder.setHostName(jsonParser.getText());
-                    break;
-                default:
-                    // skip unneeded fields
-                    skipChildren(jsonParser);
-                    break;
+            if (fieldName.equals(SCAN_DATE.attributeName())) {
+                scanBuilder.setScanDate(DATE_DESERIALIZER.convert(jsonParser.getText()));
+
+            } else if (fieldName.equals(ENGINE_VERSION.attributeName())) {
+                scanBuilder.setEngineVersion(jsonParser.getText());
+
+            } else if (fieldName.equals(ELAPSED.attributeName())) {
+                scanBuilder.setElapsedTime(jsonParser.getIntValue());
+
+            } else if (fieldName.equals(BUILD_SERVER.attributeName())) {
+                scanBuilder.setHostName(jsonParser.getText());
+
+            // Skip unneeded fields
+            } else {
+                skipChildren(jsonParser);
+
             }
         }
     }
@@ -119,78 +117,81 @@ public class SampleParserPlugin implements ParserPlugin<SampleParserVulnerabilit
         while (jsonParser.nextToken() != JsonToken.END_OBJECT) {
             final String fieldName = jsonParser.getCurrentName();
             jsonParser.nextToken();
-            switch (fieldName) {
 
-                // standard attributes
+            // Custom mandatory attributes:
+            if (fieldName.equals(UNIQUE_ID.attributeName())) {
+                f.setUniqueId(jsonParser.getText());
 
-                case "category":
-                    f.setCategory(jsonParser.getText());
-                    break;
-                case "fileName":
-                    f.setFileName(jsonParser.getText());
-                    break;
-                case "vulnerabilityAbstract":
-                    f.setVulnerabilityAbstract(jsonParser.getText());
-                    break;
-                case "lineNumber":
-                    f.setLineNumber(jsonParser.getIntValue());
-                    break;
-                case "confidence":
-                    f.setConfidence(jsonParser.getFloatValue());
-                    break;
-                case "impact":
-                    f.setImpact(jsonParser.getFloatValue());
-                    break;
+            // Standard attributes
+            } else if (fieldName.equals(CATEGORY.attributeName())) {
+                f.setCategory(jsonParser.getText());
 
-                // custom attributes
+            } else if (fieldName.equals(FILE_NAME.attributeName())) {
+                f.setFileName(jsonParser.getText());
 
-                case "uniqueId":
-                    f.setUniqueId(jsonParser.getText());
-                    break;
-                case "categoryId":
-                    f.setCategoryId(jsonParser.getText());
-                    break;
-                case "criticality":
-                    f.setCriticality(jsonParser.getText());
-                    break;
-                case "artifact":
-                    f.setArtifact(jsonParser.getText());
-                    break;
-                case "description":
-                    f.setDescription(jsonParser.getText());
-                    break;
-                case "comment":
-                    f.setComment(jsonParser.getText());
-                    break;
-                case "buildNumber":
-                    f.setBuildNumber(jsonParser.getText());
-                    break;
-                case "status":
-                    f.setStatus(jsonParser.getText());
-                    break;
-                case "lastChangeDate":
-                    f.setLastChangeDate(DATE_DESERIALIZER.convert(jsonParser.getText()));
-                    break;
-                case "artifactBuildDate":
-                    f.setArtifactBuildDate(DATE_DESERIALIZER.convert(jsonParser.getText()));
-                    break;
+            } else if (fieldName.equals(VULNERABILITY_ABSTRACT.attributeName())) {
+                f.setVulnerabilityAbstract(jsonParser.getText());
 
-                default:
-                    // skip unneeded fields
-                    skipChildren(jsonParser);
-                    break;
+            } else if (fieldName.equals(LINE_NUMBER.attributeName())) {
+                f.setLineNumber(jsonParser.getIntValue());
+
+            } else if (fieldName.equals(CONFIDENCE.attributeName())) {
+                f.setConfidence(jsonParser.getFloatValue());
+
+            } else if (fieldName.equals(IMPACT.attributeName())) {
+                f.setImpact(jsonParser.getFloatValue());
+
+            } else if (fieldName.equals(PRIORITY.attributeName())) {
+                try {
+                    f.setPriority(BasicVulnerabilityBuilder.Priority.valueOf(jsonParser.getText()));
+                } catch (IllegalArgumentException e) {
+                    f.setPriority(BasicVulnerabilityBuilder.Priority.Medium);
+                }
+
+            // Custom attributes
+            } else if (fieldName.equals(CATEGORY_ID.attributeName())) {
+                f.setCategoryId(jsonParser.getText());
+
+            } else if (fieldName.equals(ARTIFACT.attributeName())) {
+                f.setArtifact(jsonParser.getText());
+
+            } else if (fieldName.equals(DESCRIPTION.attributeName())) {
+                f.setDescription(jsonParser.getText());
+
+            } else if (fieldName.equals(COMMENT.attributeName())) {
+                f.setComment(jsonParser.getText());
+
+            } else if (fieldName.equals(BUILD_NUMBER.attributeName())) {
+                f.setBuildNumber(jsonParser.getText());
+
+            } else if (fieldName.equals(CUSTOM_STATUS.attributeName())) {
+                f.setCustomStatus(jsonParser.getText());
+
+            } else if (fieldName.equals(LAST_CHANGE_DATE.attributeName())) {
+                f.setLastChangeDate(DATE_DESERIALIZER.convert(jsonParser.getText()));
+
+            } else if (fieldName.equals(ARTIFACT_BUILD_DATE.attributeName())) {
+                f.setArtifactBuildDate(DATE_DESERIALIZER.convert(jsonParser.getText()));
+
+            } else if (fieldName.equals(TEXT64.attributeName())) {
+                f.setText64(new String(jsonParser.getBinaryValue(), StandardCharsets.US_ASCII));
+
+            // Skip unneeded fields:
+            } else {
+                skipChildren(jsonParser);
             }
         }
 
         // start new vulnerability
         final StaticVulnerabilityBuilder v = vh.startStaticVulnerability(f.getUniqueId());
         // set builtin attributes
-        v.setCategory(f.getCategory());
-        v.setFileName(f.getFileName());
-        v.setVulnerabilityAbstract(f.getVulnerabilityAbstract());
-        v.setLineNumber(f.getLineNumber());
-        v.setConfidence(f.getConfidence());
-        v.setImpact(f.getImpact());
+        v.setCategory(f.getCategory());                             // REST -> issueName
+        v.setFileName(f.getFileName());                             // REST -> fullFileName or shortFileName
+        v.setVulnerabilityAbstract(f.getVulnerabilityAbstract());   // REST -> brief
+        v.setLineNumber(f.getLineNumber());                         // REST -> N/A, UI issue table -> part of Primary Location
+        v.setConfidence(f.getConfidence());                         // REST -> confidence
+        v.setImpact(f.getImpact());                                 // REST -> impact
+        v.setPriority(f.getPriority());                             // REST -> friority, UI issue table -> Criticality
 
         // set string custom attributes
         if (f.getUniqueId() != null) {
@@ -199,15 +200,16 @@ public class SampleParserPlugin implements ParserPlugin<SampleParserVulnerabilit
         if (f.getCategoryId() != null) {
             v.setStringCustomAttributeValue(CATEGORY_ID, f.getCategoryId());
         }
-        if (f.getCriticality() != null) {
-            v.setStringCustomAttributeValue(CRITICALITY, f.getCriticality());
-        }
         if (f.getArtifact() != null) {
             v.setStringCustomAttributeValue(ARTIFACT, f.getArtifact());
         }
-        if (f.getStatus() != null) {
-            v.setStringCustomAttributeValue(STATUS, f.getStatus());
+        if (f.getBuildNumber() != null) {
+            v.setStringCustomAttributeValue(BUILD_NUMBER, f.getBuildNumber());
         }
+        if (f.getCustomStatus() != null) {
+            v.setStringCustomAttributeValue(CUSTOM_STATUS, f.getCustomStatus());
+        }
+
         // set long string custom attributes
         if (f.getDescription() != null) {
             v.setStringCustomAttributeValue(DESCRIPTION, f.getDescription());
@@ -215,9 +217,10 @@ public class SampleParserPlugin implements ParserPlugin<SampleParserVulnerabilit
         if (f.getComment() != null) {
             v.setStringCustomAttributeValue(COMMENT, f.getComment());
         }
-        if (f.getBuildNumber() != null) {
-            v.setStringCustomAttributeValue(BUILD_NUMBER, f.getBuildNumber());
+        if (f.getText64() != null) {
+            v.setStringCustomAttributeValue(TEXT64, f.getText64());
         }
+
         // set date custom attributes
         if (f.getLastChangeDate() != null) {
             v.setDateCustomAttributeValue(LAST_CHANGE_DATE, f.getLastChangeDate());
@@ -225,6 +228,7 @@ public class SampleParserPlugin implements ParserPlugin<SampleParserVulnerabilit
         if (f.getArtifactBuildDate() != null) {
             v.setDateCustomAttributeValue(ARTIFACT_BUILD_DATE, f.getArtifactBuildDate());
         }
+
         // complete vulnerability building
         v.completeVulnerability();
 
@@ -235,7 +239,7 @@ public class SampleParserPlugin implements ParserPlugin<SampleParserVulnerabilit
     private static <T> void parseJson(final ScanData scanData, final T object, final Callback<T> fn) throws ScanParsingException, IOException {
         try (
                 final InputStream content = scanData.getInputStream(x -> x.endsWith(".json"));
-                final JsonParser jsonParser = JSON_FACTORY.createParser(content);
+                final JsonParser jsonParser = JSON_FACTORY.createParser(content)
         ) {
             jsonParser.nextToken();
             assertStartObject(jsonParser);

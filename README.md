@@ -256,7 +256,7 @@ The [plugin metadata specification](https://github.com/FortifySaTPublish/plugin-
               "items": [
                 {
                   "type": "template",
-                  "key": "customAttributes.buildServer",
+                  "key": "customAttributes.description",
                   "templateId": "SIMPLE",
                   "dataType": "string"
                 }
@@ -266,13 +266,7 @@ The [plugin metadata specification](https://github.com/FortifySaTPublish/plugin-
           [
             {
               "type": "template",
-              "key": "customAttributes.text1",
-              "templateId": "COLLAPSE",
-              "dataType": "string"
-            },
-            {
-              "type": "template",
-              "key": "customAttributes.text2",
+              "key": "customAttributes.text64",
               "templateId": "COLLAPSE",
               "dataType": "string"
             }
@@ -403,10 +397,14 @@ The [plugin metadata specification](https://github.com/FortifySaTPublish/plugin-
 - `scan.info` can also provide `scanDate` property value in ISO-8601 format
   - if `scanDate` is not provided the parser plugin will be responsible to provide a meaningful scan date value for SSC operations
 
-## Generating scan with random data
-The sample plugin library can be also used as a generator for scans, which can be parsed by plugin itself. The usage is as follows:
-- `java -cp sample-parser-[version].jar com.thirdparty.ScanGenerator output_scan.zip ISSUE_COUNT CATEGORY_COUNT LONG_TEXT_SIZE`
-  - e.g. `java -cp b:\tmp\sample-plugin\sample-parser-1.0.412650.3098.jar com.thirdparty.ScanGenerator sample_scan.zip 50 10 500`
+## Generating scan with random or steady data
+The sample plugin library can be also used as a generator for scans, which can be parsed by plugin itself.
+The usage for a generic scan is as follows:
+- `java -cp sample-parser-[version].jar com.thirdparty.ScanGenerator generic <GENERIC_OUTPUT_SCAN_ZIP_NAME> <ISSUE_COUNT> <CATEGORY_COUNT> <LONG_TEXT_SIZE>`
+  - e.g. `java -cp b:\tmp\sample-plugin\build\sample-plugin-1.0.418255.jar com.thirdparty.ScanGenerator generic generic_sample_scan.zip 50 10 500`
+The usage for a stead scan with a more realistic content is as follows:
+- `java -cp sample-parser-[version].jar com.thirdparty.ScanGenerator  generic <STEADY_OUTPUT_SCAN_ZIP_NAME>`
+  - e.g. `java -cp b:\tmp\sample-plugin\build\sample-plugin-1.0.418255.jar com.thirdparty.ScanGenerator steady_sample_scan.zip`
 
 ## Debugging
 - Developer can follow an `ssc.log` and `plugin-framework.log` to monitor what is happening in SSC and plugin container.

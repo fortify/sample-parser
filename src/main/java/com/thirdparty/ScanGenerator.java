@@ -2,7 +2,11 @@ package com.thirdparty;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
+import com.fortify.plugin.api.BasicVulnerabilityBuilder;
+import com.thirdparty.scan.DateDeserializer;
 import com.thirdparty.scan.DateSerializer;
+import com.thirdparty.scan.Finding;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -12,7 +16,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
-import java.math.BigDecimal;
 import java.net.Inet4Address;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -21,16 +24,18 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
+import static com.thirdparty.SscBuiltInVulnerabilityAttribute.*;
+import static com.thirdparty.SampleParserVulnerabilityAttribute.*;
 
 /**
  * (C) Copyright 2015,2016 Hewlett Packard Enterprise Development, L.P.
@@ -38,11 +43,27 @@ import java.util.zip.ZipOutputStream;
 public class ScanGenerator {
 
     private static final DateSerializer DATE_SERIALIZER = new DateSerializer();
+    static final DateDeserializer DATE_DESERIALIZER = new DateDeserializer();
     private static final Charset charset = StandardCharsets.US_ASCII;
+
+    private static final BasicVulnerabilityBuilder.Priority[] PRIORITY_VALUES = BasicVulnerabilityBuilder.Priority.values();
+    private static final int PRIORITY_SIZE = PRIORITY_VALUES.length;
+    private static final String[] CUSTOM_STATUS_VALUES = {"NEW", "OPEN", "REMEDIATED"};
+
+    private static final String SCAN_TYPE_STEADY = "steady";
+    private static final String SCAN_TYPE_GENERIC = "generic";
+
+    private static String scanType;
+
+    enum CustomStatus {
+        NEW,
+        OPEN,
+        REMEDIATED
+    }
 
     private final Random random;
     private final File outputFile;
-    private final int issueCount;
+    private int issueCount;
     private final int categoryCount;
     private final int longTextSize;
     private final Instant now;
@@ -56,12 +77,40 @@ public class ScanGenerator {
         this.now = now;
     }
 
+    private ScanGenerator(final Random random, final File outputFile) {
+        this(random, outputFile, 0, 0, 0, null);
+    }
+
+    private static boolean isScanGeneric() {
+        return SCAN_TYPE_GENERIC.equals(scanType);
+    }
+
+    private static boolean isScanSteady() {
+        return SCAN_TYPE_STEADY.equals(scanType);
+    }
+
     public static void main(String[] args) throws NoSuchAlgorithmException, IOException, InterruptedException {
-        if (args.length != 4) {
-            System.err.println(String.format("Usage: %s OUTPUT_SCAN.zip ISSUE_COUNT CATEGORY_COUNT LONG_TEXT_SIZE", ScanGenerator.class.getSimpleName()));
+        boolean argsOk = false;
+        if ((args.length == 5) || (args.length == 2)) {
+            scanType = args[0].toLowerCase();
+            if (isScanGeneric() || isScanSteady()) {
+                argsOk = true;
+            }
+        }
+        if (!argsOk) {
+            System.err.println(String.format("Usage:\n" +
+                    "\t%s " + SCAN_TYPE_STEADY + " <OUTPUT_SCAN_ZIP_NAME>\n" +
+                    "\t%s " + SCAN_TYPE_GENERIC + " <OUTPUT_SCAN_ZIP_NAME> <ISSUE_COUNT> <CATEGORY_COUNT> <LONG_TEXT_SIZE>\n"
+                    , ScanGenerator.class.getSimpleName(), ScanGenerator.class.getSimpleName()));
             System.exit(1);
         }
-        final ScanGenerator scanGenerator = new ScanGenerator(SecureRandom.getInstanceStrong(), new File(args[0]), Integer.valueOf(args[1]), Integer.valueOf(args[2]), Integer.valueOf(args[3]), Instant.now());
+
+        ScanGenerator scanGenerator;
+        if (isScanSteady()) {
+            scanGenerator = new ScanGenerator(SecureRandom.getInstanceStrong(), new File(args[1]));
+        } else {
+            scanGenerator = new ScanGenerator(SecureRandom.getInstanceStrong(), new File(args[1]), Integer.valueOf(args[2]), Integer.valueOf(args[3]), Integer.valueOf(args[4]), Instant.now());
+        }
         scanGenerator.write();
     }
 
@@ -72,10 +121,14 @@ public class ScanGenerator {
         }
         try (
             final OutputStream out = new FileOutputStream(outputFile);
-            final ZipOutputStream zipOut = new ZipOutputStream(out);
+            final ZipOutputStream zipOut = new ZipOutputStream(out)
         ) {
             writeScanInfo("SAMPLE", zipOut);
-            writeScan(zipOut);
+            if (isScanSteady()) {
+                writeScan(zipOut, SteadySampleScan.STEADY_FINDINGS::get, SteadySampleScan.STEADY_FINDINGS.size());
+            } else {
+                writeScan(zipOut, this::generateFinding, issueCount);
+            }
         } catch (final Exception e) {
             try {
                 Files.delete(outputFile.toPath());
@@ -97,48 +150,104 @@ public class ScanGenerator {
         }
     }
 
-    private void writeScan(final ZipOutputStream zipOut) throws IOException, InterruptedException {
+    private void writeScan(final ZipOutputStream zipOut, Function<Integer, Finding> getFinding, Integer findingCount
+            ) throws IOException, InterruptedException {
+
         final long startTime = System.currentTimeMillis();
-        zipOut.putNextEntry(new ZipEntry("sample-scan.json"));
+        final String jsonFileName = isScanSteady() ?   "steady-sample-scan.json" : "generic-sample-scan.json";
+        zipOut.putNextEntry(new ZipEntry(jsonFileName));
         try (final JsonGenerator jsonGenerator = new JsonFactory().createGenerator(zipOut)) {
+            if (isScanSteady()) {
+                jsonGenerator.setPrettyPrinter(new DefaultPrettyPrinter());
+            }
             jsonGenerator.disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
             jsonGenerator.writeStartObject();
-            jsonGenerator.writeStringField("scanDate", DATE_SERIALIZER.convert(new Date()));
-            jsonGenerator.writeStringField("engineVersion", "1.0-SNAPSHOT");
-            jsonGenerator.writeStringField("hostName", Inet4Address.getLocalHost().getHostName());
+            if (isScanSteady()) {
+                jsonGenerator.writeStringField(ENGINE_VERSION.attributeName(), SteadySampleScan.ENGINE_VERSION);
+                jsonGenerator.writeStringField(SCAN_DATE.attributeName(), SteadySampleScan.SCAN_DATE);
+                jsonGenerator.writeStringField(BUILD_SERVER.attributeName(), SteadySampleScan.BUILD_SERVER);
+            } else {
+                jsonGenerator.writeStringField(ENGINE_VERSION.attributeName(), "1.0-SNAPSHOT");
+                jsonGenerator.writeStringField(SCAN_DATE.attributeName(), DATE_SERIALIZER.convert(new Date()));
+                jsonGenerator.writeStringField(BUILD_SERVER.attributeName(), Inet4Address.getLocalHost().getHostName());
+            }
             jsonGenerator.writeArrayFieldStart("findings");
             int i;
-            for (i = 0; i < issueCount; i++) {
-                writeFinding(jsonGenerator, i);
+            for (i = 0; i < findingCount; i++) {
+                writeFinding(jsonGenerator, getFinding.apply(i));
             }
             jsonGenerator.writeEndArray();
             // NB: this value should be in seconds, but we always want some non-zero value, so we use millis
-            jsonGenerator.writeNumberField("elapsed", (System.currentTimeMillis() - startTime));
+            if (isScanSteady()) {
+                jsonGenerator.writeNumberField(ELAPSED.attributeName(), (System.currentTimeMillis() - startTime));
+            } else {
+                jsonGenerator.writeNumberField(ELAPSED.attributeName(), SteadySampleScan.ELAPSED);
+            }
             jsonGenerator.writeEndObject();
         }
     }
 
-    private void writeFinding(final JsonGenerator jsonGenerator, final int i) throws IOException, InterruptedException {
+
+    private Finding generateFinding(final int i) {
         final String uniqueId = UUID.randomUUID().toString();
         final String id = String.format("%s/%08d", uniqueId, i + 1);
+        final int randCat = random.nextInt(categoryCount);
+
+        Finding fn = new Finding();
+
+        // mandatory custom attributes
+        fn.setUniqueId(UUID.randomUUID().toString());
+
+        // builtin attributes
+        fn.setCategory(String.format("[generated] Random category %d", randCat));
+        fn.setFileName(String.format("file-%s.bin", id));
+        fn.setVulnerabilityAbstract("Abstract for vulnerability " + id);
+        fn.setLineNumber(random.nextInt(Integer.MAX_VALUE));
+        fn.setConfidence(random.nextFloat() * 9 + 1); // 1..10
+        fn.setImpact(random.nextFloat() + 200f);
+        fn.setPriority(PRIORITY_VALUES[random.nextInt(PRIORITY_SIZE)]);
+
+        // custom attributes
+        fn.setCategoryId(String.format("c%d", randCat));
+        fn.setArtifact(String.format("artifact-%s.jar", id));
+        fn.setDescription("Description for vulnerability " + id + "\nSecurity problem in code...");
+        fn.setComment("Comment for vulnerability " + id + "\nMight be a false positive...");
+        fn.setBuildNumber(String.valueOf(random.nextFloat() + 300f));
+        fn.setCustomStatus(CUSTOM_STATUS_VALUES[random.nextInt(CUSTOM_STATUS_VALUES.length)]);
+        fn.setLastChangeDate(Date.from(now.minus(2, ChronoUnit.DAYS).minus(2, ChronoUnit.HOURS)));
+        fn.setArtifactBuildDate(Date.from(now.minus(1, ChronoUnit.DAYS).minus(1, ChronoUnit.HOURS)));
+        fn.setText64("Very long text for " + id + ": \n");
+
+        return fn;
+    }
+
+    private void writeFinding(final JsonGenerator jsonGenerator, final Finding fn) throws IOException, InterruptedException {
         jsonGenerator.writeStartObject();
-        jsonGenerator.writeStringField("uniqueId", uniqueId);
-        jsonGenerator.writeStringField("category", String.format("Category %d", random.nextInt(categoryCount)));
-        jsonGenerator.writeStringField("fileName", String.format("file-%s.bin", id));
-        jsonGenerator.writeStringField("vulnerabilityAbstract", "Abstract for vulnerability " + id);
-        jsonGenerator.writeNumberField("lineNumber", random.nextInt(Integer.MAX_VALUE));
-        jsonGenerator.writeNumberField("confidence", random.nextFloat() * 9 + 1); // 1..10
-        jsonGenerator.writeStringField("friority", FriorityList[random.nextInt(FriorityList.length)]);
-        jsonGenerator.writeStringField("buildServer", "server1.example.com");
-        jsonGenerator.writeStringField("artifact", String.format("artifact-%s.jar", id));
-        jsonGenerator.writeFieldName("text1");
-        writeLoremIpsum("Very long text1 for " + id + '\n', jsonGenerator);
-        jsonGenerator.writeFieldName("text2");
-        writeLoremIpsum("Very long text2 for " + id + '\n', jsonGenerator);
-        jsonGenerator.writeNumberField("ratio", BigDecimal.valueOf(random.nextFloat() + 200.0));
-        jsonGenerator.writeNumberField("buildNumber", BigDecimal.valueOf(random.nextFloat() + 300.0));
-        jsonGenerator.writeStringField("lastChangeDate", DATE_SERIALIZER.convert(Date.from(now.minus(2, ChronoUnit.DAYS).minus(2, ChronoUnit.HOURS))));
-        jsonGenerator.writeStringField("artifactBuildDate", DATE_SERIALIZER.convert(Date.from(now.minus(1, ChronoUnit.DAYS).minus(1, ChronoUnit.HOURS))));
+
+        // Mandatory custom attributes
+        jsonGenerator.writeStringField(UNIQUE_ID.attributeName(), fn.getUniqueId());
+
+        // Builtin attributes
+        jsonGenerator.writeStringField(CATEGORY.attributeName(), fn.getCategory());
+        jsonGenerator.writeStringField(FILE_NAME.attributeName(), fn.getFileName());
+        jsonGenerator.writeStringField(VULNERABILITY_ABSTRACT.attributeName(), fn.getVulnerabilityAbstract());
+        jsonGenerator.writeNumberField(LINE_NUMBER.attributeName(), fn.getLineNumber());
+        jsonGenerator.writeNumberField(CONFIDENCE.attributeName(), fn.getConfidence());
+        jsonGenerator.writeNumberField(IMPACT.attributeName(), fn.getImpact());
+        jsonGenerator.writeStringField(PRIORITY.attributeName(), fn.getPriority().toString());
+
+        // Custom attributes
+        jsonGenerator.writeStringField(CATEGORY_ID.attributeName(), fn.getCategoryId());
+        jsonGenerator.writeStringField(CUSTOM_STATUS.attributeName(), fn.getCustomStatus());
+        jsonGenerator.writeStringField(ARTIFACT.attributeName(), fn.getArtifact());
+        jsonGenerator.writeStringField(DESCRIPTION.attributeName(), fn.getDescription());
+        jsonGenerator.writeStringField(COMMENT.attributeName(), fn.getComment());
+        jsonGenerator.writeStringField(BUILD_NUMBER.attributeName(), fn.getBuildNumber());
+        jsonGenerator.writeStringField(LAST_CHANGE_DATE.attributeName(), DATE_SERIALIZER.convert(fn.getLastChangeDate()));
+        jsonGenerator.writeStringField(ARTIFACT_BUILD_DATE.attributeName(), DATE_SERIALIZER.convert(fn.getArtifactBuildDate()));
+        jsonGenerator.writeFieldName(TEXT64.attributeName());
+            writeLoremIpsum(fn.getText64(), jsonGenerator);
+
         jsonGenerator.writeEndObject();
     }
 
@@ -192,8 +301,6 @@ public class ScanGenerator {
         return i < j ? i : j;
     }
 
-    private static final String[] FriorityList = {"Critical", "High", "Medium", "Low"};
-
     private static byte[] LOREM_IPSUM = (
         "Lorem ipsum dolor sit amet, eam ridens cetero iuvaret id. Ius eros fabulas ei. Te vis unum intellegam, cu sed ullum eruditi, et est lorem volumus. Te altera malorum quaestio mei, sea ea veniam disputando.\n" +
         "\n" +
@@ -215,4 +322,5 @@ public class ScanGenerator {
         "\n" +
         "Everti vivendum splendide ad qui, ad quod nominavi comprehensam quo, mollis scripta eu eum. Te pro dicta volumus, his affert ornatus dissentias id. Mea no quot referrentur, an his eius eripuit noluisse. His eu legere eruditi."
     ).getBytes(charset);
+
 }
