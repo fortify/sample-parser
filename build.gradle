@@ -31,12 +31,13 @@ repositories {
 
 configurations {
     compileExport
-    compile.extendsFrom compileExport
+    compilePluginApi
+    compile.extendsFrom (compileExport, compilePluginApi)
 }
 
 dependencies {
     // dependencies provided by plugin runtime
-    compile 'com.fortify.plugin:plugin-api:1.0.1'
+    compilePluginApi 'com.fortify.plugin:plugin-api:1.0.1'
     compile 'org.slf4j:slf4j-api:1.7.21'
 
     // plugin specific dependencies
@@ -46,7 +47,14 @@ dependencies {
 }
 
 
+// Plugin API is needed for generating scans from command line
+task copyToLibs( type: Copy ) {
+    into "$buildDir/libs"
+    from configurations.compilePluginApi
+}
+
 jar {
+    dependsOn 'copyToLibs'
     doFirst {
         // check if version matches requirements
         if (!version.matches(versionRegex)) {
@@ -61,6 +69,10 @@ jar {
     }
     // include files from compileExport dependencies
     from { configurations.compileExport.collect { it.isDirectory() ? it : zipTree(it).matching { exclude 'META-INF/*' } } }
+
+    into("libs") {
+        from configurations.compilePluginApi
+    }
 }
 
 

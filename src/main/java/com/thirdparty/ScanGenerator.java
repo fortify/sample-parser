@@ -99,9 +99,9 @@ public class ScanGenerator {
         }
         if (!argsOk) {
             System.err.println(String.format("Usage:\n" +
-                    "\t%s " + SCAN_TYPE_STEADY + " <OUTPUT_SCAN_ZIP_NAME>\n" +
-                    "\t%s " + SCAN_TYPE_GENERIC + " <OUTPUT_SCAN_ZIP_NAME> <ISSUE_COUNT> <CATEGORY_COUNT> <LONG_TEXT_SIZE>\n"
-                    , ScanGenerator.class.getSimpleName(), ScanGenerator.class.getSimpleName()));
+                    "\tjava -cp <class_path> %s " + SCAN_TYPE_STEADY + " <OUTPUT_SCAN_ZIP_NAME>\n" +
+                    "\tjava -cp <class_path> %s " + SCAN_TYPE_GENERIC + " <OUTPUT_SCAN_ZIP_NAME> <ISSUE_COUNT> <CATEGORY_COUNT> <LONG_TEXT_SIZE>\n"
+                    , ScanGenerator.class.getName(), ScanGenerator.class.getName()));
             System.exit(1);
         }
 

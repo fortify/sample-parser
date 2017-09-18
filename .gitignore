@@ -2,6 +2,7 @@
 .shelf/
 build/
 out/
+dist/
 *.iml
 *.iws
 *.ipr
