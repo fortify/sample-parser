@@ -1,14 +1,24 @@
 package com.thirdparty.scan;
 
+/**
+ * (c) Copyright [2017] EntIT Software LLC
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fortify.plugin.api.BasicVulnerabilityBuilder;
-
+import static com.thirdparty.ScanGenerator.GenPriority;
+import static com.thirdparty.ScanGenerator.CustomStatus;
 import java.util.Date;
 
-/**
- * (C) Copyright 2015,2016 Hewlett Packard Enterprise Development, L.P.
- */
 @JsonSerialize
 public class Finding {
 
@@ -22,7 +32,7 @@ public class Finding {
     private Integer lineNumber;
     private Float confidence;
     private Float impact;
-    private BasicVulnerabilityBuilder.Priority priority;
+    private GenPriority priority;
 
     // custom attributes
     private String categoryId;
@@ -30,10 +40,10 @@ public class Finding {
     private String description;
     private String comment;
     private String buildNumber;
-    private String customStatus;
+    private CustomStatus customStatus;
     private Date lastChangeDate;
     private Date artifactBuildDate;
-    private String text64;
+    private String textBase64;
 
     public String getUniqueId() {
         return uniqueId;
@@ -87,9 +97,9 @@ public class Finding {
         this.uniqueId = uniqueId;
     }
 
-    public BasicVulnerabilityBuilder.Priority getPriority() { return priority; }
+    public GenPriority getPriority() { return priority; }
 
-    public void setPriority(final BasicVulnerabilityBuilder.Priority priority) { this.priority = priority; }
+    public void setPriority(final GenPriority priority) { this.priority = priority; }
 
     public String getCategoryId() { return categoryId; }
 
@@ -119,9 +129,9 @@ public class Finding {
         this.buildNumber = buildNumber;
     }
 
-    public String getCustomStatus() { return customStatus; }
+    public CustomStatus getCustomStatus() { return customStatus; }
 
-    public void setCustomStatus(final String customStatus) { this.customStatus = customStatus; }
+    public void setCustomStatus(final CustomStatus customStatus) { this.customStatus = customStatus; }
 
 
     @JsonSerialize(converter = DateSerializer.class)
@@ -144,11 +154,11 @@ public class Finding {
         this.artifactBuildDate = artifactBuildDate;
     }
 
-    public String getText64() {
-        return text64;
+    public String getTextBase64() {
+        return textBase64;
     }
 
-    public void setText64(String text64) {
-        this.text64 = text64;
+    public void setTextBase64(String textBase64) {
+        this.textBase64 = textBase64;
     }
 }

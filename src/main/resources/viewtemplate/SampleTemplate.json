@@ -173,7 +173,7 @@
     {
       "type": "template",
       "title": "Custom long text (base64 example)",
-      "key": "customAttributes.text64",
+      "key": "customAttributes.textBase64",
       "templateId": "COLLAPSE",
       "dataType": "string"
     }

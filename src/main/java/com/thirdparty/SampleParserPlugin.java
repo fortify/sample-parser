@@ -1,5 +1,18 @@
 package com.thirdparty;
 
+/**
+ * (c) Copyright [2017] EntIT Software LLC
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
@@ -20,13 +33,11 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 import static com.fasterxml.jackson.core.JsonToken.START_OBJECT;
-import static com.thirdparty.SscBuiltInVulnerabilityAttribute.*;
-import static com.thirdparty.SampleParserVulnerabilityAttribute.*;
+import static com.thirdparty.CustomVulnAttribute.*;
+import static com.thirdparty.ScanGenerator.GenPriority;
+import static com.thirdparty.ScanGenerator.CustomStatus;
 
-/**
- * (C) Copyright 2015,2016 Hewlett Packard Enterprise Development, L.P.
- */
-public class SampleParserPlugin implements ParserPlugin<SampleParserVulnerabilityAttribute> {
+public class SampleParserPlugin implements ParserPlugin<CustomVulnAttribute> {
     private static final Logger LOG = LoggerFactory.getLogger(SampleParserPlugin.class);
 
     private static final JsonFactory JSON_FACTORY;
@@ -48,8 +59,8 @@ public class SampleParserPlugin implements ParserPlugin<SampleParserVulnerabilit
     }
 
     @Override
-    public Class<SampleParserVulnerabilityAttribute> getVulnerabilityAttributesClass() {
-        return SampleParserVulnerabilityAttribute.class;
+    public Class<CustomVulnAttribute> getVulnerabilityAttributesClass() {
+        return CustomVulnAttribute.class;
     }
 
     @Override
@@ -62,24 +73,34 @@ public class SampleParserPlugin implements ParserPlugin<SampleParserVulnerabilit
     private void parseScanInternal(final ScanData scanData, final ScanBuilder scanBuilder, final JsonParser jsonParser) throws IOException, ScanParsingException {
         // load data from top-level object fields
         while (jsonParser.nextToken() != JsonToken.END_OBJECT) {
-            final String fieldName = jsonParser.getCurrentName();
+            final VulnAttribute vulnAttr = VulnAttribute.get(jsonParser.getCurrentName());
             jsonParser.nextToken();
-            if (fieldName.equals(SCAN_DATE.attributeName())) {
-                scanBuilder.setScanDate(DATE_DESERIALIZER.convert(jsonParser.getText()));
-
-            } else if (fieldName.equals(ENGINE_VERSION.attributeName())) {
-                scanBuilder.setEngineVersion(jsonParser.getText());
-
-            } else if (fieldName.equals(ELAPSED.attributeName())) {
-                scanBuilder.setElapsedTime(jsonParser.getIntValue());
-
-            } else if (fieldName.equals(BUILD_SERVER.attributeName())) {
-                scanBuilder.setHostName(jsonParser.getText());
-
-            // Skip unneeded fields
-            } else {
+            if (vulnAttr == null) {
                 skipChildren(jsonParser);
+                continue;
+            }
 
+            switch (vulnAttr) {
+                case SCAN_DATE:
+                    scanBuilder.setScanDate(DATE_DESERIALIZER.convert(jsonParser.getText()));
+                    break;
+
+                case ENGINE_VERSION:
+                    scanBuilder.setEngineVersion(jsonParser.getText());
+                    break;
+
+                case ELAPSED:
+                    scanBuilder.setElapsedTime(jsonParser.getIntValue());
+                    break;
+
+                case BUILD_SERVER:
+                    scanBuilder.setHostName(jsonParser.getText());
+                    break;
+
+                // Skip unneeded fields
+                default:
+                    skipChildren(jsonParser);
+                    break;
             }
         }
     }
@@ -96,7 +117,7 @@ public class SampleParserPlugin implements ParserPlugin<SampleParserVulnerabilit
             jsonParser.nextToken();
             if (fieldName.equals("findings")) {
                 if (jsonParser.currentToken() != JsonToken.START_ARRAY) {
-                    throw new ScanParsingException(String.format("Expected array as value for findings at %s", jsonParser.getTokenLocation()));
+                    throw new ScanParsingException(String.format("Expected array as a value for findings at %s", jsonParser.getTokenLocation()));
                 }
                 while (jsonParser.nextToken() != JsonToken.END_ARRAY) {
                     assertStartObject(jsonParser);
@@ -112,127 +133,167 @@ public class SampleParserPlugin implements ParserPlugin<SampleParserVulnerabilit
     }
 
     private String parseVulnerability(final ScanData scanData, final VulnerabilityHandler vh, final JsonParser jsonParser) throws IOException {
-        final Finding f = new Finding();
-        // load data from one vulnerability object
+        final Finding fn = new Finding();
+        loadFinding(jsonParser, fn);    // Load data from one scan json vulnerability to the Finding onject
+
+        final StaticVulnerabilityBuilder vb = vh.startStaticVulnerability(fn.getUniqueId());  // Start new vulnerability building
+        populateVulnerability(vb, fn);
+        vb.completeVulnerability();  // Complete vulnerability building
+
+        return fn.getUniqueId();
+    }
+
+    private void loadFinding(final JsonParser jsonParser, Finding fn) throws IOException {
         while (jsonParser.nextToken() != JsonToken.END_OBJECT) {
-            final String fieldName = jsonParser.getCurrentName();
+            VulnAttribute vulnAttr = VulnAttribute.get(jsonParser.getCurrentName());
             jsonParser.nextToken();
-
-            // Custom mandatory attributes:
-            if (fieldName.equals(UNIQUE_ID.attributeName())) {
-                f.setUniqueId(jsonParser.getText());
-
-            // Standard attributes
-            } else if (fieldName.equals(CATEGORY.attributeName())) {
-                f.setCategory(jsonParser.getText());
-
-            } else if (fieldName.equals(FILE_NAME.attributeName())) {
-                f.setFileName(jsonParser.getText());
-
-            } else if (fieldName.equals(VULNERABILITY_ABSTRACT.attributeName())) {
-                f.setVulnerabilityAbstract(jsonParser.getText());
-
-            } else if (fieldName.equals(LINE_NUMBER.attributeName())) {
-                f.setLineNumber(jsonParser.getIntValue());
-
-            } else if (fieldName.equals(CONFIDENCE.attributeName())) {
-                f.setConfidence(jsonParser.getFloatValue());
-
-            } else if (fieldName.equals(IMPACT.attributeName())) {
-                f.setImpact(jsonParser.getFloatValue());
-
-            } else if (fieldName.equals(PRIORITY.attributeName())) {
-                try {
-                    f.setPriority(BasicVulnerabilityBuilder.Priority.valueOf(jsonParser.getText()));
-                } catch (IllegalArgumentException e) {
-                    f.setPriority(BasicVulnerabilityBuilder.Priority.Medium);
-                }
-
-            // Custom attributes
-            } else if (fieldName.equals(CATEGORY_ID.attributeName())) {
-                f.setCategoryId(jsonParser.getText());
-
-            } else if (fieldName.equals(ARTIFACT.attributeName())) {
-                f.setArtifact(jsonParser.getText());
-
-            } else if (fieldName.equals(DESCRIPTION.attributeName())) {
-                f.setDescription(jsonParser.getText());
-
-            } else if (fieldName.equals(COMMENT.attributeName())) {
-                f.setComment(jsonParser.getText());
-
-            } else if (fieldName.equals(BUILD_NUMBER.attributeName())) {
-                f.setBuildNumber(jsonParser.getText());
-
-            } else if (fieldName.equals(CUSTOM_STATUS.attributeName())) {
-                f.setCustomStatus(jsonParser.getText());
-
-            } else if (fieldName.equals(LAST_CHANGE_DATE.attributeName())) {
-                f.setLastChangeDate(DATE_DESERIALIZER.convert(jsonParser.getText()));
-
-            } else if (fieldName.equals(ARTIFACT_BUILD_DATE.attributeName())) {
-                f.setArtifactBuildDate(DATE_DESERIALIZER.convert(jsonParser.getText()));
-
-            } else if (fieldName.equals(TEXT64.attributeName())) {
-                f.setText64(new String(jsonParser.getBinaryValue(), StandardCharsets.US_ASCII));
-
-            // Skip unneeded fields:
-            } else {
+            if (vulnAttr == null) {
                 skipChildren(jsonParser);
+                continue;
+            }
+
+            switch (vulnAttr) {
+
+                // Custom mandatory attributes:
+
+                case UNIQUE_ID:
+                    fn.setUniqueId(jsonParser.getText());
+                    break;
+
+                // Standard SSC attributes
+
+                case CATEGORY:
+                    fn.setCategory(jsonParser.getText());
+                    break;
+
+                case FILE_NAME:
+                    fn.setFileName(jsonParser.getText());
+                    break;
+
+                case VULNERABILITY_ABSTRACT:
+                    fn.setVulnerabilityAbstract(jsonParser.getText());
+                    break;
+
+                case LINE_NUMBER:
+                    fn.setLineNumber(jsonParser.getIntValue());
+                    break;
+
+                case CONFIDENCE:
+                    fn.setConfidence(jsonParser.getFloatValue());
+                    break;
+
+                case IMPACT:
+                    fn.setImpact(jsonParser.getFloatValue());
+                    break;
+
+                case PRIORITY:
+                    try {
+                        fn.setPriority(GenPriority.valueOf(jsonParser.getText()));
+                    } catch (IllegalArgumentException e) {
+                        fn.setPriority(GenPriority.Medium);
+                    }
+                    break;
+
+                // Custom attributes
+
+                case CATEGORY_ID:
+                    fn.setCategoryId(jsonParser.getText());
+                    break;
+
+                case ARTIFACT:
+                    fn.setArtifact(jsonParser.getText());
+                    break;
+
+                case DESCRIPTION:
+                    fn.setDescription(jsonParser.getText());
+                    break;
+
+                case COMMENT:
+                    fn.setComment(jsonParser.getText());
+                    break;
+
+                case BUILD_NUMBER:
+                    fn.setBuildNumber(jsonParser.getText());
+                    break;
+
+                case CUSTOM_STATUS:
+                    try {
+                        fn.setCustomStatus(CustomStatus.valueOf(jsonParser.getText()));
+                    } catch (IllegalArgumentException e) {
+                        fn.setCustomStatus(CustomStatus.NEW);
+                    }
+                    break;
+
+                case LAST_CHANGE_DATE:
+                    fn.setLastChangeDate(DATE_DESERIALIZER.convert(jsonParser.getText()));
+                    break;
+
+                case ARTIFACT_BUILD_DATE:
+                    fn.setArtifactBuildDate(DATE_DESERIALIZER.convert(jsonParser.getText()));
+                    break;
+
+                case TEXT_BASE64:
+                    fn.setTextBase64(new String(jsonParser.getBinaryValue(), StandardCharsets.US_ASCII));
+                    break;
+
+                // Skip unneeded fields:
+                default:
+                    skipChildren(jsonParser);
+                    break;
             }
         }
+    }
 
-        // start new vulnerability
-        final StaticVulnerabilityBuilder v = vh.startStaticVulnerability(f.getUniqueId());
-        // set builtin attributes
-        v.setCategory(f.getCategory());                             // REST -> issueName
-        v.setFileName(f.getFileName());                             // REST -> fullFileName or shortFileName
-        v.setVulnerabilityAbstract(f.getVulnerabilityAbstract());   // REST -> brief
-        v.setLineNumber(f.getLineNumber());                         // REST -> N/A, UI issue table -> part of Primary Location
-        v.setConfidence(f.getConfidence());                         // REST -> confidence
-        v.setImpact(f.getImpact());                                 // REST -> impact
-        v.setPriority(f.getPriority());                             // REST -> friority, UI issue table -> Criticality
+    private void populateVulnerability(final StaticVulnerabilityBuilder vb, final Finding fn) {
 
-        // set string custom attributes
-        if (f.getUniqueId() != null) {
-            v.setStringCustomAttributeValue(UNIQUE_ID, f.getUniqueId());
+        // Set builtin attributes
+        vb.setCategory(fn.getCategory());                             // REST -> issueName
+        vb.setFileName(fn.getFileName());                             // REST -> fullFileName or shortFileName
+        vb.setVulnerabilityAbstract(fn.getVulnerabilityAbstract());   // REST -> brief
+        vb.setLineNumber(fn.getLineNumber());                         // REST -> N/A, UI issue table -> part of Primary Location
+        vb.setConfidence(fn.getConfidence());                         // REST -> confidence
+        vb.setImpact(fn.getImpact());                                 // REST -> impact
+        try {
+            vb.setPriority(BasicVulnerabilityBuilder.Priority.valueOf(fn.getPriority().name()));  // REST -> friority, UI issue table -> Criticality
+        } catch (IllegalArgumentException e) {
+            // Leave priority unset if the value from scan is unknown
         }
-        if (f.getCategoryId() != null) {
-            v.setStringCustomAttributeValue(CATEGORY_ID, f.getCategoryId());
+
+        // Set string custom attributes
+        if (fn.getUniqueId() != null) {
+            vb.setStringCustomAttributeValue(UNIQUE_ID, fn.getUniqueId());
         }
-        if (f.getArtifact() != null) {
-            v.setStringCustomAttributeValue(ARTIFACT, f.getArtifact());
+        if (fn.getCategoryId() != null) {
+            vb.setStringCustomAttributeValue(CATEGORY_ID, fn.getCategoryId());
         }
-        if (f.getBuildNumber() != null) {
-            v.setStringCustomAttributeValue(BUILD_NUMBER, f.getBuildNumber());
+        if (fn.getArtifact() != null) {
+            vb.setStringCustomAttributeValue(ARTIFACT, fn.getArtifact());
         }
-        if (f.getCustomStatus() != null) {
-            v.setStringCustomAttributeValue(CUSTOM_STATUS, f.getCustomStatus());
+        if (fn.getBuildNumber() != null) {
+            vb.setStringCustomAttributeValue(BUILD_NUMBER, fn.getBuildNumber());
+        }
+        if (fn.getCustomStatus() != null) {
+            vb.setStringCustomAttributeValue(CUSTOM_STATUS, fn.getCustomStatus().name());
         }
 
         // set long string custom attributes
-        if (f.getDescription() != null) {
-            v.setStringCustomAttributeValue(DESCRIPTION, f.getDescription());
+        if (fn.getDescription() != null) {
+            vb.setStringCustomAttributeValue(DESCRIPTION, fn.getDescription());
         }
-        if (f.getComment() != null) {
-            v.setStringCustomAttributeValue(COMMENT, f.getComment());
+        if (fn.getComment() != null) {
+            vb.setStringCustomAttributeValue(COMMENT, fn.getComment());
         }
-        if (f.getText64() != null) {
-            v.setStringCustomAttributeValue(TEXT64, f.getText64());
+        if (fn.getTextBase64() != null) {
+            vb.setStringCustomAttributeValue(TEXT_BASE64, fn.getTextBase64());
         }
 
         // set date custom attributes
-        if (f.getLastChangeDate() != null) {
-            v.setDateCustomAttributeValue(LAST_CHANGE_DATE, f.getLastChangeDate());
+        if (fn.getLastChangeDate() != null) {
+            vb.setDateCustomAttributeValue(LAST_CHANGE_DATE, fn.getLastChangeDate());
         }
-        if (f.getArtifactBuildDate() != null) {
-            v.setDateCustomAttributeValue(ARTIFACT_BUILD_DATE, f.getArtifactBuildDate());
+        if (fn.getArtifactBuildDate() != null) {
+            vb.setDateCustomAttributeValue(ARTIFACT_BUILD_DATE, fn.getArtifactBuildDate());
         }
-
-        // complete vulnerability building
-        v.completeVulnerability();
-
-        return f.getUniqueId();
     }
 
 

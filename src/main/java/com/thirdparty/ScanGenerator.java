@@ -1,9 +1,21 @@
 package com.thirdparty;
 
+/**
+ * (c) Copyright [2017] EntIT Software LLC
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
-import com.fortify.plugin.api.BasicVulnerabilityBuilder;
 import com.thirdparty.scan.DateDeserializer;
 import com.thirdparty.scan.DateSerializer;
 import com.thirdparty.scan.Finding;
@@ -34,32 +46,30 @@ import java.util.function.Function;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import static com.thirdparty.SscBuiltInVulnerabilityAttribute.*;
-import static com.thirdparty.SampleParserVulnerabilityAttribute.*;
+import static com.thirdparty.VulnAttribute.*;
 
-/**
- * (C) Copyright 2015,2016 Hewlett Packard Enterprise Development, L.P.
- */
 public class ScanGenerator {
 
     private static final DateSerializer DATE_SERIALIZER = new DateSerializer();
     static final DateDeserializer DATE_DESERIALIZER = new DateDeserializer();
     private static final Charset charset = StandardCharsets.US_ASCII;
 
-    private static final BasicVulnerabilityBuilder.Priority[] PRIORITY_VALUES = BasicVulnerabilityBuilder.Priority.values();
-    private static final int PRIORITY_SIZE = PRIORITY_VALUES.length;
-    private static final String[] CUSTOM_STATUS_VALUES = {"NEW", "OPEN", "REMEDIATED"};
+    // GenPriority should exactly copy values from com.fortify.plugin.api.BasicVulnerabilityBuilder.Priority
+    // We don't use the original Priority here because we don't want generator to be dependent on the plugin-api
+    public enum GenPriority {
+        Critical, High, Medium, Low;
+        final static int LENGTH = values().length;
+    };
 
-    private static final String SCAN_TYPE_STEADY = "steady";
-    private static final String SCAN_TYPE_GENERIC = "generic";
+    public enum CustomStatus {
+        NEW, OPEN, REMEDIATED;
+        final static int LENGTH = values().length;
+    };
+
+    private static final String SCAN_TYPE_FIXED = "fixed";
+    private static final String SCAN_TYPE_RANDOM = "random";
 
     private static String scanType;
-
-    enum CustomStatus {
-        NEW,
-        OPEN,
-        REMEDIATED
-    }
 
     private final Random random;
     private final File outputFile;
@@ -81,32 +91,32 @@ public class ScanGenerator {
         this(random, outputFile, 0, 0, 0, null);
     }
 
-    private static boolean isScanGeneric() {
-        return SCAN_TYPE_GENERIC.equals(scanType);
+    private static boolean isScanRandom() {
+        return SCAN_TYPE_RANDOM.equals(scanType);
     }
 
-    private static boolean isScanSteady() {
-        return SCAN_TYPE_STEADY.equals(scanType);
+    private static boolean isScanFixed() {
+        return SCAN_TYPE_FIXED.equals(scanType);
     }
 
     public static void main(String[] args) throws NoSuchAlgorithmException, IOException, InterruptedException {
         boolean argsOk = false;
         if ((args.length == 5) || (args.length == 2)) {
             scanType = args[0].toLowerCase();
-            if (isScanGeneric() || isScanSteady()) {
+            if (isScanRandom() || isScanFixed()) {
                 argsOk = true;
             }
         }
         if (!argsOk) {
             System.err.println(String.format("Usage:\n" +
-                    "\tjava -cp <class_path> %s " + SCAN_TYPE_STEADY + " <OUTPUT_SCAN_ZIP_NAME>\n" +
-                    "\tjava -cp <class_path> %s " + SCAN_TYPE_GENERIC + " <OUTPUT_SCAN_ZIP_NAME> <ISSUE_COUNT> <CATEGORY_COUNT> <LONG_TEXT_SIZE>\n"
+                    "\tjava -cp <class_path> %s " + SCAN_TYPE_FIXED + " <OUTPUT_SCAN_ZIP_NAME>\n" +
+                    "\tjava -cp <class_path> %s " + SCAN_TYPE_RANDOM + " <OUTPUT_SCAN_ZIP_NAME> <ISSUE_COUNT> <CATEGORY_COUNT> <LONG_TEXT_SIZE>\n"
                     , ScanGenerator.class.getName(), ScanGenerator.class.getName()));
             System.exit(1);
         }
 
         ScanGenerator scanGenerator;
-        if (isScanSteady()) {
+        if (isScanFixed()) {
             scanGenerator = new ScanGenerator(SecureRandom.getInstanceStrong(), new File(args[1]));
         } else {
             scanGenerator = new ScanGenerator(SecureRandom.getInstanceStrong(), new File(args[1]), Integer.valueOf(args[2]), Integer.valueOf(args[3]), Integer.valueOf(args[4]), Instant.now());
@@ -124,8 +134,8 @@ public class ScanGenerator {
             final ZipOutputStream zipOut = new ZipOutputStream(out)
         ) {
             writeScanInfo("SAMPLE", zipOut);
-            if (isScanSteady()) {
-                writeScan(zipOut, SteadySampleScan.STEADY_FINDINGS::get, SteadySampleScan.STEADY_FINDINGS.size());
+            if (isScanFixed()) {
+                writeScan(zipOut, FixedSampleScan.FIXED_FINDINGS::get, FixedSampleScan.FIXED_FINDINGS.size());
             } else {
                 writeScan(zipOut, this::generateFinding, issueCount);
             }
@@ -154,22 +164,22 @@ public class ScanGenerator {
             ) throws IOException, InterruptedException {
 
         final long startTime = System.currentTimeMillis();
-        final String jsonFileName = isScanSteady() ?   "steady-sample-scan.json" : "generic-sample-scan.json";
+        final String jsonFileName = isScanFixed() ?   "fixed-sample-scan.json" : "random-sample-scan.json";
         zipOut.putNextEntry(new ZipEntry(jsonFileName));
         try (final JsonGenerator jsonGenerator = new JsonFactory().createGenerator(zipOut)) {
-            if (isScanSteady()) {
+            if (isScanFixed()) {
                 jsonGenerator.setPrettyPrinter(new DefaultPrettyPrinter());
             }
             jsonGenerator.disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
             jsonGenerator.writeStartObject();
-            if (isScanSteady()) {
-                jsonGenerator.writeStringField(ENGINE_VERSION.attributeName(), SteadySampleScan.ENGINE_VERSION);
-                jsonGenerator.writeStringField(SCAN_DATE.attributeName(), SteadySampleScan.SCAN_DATE);
-                jsonGenerator.writeStringField(BUILD_SERVER.attributeName(), SteadySampleScan.BUILD_SERVER);
+            if (isScanFixed()) {
+                jsonGenerator.writeStringField(ENGINE_VERSION.attrName(), FixedSampleScan.ENGINE_VERSION);
+                jsonGenerator.writeStringField(SCAN_DATE.attrName(), FixedSampleScan.SCAN_DATE);
+                jsonGenerator.writeStringField(BUILD_SERVER.attrName(), FixedSampleScan.BUILD_SERVER);
             } else {
-                jsonGenerator.writeStringField(ENGINE_VERSION.attributeName(), "1.0-SNAPSHOT");
-                jsonGenerator.writeStringField(SCAN_DATE.attributeName(), DATE_SERIALIZER.convert(new Date()));
-                jsonGenerator.writeStringField(BUILD_SERVER.attributeName(), Inet4Address.getLocalHost().getHostName());
+                jsonGenerator.writeStringField(ENGINE_VERSION.attrName(), "1.0-SNAPSHOT");
+                jsonGenerator.writeStringField(SCAN_DATE.attrName(), DATE_SERIALIZER.convert(new Date()));
+                jsonGenerator.writeStringField(BUILD_SERVER.attrName(), Inet4Address.getLocalHost().getHostName());
             }
             jsonGenerator.writeArrayFieldStart("findings");
             int i;
@@ -178,10 +188,10 @@ public class ScanGenerator {
             }
             jsonGenerator.writeEndArray();
             // NB: this value should be in seconds, but we always want some non-zero value, so we use millis
-            if (isScanSteady()) {
-                jsonGenerator.writeNumberField(ELAPSED.attributeName(), (System.currentTimeMillis() - startTime));
+            if (isScanFixed()) {
+                jsonGenerator.writeNumberField(ELAPSED.attrName(), (System.currentTimeMillis() - startTime));
             } else {
-                jsonGenerator.writeNumberField(ELAPSED.attributeName(), SteadySampleScan.ELAPSED);
+                jsonGenerator.writeNumberField(ELAPSED.attrName(), FixedSampleScan.ELAPSED);
             }
             jsonGenerator.writeEndObject();
         }
@@ -205,7 +215,7 @@ public class ScanGenerator {
         fn.setLineNumber(random.nextInt(Integer.MAX_VALUE));
         fn.setConfidence(random.nextFloat() * 9 + 1); // 1..10
         fn.setImpact(random.nextFloat() + 200f);
-        fn.setPriority(PRIORITY_VALUES[random.nextInt(PRIORITY_SIZE)]);
+        fn.setPriority(GenPriority.values()[random.nextInt(GenPriority.LENGTH)]);
 
         // custom attributes
         fn.setCategoryId(String.format("c%d", randCat));
@@ -213,10 +223,10 @@ public class ScanGenerator {
         fn.setDescription("Description for vulnerability " + id + "\nSecurity problem in code...");
         fn.setComment("Comment for vulnerability " + id + "\nMight be a false positive...");
         fn.setBuildNumber(String.valueOf(random.nextFloat() + 300f));
-        fn.setCustomStatus(CUSTOM_STATUS_VALUES[random.nextInt(CUSTOM_STATUS_VALUES.length)]);
+        fn.setCustomStatus(CustomStatus.values()[random.nextInt(CustomStatus.LENGTH)]);
         fn.setLastChangeDate(Date.from(now.minus(2, ChronoUnit.DAYS).minus(2, ChronoUnit.HOURS)));
         fn.setArtifactBuildDate(Date.from(now.minus(1, ChronoUnit.DAYS).minus(1, ChronoUnit.HOURS)));
-        fn.setText64("Very long text for " + id + ": \n");
+        fn.setTextBase64("Very long text for " + id + ": \n");
 
         return fn;
     }
@@ -225,28 +235,28 @@ public class ScanGenerator {
         jsonGenerator.writeStartObject();
 
         // Mandatory custom attributes
-        jsonGenerator.writeStringField(UNIQUE_ID.attributeName(), fn.getUniqueId());
+        jsonGenerator.writeStringField(UNIQUE_ID.attrName(), fn.getUniqueId());
 
         // Builtin attributes
-        jsonGenerator.writeStringField(CATEGORY.attributeName(), fn.getCategory());
-        jsonGenerator.writeStringField(FILE_NAME.attributeName(), fn.getFileName());
-        jsonGenerator.writeStringField(VULNERABILITY_ABSTRACT.attributeName(), fn.getVulnerabilityAbstract());
-        jsonGenerator.writeNumberField(LINE_NUMBER.attributeName(), fn.getLineNumber());
-        jsonGenerator.writeNumberField(CONFIDENCE.attributeName(), fn.getConfidence());
-        jsonGenerator.writeNumberField(IMPACT.attributeName(), fn.getImpact());
-        jsonGenerator.writeStringField(PRIORITY.attributeName(), fn.getPriority().toString());
+        jsonGenerator.writeStringField(CATEGORY.attrName(), fn.getCategory());
+        jsonGenerator.writeStringField(FILE_NAME.attrName(), fn.getFileName());
+        jsonGenerator.writeStringField(VULNERABILITY_ABSTRACT.attrName(), fn.getVulnerabilityAbstract());
+        jsonGenerator.writeNumberField(LINE_NUMBER.attrName(), fn.getLineNumber());
+        jsonGenerator.writeNumberField(CONFIDENCE.attrName(), fn.getConfidence());
+        jsonGenerator.writeNumberField(IMPACT.attrName(), fn.getImpact());
+        jsonGenerator.writeStringField(PRIORITY.attrName(), fn.getPriority().name());
 
         // Custom attributes
-        jsonGenerator.writeStringField(CATEGORY_ID.attributeName(), fn.getCategoryId());
-        jsonGenerator.writeStringField(CUSTOM_STATUS.attributeName(), fn.getCustomStatus());
-        jsonGenerator.writeStringField(ARTIFACT.attributeName(), fn.getArtifact());
-        jsonGenerator.writeStringField(DESCRIPTION.attributeName(), fn.getDescription());
-        jsonGenerator.writeStringField(COMMENT.attributeName(), fn.getComment());
-        jsonGenerator.writeStringField(BUILD_NUMBER.attributeName(), fn.getBuildNumber());
-        jsonGenerator.writeStringField(LAST_CHANGE_DATE.attributeName(), DATE_SERIALIZER.convert(fn.getLastChangeDate()));
-        jsonGenerator.writeStringField(ARTIFACT_BUILD_DATE.attributeName(), DATE_SERIALIZER.convert(fn.getArtifactBuildDate()));
-        jsonGenerator.writeFieldName(TEXT64.attributeName());
-            writeLoremIpsum(fn.getText64(), jsonGenerator);
+        jsonGenerator.writeStringField(CATEGORY_ID.attrName(), fn.getCategoryId());
+        jsonGenerator.writeStringField(CUSTOM_STATUS.attrName(), fn.getCustomStatus().name());
+        jsonGenerator.writeStringField(ARTIFACT.attrName(), fn.getArtifact());
+        jsonGenerator.writeStringField(DESCRIPTION.attrName(), fn.getDescription());
+        jsonGenerator.writeStringField(COMMENT.attrName(), fn.getComment());
+        jsonGenerator.writeStringField(BUILD_NUMBER.attrName(), fn.getBuildNumber());
+        jsonGenerator.writeStringField(LAST_CHANGE_DATE.attrName(), DATE_SERIALIZER.convert(fn.getLastChangeDate()));
+        jsonGenerator.writeStringField(ARTIFACT_BUILD_DATE.attrName(), DATE_SERIALIZER.convert(fn.getArtifactBuildDate()));
+        jsonGenerator.writeFieldName(TEXT_BASE64.attrName());
+            writeLoremIpsum(fn.getTextBase64(), jsonGenerator);
 
         jsonGenerator.writeEndObject();
     }

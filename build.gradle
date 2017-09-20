@@ -8,7 +8,7 @@ ext {
     jacksonVersion = "2.8.4"
 
     distDir = "$projectDir/dist"
-    steadyZipFileName = 'steady_sample_scan.zip'
+    fixedZipFileName = 'fixed_sample_scan.zip'
 }
 
 // plugin version, note the version must match versionRegex.
@@ -31,13 +31,12 @@ repositories {
 
 configurations {
     compileExport
-    compilePluginApi
-    compile.extendsFrom (compileExport, compilePluginApi)
+    compile.extendsFrom (compileExport)
 }
 
 dependencies {
     // dependencies provided by plugin runtime
-    compilePluginApi 'com.fortify.plugin:plugin-api:1.0.1'
+    compile 'com.fortify.plugin:plugin-api:1.0.1'
     compile 'org.slf4j:slf4j-api:1.7.21'
 
     // plugin specific dependencies
@@ -46,15 +45,7 @@ dependencies {
     compileExport(group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: "$jacksonVersion") { transitive = false }
 }
 
-
-// Plugin API is needed for generating scans from command line
-task copyToLibs( type: Copy ) {
-    into "$buildDir/libs"
-    from configurations.compilePluginApi
-}
-
 jar {
-    dependsOn 'copyToLibs'
     doFirst {
         // check if version matches requirements
         if (!version.matches(versionRegex)) {
@@ -69,16 +60,12 @@ jar {
     }
     // include files from compileExport dependencies
     from { configurations.compileExport.collect { it.isDirectory() ? it : zipTree(it).matching { exclude 'META-INF/*' } } }
-
-    into("libs") {
-        from configurations.compilePluginApi
-    }
 }
 
 
-task deleteSteadyScan {
+task deleteFixedScan {
     doLast {
-        delete "$distDir/$steadyZipFileName"
+        delete "$distDir/$fixedZipFileName"
     }
 }
 
@@ -94,12 +81,12 @@ task createDistDir {
     }
 }
 
-task (genSteadyScan, dependsOn: [classes, createDistDir, deleteSteadyScan], type: JavaExec) {
+task (genFixedScan, dependsOn: [classes, createDistDir, deleteFixedScan], type: JavaExec) {
     main = 'com.thirdparty.ScanGenerator'
     classpath = sourceSets.main.runtimeClasspath
-    args 'steady', "$distDir/$steadyZipFileName"
+    args 'fixed', "$distDir/$fixedZipFileName"
 }
 
-build.dependsOn genSteadyScan
+build.dependsOn genFixedScan
 
 clean.dependsOn cleanDistDir

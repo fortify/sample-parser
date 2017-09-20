@@ -266,7 +266,7 @@ The [plugin metadata specification](https://github.com/FortifySaTPublish/plugin-
           [
             {
               "type": "template",
-              "key": "customAttributes.text64",
+              "key": "customAttributes.textBase64",
               "templateId": "COLLAPSE",
               "dataType": "string"
             }
@@ -397,15 +397,15 @@ The [plugin metadata specification](https://github.com/FortifySaTPublish/plugin-
 - `scan.info` can also provide `scanDate` property value in ISO-8601 format
   - if `scanDate` is not provided the parser plugin will be responsible to provide a meaningful scan date value for SSC operations
 
-## Generating scan with generic random or steady data
+## Generating scan with random or fixed data
 The sample plugin library can be also used as a generator for scans, which can be parsed by plugin itself.
 For this the plugin-api has to be present on the classpath.
-The usage for a generic scan is as follows:
-- `java -cp <class path to sample-parser-plugin and plugin-api> com.thirdparty.ScanGenerator generic <GENERIC_OUTPUT_SCAN_ZIP_NAME> <ISSUE_COUNT> <CATEGORY_COUNT> <LONG_TEXT_SIZE>`
-  - e.g. from the project root: `java -cp build/libs/* com.thirdparty.ScanGenerator generic generic_sample_scan.zip 50 10 500`
-The usage for a steady scan with a more realistic content is as follows:
-- `java -cp <class path to sample-parser-plugin and plugin-api> com.thirdparty.ScanGenerator  steady <STEADY_OUTPUT_SCAN_ZIP_NAME>`
-  - e.g. from the project root `java -cp build/libs/* com.thirdparty.ScanGenerator steady steady_sample_scan.zip`
+The usage for a random scan is as follows:
+- `java -cp <class path to sample-parser-plugin and plugin-api> com.thirdparty.ScanGenerator random <RANDOM_OUTPUT_SCAN_ZIP_NAME> <ISSUE_COUNT> <CATEGORY_COUNT> <LONG_TEXT_SIZE>`
+  - e.g. from the project root: `java -cp build/libs/* com.thirdparty.ScanGenerator random random_sample_scan.zip 50 10 500`
+The usage for a fixed scan with a more realistic content is as follows:
+- `java -cp <class path to sample-parser-plugin and plugin-api> com.thirdparty.ScanGenerator fixed <FIXED_OUTPUT_SCAN_ZIP_NAME>`
+  - e.g. from the project root `java -cp build/libs/* com.thirdparty.ScanGenerator fixed fixed_sample_scan.zip`
 
 ## Debugging
 - Developer can follow an `ssc.log` and `plugin-framework.log` to monitor what is happening in SSC and plugin container.

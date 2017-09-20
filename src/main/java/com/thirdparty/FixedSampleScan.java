@@ -1,24 +1,40 @@
 package com.thirdparty;
 
-import com.fortify.plugin.api.BasicVulnerabilityBuilder;
+/**
+ * (c) Copyright [2017] EntIT Software LLC
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import com.thirdparty.scan.Finding;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.thirdparty.ScanGenerator.GenPriority;
+import static com.thirdparty.ScanGenerator.CustomStatus;
+import static com.thirdparty.ScanGenerator.DATE_DESERIALIZER;
+
 /**
  * Created by pateraj on 15.9.2017.
  */
-class SteadySampleScan {
+class FixedSampleScan {
 
-    static final List<Finding> STEADY_FINDINGS = generateSteadyFindings();
+    static final List<Finding> FIXED_FINDINGS = generateFixedFindings();
 
     static final String ENGINE_VERSION = "1.0-SNAPSHOT";
     static final String SCAN_DATE = "2017-04-18T23:31:42.136Z";
     static final String BUILD_SERVER = "server01";
     static final int ELAPSED = 860;
 
-    private static List<Finding> generateSteadyFindings() {
+    private static List<Finding> generateFixedFindings() {
         List<Finding> findingList = new ArrayList<>();
 
         Finding fn = new Finding();
@@ -31,17 +47,17 @@ class SteadySampleScan {
         fn.setLineNumber(103);
         fn.setConfidence(4.968653f);
         fn.setImpact(200.690f);
-        fn.setPriority(BasicVulnerabilityBuilder.Priority.Critical);
+        fn.setPriority(GenPriority.Critical);
         // Custom attributes:
         fn.setCategoryId("a101");
         fn.setArtifact("artifact-fda2eaa2-7643-4fc5-809e-3eb6957e1945/00000001.jar");
         fn.setDescription("Cross-site scripting (XSS) is a type of computer security vulnerability typically found in web applications. XSS enables attackers to inject client-side scripts into web pages viewed by other users. A cross-site scripting vulnerability may be used by attackers to bypass access controls such as the same-origin policy. Cross-site scripting carried out on websites accounted for roughly 84% of all security vulnerabilities documented by Symantec as of 2007.[1] Their effect may range from a petty nuisance to a significant security risk, depending on the sensitivity of the data handled by the vulnerable site and the nature of any security mitigation implemented by the site's owner.");
         fn.setComment("This should be fixed");
         fn.setBuildNumber("300.3837014436722");
-        fn.setCustomStatus(ScanGenerator.CustomStatus.OPEN.toString());
-        fn.setLastChangeDate(ScanGenerator.DATE_DESERIALIZER.convert("2017-04-16T21:31:42.092Z"));
-        fn.setArtifactBuildDate(ScanGenerator.DATE_DESERIALIZER.convert("2017-04-17T22:31:42.092Z"));
-        fn.setText64("Example of a text encoded in the original scan to Base64. \n" + longText);
+        fn.setCustomStatus(CustomStatus.OPEN);
+        fn.setLastChangeDate(DATE_DESERIALIZER.convert("2017-04-16T21:31:42.092Z"));
+        fn.setArtifactBuildDate(DATE_DESERIALIZER.convert("2017-04-17T22:31:42.092Z"));
+        fn.setTextBase64("Example of a text encoded in the original scan to Base64. \n" + longText);
         findingList.add(fn);
 
         fn = new Finding();
@@ -54,17 +70,17 @@ class SteadySampleScan {
         fn.setLineNumber(146);
         fn.setConfidence(4.968653f);
         fn.setImpact(200.690f);
-        fn.setPriority(BasicVulnerabilityBuilder.Priority.Critical);
+        fn.setPriority(GenPriority.Critical);
         // Custom attributes:
         fn.setCategoryId("a101");
         fn.setArtifact("artifact-fda2eaa2-7643-4fc5-809e-3eb6957e1999/00000001.jar");
         fn.setDescription("Cross-site scripting (XSS) is a type of computer security vulnerability typically found in web applications. XSS enables attackers to inject client-side scripts into web pages viewed by other users. A cross-site scripting vulnerability may be used by attackers to bypass access controls such as the same-origin policy. Cross-site scripting carried out on websites accounted for roughly 84% of all security vulnerabilities documented by Symantec as of 2007.[1] Their effect may range from a petty nuisance to a significant security risk, depending on the sensitivity of the data handled by the vulnerable site and the nature of any security mitigation implemented by the site's owner.");
         fn.setComment("This should be fixed");
         fn.setBuildNumber("300.3837014436722");
-        fn.setCustomStatus(ScanGenerator.CustomStatus.OPEN.toString());
-        fn.setLastChangeDate(ScanGenerator.DATE_DESERIALIZER.convert("2017-04-16T21:31:42.092Z"));
-        fn.setArtifactBuildDate(ScanGenerator.DATE_DESERIALIZER.convert("2017-04-17T22:31:42.092Z"));
-        fn.setText64("Example of a text encoded in the original scan to Base64. \n" + longText);
+        fn.setCustomStatus(CustomStatus.OPEN);
+        fn.setLastChangeDate(DATE_DESERIALIZER.convert("2017-04-16T21:31:42.092Z"));
+        fn.setArtifactBuildDate(DATE_DESERIALIZER.convert("2017-04-17T22:31:42.092Z"));
+        fn.setTextBase64("Example of a text encoded in the original scan to Base64. \n" + longText);
         findingList.add(fn);
 
         fn = new Finding();
@@ -77,17 +93,17 @@ class SteadySampleScan {
         fn.setLineNumber(489);
         fn.setConfidence(4.968653f);
         fn.setImpact(200.690f);
-        fn.setPriority(BasicVulnerabilityBuilder.Priority.Critical);
+        fn.setPriority(GenPriority.Critical);
         // Custom attributes:
         fn.setCategoryId("a101");
         fn.setArtifact("artifact-fda2eaa2-7643-4fc5-809e-3eb6957e1946/00000001.jar");
         fn.setDescription("Cross-site scripting (XSS) is a type of computer security vulnerability typically found in web applications. XSS enables attackers to inject client-side scripts into web pages viewed by other users. A cross-site scripting vulnerability may be used by attackers to bypass access controls such as the same-origin policy. Cross-site scripting carried out on websites accounted for roughly 84% of all security vulnerabilities documented by Symantec as of 2007.[1] Their effect may range from a petty nuisance to a significant security risk, depending on the sensitivity of the data handled by the vulnerable site and the nature of any security mitigation implemented by the site's owner.");
         fn.setComment("fixed in build 303.0001");
         fn.setBuildNumber("300.3837014436722");
-        fn.setCustomStatus(ScanGenerator.CustomStatus.REMEDIATED.toString());
-        fn.setLastChangeDate(ScanGenerator.DATE_DESERIALIZER.convert("2017-04-16T21:31:42.092Z"));
-        fn.setArtifactBuildDate(ScanGenerator.DATE_DESERIALIZER.convert("2017-04-17T22:31:42.092Z"));
-        fn.setText64("Example of a text encoded in the original scan to Base64. \n" + longText);
+        fn.setCustomStatus(CustomStatus.REMEDIATED);
+        fn.setLastChangeDate(DATE_DESERIALIZER.convert("2017-04-16T21:31:42.092Z"));
+        fn.setArtifactBuildDate(DATE_DESERIALIZER.convert("2017-04-17T22:31:42.092Z"));
+        fn.setTextBase64("Example of a text encoded in the original scan to Base64. \n" + longText);
         findingList.add(fn);
 
         fn = new Finding();
@@ -100,17 +116,17 @@ class SteadySampleScan {
         fn.setLineNumber(8409);
         fn.setConfidence(2.941967f);
         fn.setImpact(200.696f);
-        fn.setPriority(BasicVulnerabilityBuilder.Priority.High);
+        fn.setPriority(GenPriority.High);
         // Custom attributes:
         fn.setCategoryId("c121");
         fn.setArtifact("artifact-c834c327-4cee-4420-b1f8-b24bea95fee3/00000002.jar");
         fn.setDescription("SQL injection is a code injection technique, used to attack data-driven applications, in which nefarious SQL statements are inserted into an entry field for execution (e.g. to dump the database contents to the attacker).[1] SQL injection must exploit a security vulnerability in an application's software, for example, when user input is either incorrectly filtered for string literal escape characters embedded in SQL statements or user input is not strongly typed and unexpectedly executed. SQL injection is mostly known as an attack vector for websites but can be used to attack any type of SQL database.");
         fn.setComment("fixed in build 300.845200451");
         fn.setBuildNumber("300.314668238163");
-        fn.setCustomStatus(ScanGenerator.CustomStatus.REMEDIATED.toString());
-        fn.setLastChangeDate(ScanGenerator.DATE_DESERIALIZER.convert("2017-04-16T21:31:42.092Z"));
-        fn.setArtifactBuildDate(ScanGenerator.DATE_DESERIALIZER.convert("2017-04-17T22:31:42.092Z"));
-        fn.setText64("Example of a text encoded in the original scan to Base64. \n" + longText);
+        fn.setCustomStatus(CustomStatus.REMEDIATED);
+        fn.setLastChangeDate(DATE_DESERIALIZER.convert("2017-04-16T21:31:42.092Z"));
+        fn.setArtifactBuildDate(DATE_DESERIALIZER.convert("2017-04-17T22:31:42.092Z"));
+        fn.setTextBase64("Example of a text encoded in the original scan to Base64. \n" + longText);
         findingList.add(fn);
 
         fn = new Finding();
@@ -123,17 +139,17 @@ class SteadySampleScan {
         fn.setLineNumber(1001);
         fn.setConfidence(2.941967f);
         fn.setImpact(200.696f);
-        fn.setPriority(BasicVulnerabilityBuilder.Priority.High);
+        fn.setPriority(GenPriority.High);
         // Custom attributes:
         fn.setCategoryId("c121");
         fn.setArtifact("artifact-c834c327-4cee-4420-b1f8-b24bea95fee3/00000002.jar");
         fn.setDescription("SQL injection is a code injection technique, used to attack data-driven applications, in which nefarious SQL statements are inserted into an entry field for execution (e.g. to dump the database contents to the attacker).[1] SQL injection must exploit a security vulnerability in an application's software, for example, when user input is either incorrectly filtered for string literal escape characters embedded in SQL statements or user input is not strongly typed and unexpectedly executed. SQL injection is mostly known as an attack vector for websites but can be used to attack any type of SQL database.");
         fn.setComment("fixed in build 300.845200451");
         fn.setBuildNumber("300.314668238163");
-        fn.setCustomStatus(ScanGenerator.CustomStatus.REMEDIATED.toString());
-        fn.setLastChangeDate(ScanGenerator.DATE_DESERIALIZER.convert("2017-04-16T21:31:42.092Z"));
-        fn.setArtifactBuildDate(ScanGenerator.DATE_DESERIALIZER.convert("2017-04-17T22:31:42.092Z"));
-        fn.setText64("Example of a text encoded in the original scan to Base64. \n" + longText);
+        fn.setCustomStatus(CustomStatus.REMEDIATED);
+        fn.setLastChangeDate(DATE_DESERIALIZER.convert("2017-04-16T21:31:42.092Z"));
+        fn.setArtifactBuildDate(DATE_DESERIALIZER.convert("2017-04-17T22:31:42.092Z"));
+        fn.setTextBase64("Example of a text encoded in the original scan to Base64. \n" + longText);
         findingList.add(fn);
 
         fn = new Finding();
@@ -146,17 +162,17 @@ class SteadySampleScan {
         fn.setLineNumber(423);
         fn.setConfidence(2.941967f);
         fn.setImpact(200.696f);
-        fn.setPriority(BasicVulnerabilityBuilder.Priority.High);
+        fn.setPriority(GenPriority.High);
         // Custom attributes:
         fn.setCategoryId("c121");
         fn.setArtifact("artifact-c834c327-4cee-4420-b1f8-b24bea95fee3/00000002.jar");
         fn.setDescription("SQL injection is a code injection technique, used to attack data-driven applications, in which nefarious SQL statements are inserted into an entry field for execution (e.g. to dump the database contents to the attacker).[1] SQL injection must exploit a security vulnerability in an application's software, for example, when user input is either incorrectly filtered for string literal escape characters embedded in SQL statements or user input is not strongly typed and unexpectedly executed. SQL injection is mostly known as an attack vector for websites but can be used to attack any type of SQL database.");
         fn.setComment("");
         fn.setBuildNumber("300.314668238163");
-        fn.setCustomStatus(ScanGenerator.CustomStatus.OPEN.toString());
-        fn.setLastChangeDate(ScanGenerator.DATE_DESERIALIZER.convert("2017-04-16T21:31:42.092Z"));
-        fn.setArtifactBuildDate(ScanGenerator.DATE_DESERIALIZER.convert("2017-04-17T22:31:42.092Z"));
-        fn.setText64("Example of a text encoded in the original scan to Base64. \n" + longText);
+        fn.setCustomStatus(CustomStatus.OPEN);
+        fn.setLastChangeDate(DATE_DESERIALIZER.convert("2017-04-16T21:31:42.092Z"));
+        fn.setArtifactBuildDate(DATE_DESERIALIZER.convert("2017-04-17T22:31:42.092Z"));
+        fn.setTextBase64("Example of a text encoded in the original scan to Base64. \n" + longText);
         findingList.add(fn);
 
         fn = new Finding();
@@ -169,17 +185,17 @@ class SteadySampleScan {
         fn.setLineNumber(8409);
         fn.setConfidence(2.941967f);
         fn.setImpact(200.696f);
-        fn.setPriority(BasicVulnerabilityBuilder.Priority.High);
+        fn.setPriority(GenPriority.High);
         // Custom attributes:
         fn.setCategoryId("c121");
         fn.setArtifact("artifact-c834c327-4cee-4420-b1f8-b24bea95fee3/00000002.jar");
         fn.setDescription("SQL injection is a code injection technique, used to attack data-driven applications, in which nefarious SQL statements are inserted into an entry field for execution (e.g. to dump the database contents to the attacker).[1] SQL injection must exploit a security vulnerability in an application's software, for example, when user input is either incorrectly filtered for string literal escape characters embedded in SQL statements or user input is not strongly typed and unexpectedly executed. SQL injection is mostly known as an attack vector for websites but can be used to attack any type of SQL database.");
         fn.setComment("fixed in build 300.845200451");
         fn.setBuildNumber("300.314668238163");
-        fn.setCustomStatus(ScanGenerator.CustomStatus.REMEDIATED.toString());
-        fn.setLastChangeDate(ScanGenerator.DATE_DESERIALIZER.convert("2017-04-16T21:31:42.092Z"));
-        fn.setArtifactBuildDate(ScanGenerator.DATE_DESERIALIZER.convert("2017-04-17T22:31:42.092Z"));
-        fn.setText64("Example of a text encoded in the original scan to Base64. \n" + longText);
+        fn.setCustomStatus(CustomStatus.REMEDIATED);
+        fn.setLastChangeDate(DATE_DESERIALIZER.convert("2017-04-16T21:31:42.092Z"));
+        fn.setArtifactBuildDate(DATE_DESERIALIZER.convert("2017-04-17T22:31:42.092Z"));
+        fn.setTextBase64("Example of a text encoded in the original scan to Base64. \n" + longText);
         findingList.add(fn);
 
         fn = new Finding();
@@ -192,17 +208,17 @@ class SteadySampleScan {
         fn.setLineNumber(409);
         fn.setConfidence(2.941967f);
         fn.setImpact(200.696f);
-        fn.setPriority(BasicVulnerabilityBuilder.Priority.High);
+        fn.setPriority(GenPriority.High);
         // Custom attributes:
         fn.setCategoryId("c121");
         fn.setArtifact("artifact-c834c327-4cee-4420-b1f8-b24bea95feag/00000012.jar");
         fn.setDescription("SQL injection is a code injection technique, used to attack data-driven applications, in which nefarious SQL statements are inserted into an entry field for execution (e.g. to dump the database contents to the attacker).[1] SQL injection must exploit a security vulnerability in an application's software, for example, when user input is either incorrectly filtered for string literal escape characters embedded in SQL statements or user input is not strongly typed and unexpectedly executed. SQL injection is mostly known as an attack vector for websites but can be used to attack any type of SQL database.");
         fn.setComment("");
         fn.setBuildNumber("300.314668238163");
-        fn.setCustomStatus(ScanGenerator.CustomStatus.NEW.toString());
-        fn.setLastChangeDate(ScanGenerator.DATE_DESERIALIZER.convert("2017-04-16T21:31:42.092Z"));
-        fn.setArtifactBuildDate(ScanGenerator.DATE_DESERIALIZER.convert("2017-04-17T22:31:42.092Z"));
-        fn.setText64("Example of a text encoded in the original scan to Base64. \n" + longText);
+        fn.setCustomStatus(CustomStatus.NEW);
+        fn.setLastChangeDate(DATE_DESERIALIZER.convert("2017-04-16T21:31:42.092Z"));
+        fn.setArtifactBuildDate(DATE_DESERIALIZER.convert("2017-04-17T22:31:42.092Z"));
+        fn.setTextBase64("Example of a text encoded in the original scan to Base64. \n" + longText);
         findingList.add(fn);
 
         fn = new Finding();
@@ -215,17 +231,17 @@ class SteadySampleScan {
         fn.setLineNumber(22);
         fn.setConfidence(2.941967f);
         fn.setImpact(200.696f);
-        fn.setPriority(BasicVulnerabilityBuilder.Priority.High);
+        fn.setPriority(GenPriority.High);
         // Custom attributes:
         fn.setCategoryId("c121");
         fn.setArtifact("artifact-c834c327-4cee-4420-b1f8-b24bea95fe88/00000008.jar");
         fn.setDescription("SQL injection is a code injection technique, used to attack data-driven applications, in which nefarious SQL statements are inserted into an entry field for execution (e.g. to dump the database contents to the attacker).[1] SQL injection must exploit a security vulnerability in an application's software, for example, when user input is either incorrectly filtered for string literal escape characters embedded in SQL statements or user input is not strongly typed and unexpectedly executed. SQL injection is mostly known as an attack vector for websites but can be used to attack any type of SQL database.");
         fn.setComment("");
         fn.setBuildNumber("300.314668238163");
-        fn.setCustomStatus(ScanGenerator.CustomStatus.NEW.toString());
-        fn.setLastChangeDate(ScanGenerator.DATE_DESERIALIZER.convert("2017-04-16T21:31:42.092Z"));
-        fn.setArtifactBuildDate(ScanGenerator.DATE_DESERIALIZER.convert("2017-04-17T22:31:42.092Z"));
-        fn.setText64("Example of a text encoded in the original scan to Base64. \n" + longText);
+        fn.setCustomStatus(CustomStatus.NEW);
+        fn.setLastChangeDate(DATE_DESERIALIZER.convert("2017-04-16T21:31:42.092Z"));
+        fn.setArtifactBuildDate(DATE_DESERIALIZER.convert("2017-04-17T22:31:42.092Z"));
+        fn.setTextBase64("Example of a text encoded in the original scan to Base64. \n" + longText);
         findingList.add(fn);
 
         fn = new Finding();
@@ -238,17 +254,17 @@ class SteadySampleScan {
         fn.setLineNumber(112);
         fn.setConfidence(2.941967f);
         fn.setImpact(200.696f);
-        fn.setPriority(BasicVulnerabilityBuilder.Priority.High);
+        fn.setPriority(GenPriority.High);
         // Custom attributes:
         fn.setCategoryId("c121");
         fn.setArtifact("artifact-c834c327-4cee-4420-b1f8-b24bea95fee3/00000002.jar");
         fn.setDescription("SQL injection is a code injection technique, used to attack data-driven applications, in which nefarious SQL statements are inserted into an entry field for execution (e.g. to dump the database contents to the attacker).[1] SQL injection must exploit a security vulnerability in an application's software, for example, when user input is either incorrectly filtered for string literal escape characters embedded in SQL statements or user input is not strongly typed and unexpectedly executed. SQL injection is mostly known as an attack vector for websites but can be used to attack any type of SQL database.");
         fn.setComment("");
         fn.setBuildNumber("300.314668238163");
-        fn.setCustomStatus(ScanGenerator.CustomStatus.OPEN.toString());
-        fn.setLastChangeDate(ScanGenerator.DATE_DESERIALIZER.convert("2017-04-16T21:31:42.092Z"));
-        fn.setArtifactBuildDate(ScanGenerator.DATE_DESERIALIZER.convert("2017-04-17T22:31:42.092Z"));
-        fn.setText64("Example of a text encoded in the original scan to Base64. \n" + longText);
+        fn.setCustomStatus(CustomStatus.OPEN);
+        fn.setLastChangeDate(DATE_DESERIALIZER.convert("2017-04-16T21:31:42.092Z"));
+        fn.setArtifactBuildDate(DATE_DESERIALIZER.convert("2017-04-17T22:31:42.092Z"));
+        fn.setTextBase64("Example of a text encoded in the original scan to Base64. \n" + longText);
         findingList.add(fn);
 
         return findingList;
