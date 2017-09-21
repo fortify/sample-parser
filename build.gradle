@@ -7,7 +7,7 @@ ext {
     versionRegex = '(\\d+)(\\.\\d+)*'
     jacksonVersion = "2.8.4"
 
-    distDir = "$projectDir/dist"
+    scanDir = "$buildDir/scan"
     fixedZipFileName = 'fixed_sample_scan.zip'
 }
 
@@ -62,31 +62,23 @@ jar {
     from { configurations.compileExport.collect { it.isDirectory() ? it : zipTree(it).matching { exclude 'META-INF/*' } } }
 }
 
-
 task deleteFixedScan {
     doLast {
-        delete "$distDir/$fixedZipFileName"
+        delete "$scanDir/$fixedZipFileName"
     }
 }
 
-task cleanDistDir {
-    doLast {
-        delete fileTree(dir: "$distDir", include: '**/*')
-    }
-}
-
-task createDistDir {
+task createScanDir {
     doFirst {
-        mkdir "$distDir"
+        mkdir "$scanDir"
     }
 }
 
-task (genFixedScan, dependsOn: [classes, createDistDir, deleteFixedScan], type: JavaExec) {
+task (genFixedScan, dependsOn: [classes, createScanDir, deleteFixedScan], type: JavaExec) {
     main = 'com.thirdparty.ScanGenerator'
     classpath = sourceSets.main.runtimeClasspath
-    args 'fixed', "$distDir/$fixedZipFileName"
+    args 'fixed', "$scanDir/$fixedZipFileName"
 }
 
 build.dependsOn genFixedScan
 
-clean.dependsOn cleanDistDir
