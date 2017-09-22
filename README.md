@@ -399,13 +399,17 @@ The [plugin metadata specification](https://github.com/FortifySaTPublish/plugin-
 
 ## Generating scan with random or fixed data
 The sample plugin library can be also used as a generator for scans, which can be parsed by plugin itself.
-For this the plugin-api has to be present on the classpath.
+<BR>Fixed scan will be automatically generated to the `/build/scan/fixed-sample-scan.zip` as a part of a project's `gradle clean build`
+
+Both types of scans can be also generated manually from command line.
+
 The usage for a random scan is as follows:
-- `java -cp <class path to sample-parser-plugin and plugin-api> com.thirdparty.ScanGenerator random <RANDOM_OUTPUT_SCAN_ZIP_NAME> <ISSUE_COUNT> <CATEGORY_COUNT> <LONG_TEXT_SIZE>`
-  - e.g. from the project root: `java -cp build/libs/* com.thirdparty.ScanGenerator random random_sample_scan.zip 50 10 500`
+- `java -cp <class path to sample-parser-plugin> com.thirdparty.ScanGenerator random <RANDOM_OUTPUT_SCAN_ZIP_NAME> <ISSUE_COUNT> <CATEGORY_COUNT> <LONG_TEXT_SIZE>`
+  - e.g. from the project root:  `java -cp build/libs/* com.thirdparty.ScanGenerator random random_sample_scan.zip 50 10 500`
+
 The usage for a fixed scan with a more realistic content is as follows:
-- `java -cp <class path to sample-parser-plugin and plugin-api> com.thirdparty.ScanGenerator fixed <FIXED_OUTPUT_SCAN_ZIP_NAME>`
-  - e.g. from the project root `java -cp build/libs/* com.thirdparty.ScanGenerator fixed fixed_sample_scan.zip`
+- `java -cp <class path to sample-parser-plugin> com.thirdparty.ScanGenerator fixed <FIXED_OUTPUT_SCAN_ZIP_NAME>`
+  - e.g. from the project root:  `java -cp build/libs/* com.thirdparty.ScanGenerator fixed fixed_sample_scan.zip`
 
 ## Debugging
 - Developer can follow an `ssc.log` and `plugin-framework.log` to monitor what is happening in SSC and plugin container.
