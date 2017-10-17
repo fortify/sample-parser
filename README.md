@@ -408,19 +408,19 @@ customAttributeName | customAttributes.*customAttributeName*
 - The `scan.info` file can also provide the `scanDate` property value in ISO-8601 format.
   - If `scanDate` is not provided, the parser plugin is responsible for providing a meaningful scan date value for SSC operations.
 
-## Generating scan with random or fixed data
+## Generating scan with fixed or random data
 The sample plugin library can also be used as a generator for scans that can be parsed by the plugin itself.
-<BR>Fixed scan will be automatically generated to the `/build/scan/fixed-sample-scan.zip` as a part of a project's `gradle clean build`
 
-Both types of scans can be also generated manually from command line.
+Two types of scans can be generated. A fixed scan with more realistic but small data and a random scan with artificial data but with configurable size.
+The fixed scan will be automatically generated to the `build/scan/fixed-sample-scan.zip` as a part of a project's build.
 
-The usage for a random scan is as follows:
-- `java -cp <class path to sample-parser-plugin> com.thirdparty.ScanGenerator random <RANDOM_OUTPUT_SCAN_ZIP_NAME> <ISSUE_COUNT> <CATEGORY_COUNT> <LONG_TEXT_SIZE>`
-  - e.g. from the project root:  `java -cp build/libs/* com.thirdparty.ScanGenerator random random_sample_scan.zip 50 10 500`
+The usage for the fixed scan generator is as follows:
+- `java -cp path/to/sample-parser-[version].jar com.thirdparty.ScanGenerator fixed <FIXED_OUTPUT_SCAN_ZIP_NAME>`
+  - For example, in the project root: `java -cp build/libs/* com.thirdparty.ScanGenerator fixed fixed_sample_scan.zip`
 
-The usage for a fixed scan with a more realistic content is as follows:
-- `java -cp <class path to sample-parser-plugin> com.thirdparty.ScanGenerator fixed <FIXED_OUTPUT_SCAN_ZIP_NAME>`
-  - e.g. from the project root:  `java -cp build/libs/* com.thirdparty.ScanGenerator fixed fixed_sample_scan.zip`
+The usage for the random scan generator is as follows:
+- `java -cp path/to/sample-parser-[version].jar com.thirdparty.ScanGenerator random <RANDOM_OUTPUT_SCAN_ZIP_NAME> <ISSUE_COUNT> <CATEGORY_COUNT> <LONG_TEXT_SIZE>`
+  - For example, in the project root: `java -cp build/libs/* com.thirdparty.ScanGenerator random random_sample_scan.zip 50 10 500`
 
 ## Debugging
 - A developer can follow `ssc.log` and `plugin-framework.log` to monitor what is happening in SSC and the plugin container.
