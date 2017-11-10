@@ -24,7 +24,7 @@ if (!project.hasProperty('release')) {
 repositories {
     // repository with fortify artifacts
     maven {
-        url  "http://dl.bintray.com/fortify/fortify-public" 
+        url  "http://dl.bintray.com/fortify/maven-public"
     }
     mavenCentral()
 }
