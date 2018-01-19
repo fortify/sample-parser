@@ -1,7 +1,7 @@
 package com.thirdparty.scan;
 
 /**
- * (c) Copyright [2017] EntIT Software LLC
+ * (c) Copyright [2017] Micro Focus or one of its affiliates.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
