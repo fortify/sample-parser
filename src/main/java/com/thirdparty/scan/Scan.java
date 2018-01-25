@@ -20,9 +20,6 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * (C) Copyright 2015,2016 Hewlett Packard Enterprise Development, L.P.
- */
 @JsonSerialize
 public class Scan {
 
