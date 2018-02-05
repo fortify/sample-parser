@@ -458,7 +458,4 @@ The usage for the random scan generator is as follows:
    - Parser plugin registration failed - check the plugin container logs and SSC logs for errors.
 
 6) Will my plugin developed for SSC/PluginFramework 17.10 work automatically with SSC/PluginFramework 17.20?
-   - There is a high probability that your plugin will be compatible with 17.20. However, due to significant improvements and validations added in SSC 17.20, be prepared to test your plugin with SSC/PluginFramework 17.20 and update your plugin for compatibility, if needed.
-
-6) Will my plugin developed for SSC/PluginFramework 17.10 work automatically with SSC/PluginFramework 17.20 ?
-   - There is a high probability that your plugin will also be compatible with 17.20 - however, due to significant improvements and validations added in SSC 17.20, you must be prepared to test your plugin with SSC/PluginFramework 17.20 and update your plugin to be compatible if needed.
+   - There is a high probability that your plugin will be compatible with 17.20. However, due to significant improvements and validations added in SSC 17.20, be prepared to test your plugin with SSC/PluginFramework 17.20 and update your plugin for compatibility, if needed. 
