@@ -457,5 +457,5 @@ The usage for the random scan generator is as follows:
    - The engine type provided with the scan is different from the engine type provided by the parser plugin, or there is no installed/enabled plugin of the specified engine type in SSC.
    - Parser plugin registration failed - check the plugin container logs and SSC logs for errors.
 
-6) Will my plugin developed for SSC/PluginFramework 17.10 work automatically with SSC/PluginFramework 17.20?
-   - There is a high probability that your plugin will be compatible with 17.20. However, due to significant improvements and validations added in SSC 17.20, be prepared to test your plugin with SSC/PluginFramework 17.20 and update your plugin for compatibility, if needed. 
+6) Will my parser plugin developed for SSC/PluginFramework 17.10 work automatically with SSC/PluginFramework 17.20?
+   - No. There is a change in XML namespace for plugin.xml. So the minimal change needed for 17.20 support is plugin.xml update. After that, there is a high probability that your plugin will be compatible with 17.20. However, due to significant improvements and validations added in SSC 17.20, be prepared to test your plugin with SSC/PluginFramework 17.20 and update your plugin for compatibility, if needed.
