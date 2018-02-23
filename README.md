@@ -135,11 +135,11 @@ The [plugin metadata specification](https://github.com/fortify/plugin-api/blob/m
 
         or
 
-        <engine-type>BLACKDUCK</engine-type>
+        <engine-type>ACME_ENGINE</engine-type>
 
         or
 
-        <engine-type>WEBINSPECT</engine-type>
+        <engine-type>ACME ENGINE-TYPE.1</engine-type>
       ```
 
     - __Supported engine versions (supported-engine-versions):__ Descriptive field that shows which versions of a supported analyzer produces scan results that the parser plugin can parse.
