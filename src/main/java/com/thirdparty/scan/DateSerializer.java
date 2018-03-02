@@ -19,9 +19,6 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
-/**
- * Created by svobodpe on 2017-01-25.
- */
 public class DateSerializer extends StdConverter<Date, String> {
     @Override
     public String convert(final Date value) {

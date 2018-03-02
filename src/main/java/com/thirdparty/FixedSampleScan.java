@@ -22,9 +22,6 @@ import static com.thirdparty.ScanGenerator.GenPriority;
 import static com.thirdparty.ScanGenerator.CustomStatus;
 import static com.thirdparty.ScanGenerator.DATE_DESERIALIZER;
 
-/**
- * Created by pateraj on 15.9.2017.
- */
 class FixedSampleScan {
 
     static final List<Finding> FIXED_FINDINGS = generateFixedFindings();

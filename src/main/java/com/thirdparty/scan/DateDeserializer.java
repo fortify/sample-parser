@@ -25,9 +25,6 @@ import java.time.temporal.TemporalAccessor;
 import java.time.temporal.TemporalQueries;
 import java.util.Date;
 
-/**
- * Created by svobodpe on 2017-01-25.
- */
 public class DateDeserializer extends StdConverter<String, Date> {
     private static final DateTimeFormatter[] DATE_TIME_FORMATTERS = {DateTimeFormatter.ISO_DATE_TIME};
 

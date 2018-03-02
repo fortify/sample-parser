@@ -19,8 +19,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by pateraj on 19.9.2017.
- *
  * <P>All attributes used by parser and generator should be defined in this class.
  * <BR>We don't define attribute types here because we don't want this class to be dependent on plugin-api.
  * <BR>Mandatory custom issue attribute types should be defined in the class implementing VulnAttribute interface.
