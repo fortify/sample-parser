@@ -23,7 +23,7 @@ The [plugin metadata specification](https://github.com/fortify/plugin-api/blob/m
 - The [plugin manifest XSD](https://github.com/fortify/plugin-api/blob/master/src/main/resources/schema "Plugin manifest XSD") provides the - plugin.xml schema.
 - Description of the attributes that can be defined in the plugin.xml: (The constraints listed for the various fields are meant to give a general idea of acceptable values. The list is not exhaustive. For the authoritative reference, consult the `pluginmanifest XSD` for the release with which your plugin is compatible.)
   - __Plugin id (id):__ unique plugin identifier defined by the plugin developer. The indentifier must be unique, stable over time,  compact, and readable (for logging/debugging purposes). Fortify recommends that you construct the plugin identifier in the following way: `(your domain name in reverse) + separator + (meaningful name, such as build artifactID)`. Do not include version information. That is specified separately below.
-    Mandatory. Max length: 80 chars.
+    Mandatory. Max length: 20 chars.
 
     Example plugin ID definition:
     ```
