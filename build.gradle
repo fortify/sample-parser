@@ -22,44 +22,40 @@ if (!project.hasProperty('release')) {
 }
 
 repositories {
-    // repository with fortify artifacts
-    maven {
-        url  "http://dl.bintray.com/fortify/maven-public"
-    }
     mavenCentral()
 }
 
 configurations {
-    compileExport
-    compile.extendsFrom (compileExport)
+    implementationExport
+    implementation.extendsFrom (implementationExport)
 }
 
 dependencies {
     // dependencies provided by plugin runtime
-    compile 'com.fortify.plugin:plugin-api:1.0.1'
-    compile 'org.slf4j:slf4j-api:1.7.21'
+    implementation 'com.fortify.plugin:plugin-api:1.0.1.1'
+    implementation 'org.slf4j:slf4j-api:1.7.21'
 
     // plugin specific dependencies
-    compileExport(group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: "$jacksonVersion") { transitive = false }
-    compileExport(group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "$jacksonVersion") { transitive = false }
-    compileExport(group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: "$jacksonVersion") { transitive = false }
+    implementationExport(group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: "$jacksonVersion") { transitive = false }
+    implementationExport(group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "$jacksonVersion") { transitive = false }
+    implementationExport(group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: "$jacksonVersion") { transitive = false }
 }
 
 jar {
     doFirst {
         // check if version matches requirements
-        if (!version.matches(versionRegex)) {
+        if (!project.version.matches(versionRegex)) {
             throw new InvalidUserDataException("Plugin version '$version' does not match '$versionRegex'")
         }
     }
     // replace version placeholders in plugin.xml
     filesMatching('plugin.xml') {
         filter {
-            it.replaceAll('<!--VERSION-->.*?<!--/VERSION-->', version)
+            it.replaceAll('<!--VERSION-->.*?<!--/VERSION-->', project.version)
         }
     }
-    // include files from compileExport dependencies
-    from { configurations.compileExport.collect { it.isDirectory() ? it : zipTree(it).matching { exclude 'META-INF/*' } } }
+    // include files from implementationExport dependencies
+    from { configurations.implementationExport.collect { it.isDirectory() ? it : zipTree(it).matching { exclude 'META-INF/*' } } }
 }
 
 task deleteFixedScan {
